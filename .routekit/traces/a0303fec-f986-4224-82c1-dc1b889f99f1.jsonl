@@ -1,0 +1,5 @@
+{"type": "run_started", "timestamp": 1768648250.861598, "data": {"trace_id": "a0303fec-f986-4224-82c1-dc1b889f99f1", "agent": "agent1", "prompt": "{}"}}
+{"type": "model_called", "timestamp": 1768648250.861721, "data": {"model": "model1", "messages_count": 1, "response": {"content": "I'll process this and use the echo tool.", "tool_calls": [], "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30, "cost": null}}, "latency_ms": 0.012874603271484375}}
+{"type": "model_called", "timestamp": 1768648250.861728, "data": {"step_id": "bc77f4e3-cc8a-454d-8875-aae97d1d8b36", "response": {"content": "I'll process this and use the echo tool.", "tool_calls": [], "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30, "cost": null}}}}
+{"type": "step_completed", "timestamp": 1768648250.8617852, "data": {"step_id": "bc77f4e3-cc8a-454d-8875-aae97d1d8b36", "step_type": "model_call", "latency_ms": 0.041961669921875}}
+{"type": "error", "timestamp": 1768648250.861896, "data": {"error": "Unable to serialize unknown type: <class 'routekit.providers.local.FakeModel'>", "error_type": "PydanticSerializationError"}}
