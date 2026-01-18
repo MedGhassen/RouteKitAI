@@ -38,7 +38,11 @@ async def test_working_memory() -> None:
 @pytest.mark.asyncio
 async def test_episodic_memory_persistence() -> None:
     """Test EpisodicMemory SQLite persistence."""
-    with tempfile.TemporaryDirectory() as tmpdir:
+    import sys
+    
+    # Use ignore_cleanup_errors on Windows to handle file locking issues
+    ignore_errors = sys.platform == "win32"
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=ignore_errors) as tmpdir:
         db_path = Path(tmpdir) / "test.db"
 
         # Create memory and store episodes
@@ -71,7 +75,11 @@ async def test_episodic_memory_persistence() -> None:
 @pytest.mark.asyncio
 async def test_episodic_memory_search() -> None:
     """Test EpisodicMemory search functionality."""
-    with tempfile.TemporaryDirectory() as tmpdir:
+    import sys
+    
+    # Use ignore_cleanup_errors on Windows to handle file locking issues
+    ignore_errors = sys.platform == "win32"
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=ignore_errors) as tmpdir:
         db_path = Path(tmpdir) / "test.db"
         memory = EpisodicMemory(db_path=db_path)
         try:

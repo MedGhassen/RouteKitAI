@@ -40,6 +40,8 @@ class EpisodicMemory(Memory):
     def _init_db(self) -> None:
         """Initialize database schema."""
         with sqlite3.connect(self.db_path) as conn:
+            # Enable WAL mode for better concurrent access and file locking on Windows
+            conn.execute("PRAGMA journal_mode=WAL")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS episodes (
@@ -217,15 +219,26 @@ class EpisodicMemory(Memory):
         This method forces SQLite to release locks by opening and closing a connection.
         """
         import gc
+        import sys
+        import time
         
         try:
             # Force garbage collection to ensure any lingering connections are cleaned up
             gc.collect()
             # Open and immediately close a connection to ensure locks are released
             # Use a short timeout to avoid hanging
-            with sqlite3.connect(str(self.db_path), timeout=0.1) as conn:
+            with sqlite3.connect(str(self.db_path), timeout=1.0) as conn:
+                # Checkpoint WAL to ensure all data is written and locks are released
+                try:
+                    conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                except sqlite3.Error:
+                    # WAL checkpoint may fail if not in WAL mode, ignore
+                    pass
                 # Execute a simple query to ensure connection is fully established
                 conn.execute("SELECT 1")
+                # On Windows, SQLite needs a moment to release file locks
+                if sys.platform == "win32":
+                    time.sleep(0.05)
         except (sqlite3.Error, OSError, TimeoutError):
             # Ignore errors during cleanup - file may already be closed or locked
             pass
