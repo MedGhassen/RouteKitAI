@@ -91,7 +91,7 @@ async def test_graph_validation() -> None:
         edges=[],
     )
 
-    errors = graph.validate()
+    errors = graph.validate_structure()
     assert len(errors) == 0
 
     # Invalid graph - missing entry node
@@ -102,7 +102,7 @@ async def test_graph_validation() -> None:
         edges=[],
     )
 
-    errors = graph2.validate()
+    errors = graph2.validate_structure()
     assert len(errors) > 0
     assert any("missing" in error.lower() for error in errors)
 

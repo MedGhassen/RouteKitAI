@@ -48,7 +48,7 @@ class GraphExecutor(BaseModel):
             RouteKitRuntimeError: If graph execution fails
         """
         # Validate graph
-        errors = self.graph.validate()
+        errors = self.graph.validate_structure()
         if errors:
             raise RouteKitRuntimeError(f"Graph validation failed: {'; '.join(errors)}")
 
@@ -97,9 +97,26 @@ class GraphExecutor(BaseModel):
                     }
                 )
 
-            # Mark node as visited
+            # Mark node as visited (track both set and path for different purposes)
+            # Set is for cycle detection, path is for execution history
             exec_state.visited_nodes.add(current_node_id)
             exec_state.execution_path.append(current_node_id)
+            
+            # Detect if we're revisiting a node (potential infinite loop, even if not a cycle)
+            if exec_state.execution_path.count(current_node_id) > 1:
+                # Warn but don't fail - might be intentional for retry logic
+                # Only fail if we've visited this node too many times
+                visit_count = exec_state.execution_path.count(current_node_id)
+                if visit_count > 10:  # Arbitrary threshold
+                    raise RouteKitRuntimeError(
+                        f"Node '{current_node_id}' visited {visit_count} times - possible infinite loop",
+                        context={
+                            "node_id": current_node_id,
+                            "graph_name": self.graph.name,
+                            "execution_path": exec_state.execution_path,
+                            "visit_count": visit_count
+                        }
+                    )
 
             # Execute node
             try:
@@ -114,14 +131,20 @@ class GraphExecutor(BaseModel):
                     context={"node_id": current_node_id, "node_type": node.type.value, "graph_name": self.graph.name}
                 ) from e
 
-            # Update state with node output
+            # Update state with node output (safely merge, don't overwrite critical keys)
             if node.output_mapping:
                 for output_key, state_key in node.output_mapping.items():
                     if output_key in node_output:
+                        # Preserve existing state if key exists and is important
+                        if state_key in exec_state.state and state_key.startswith("_"):
+                            # Don't overwrite internal state keys
+                            continue
                         exec_state.state[state_key] = node_output[output_key]
             else:
-                # Default: merge all outputs into state
-                exec_state.state.update(node_output)
+                # Default: merge all outputs into state, but preserve internal keys
+                for key, value in node_output.items():
+                    if not key.startswith("_"):  # Don't overwrite internal state
+                        exec_state.state[key] = value
 
             # Determine next node(s)
             next_node = self._get_next_node(node, exec_state.state)

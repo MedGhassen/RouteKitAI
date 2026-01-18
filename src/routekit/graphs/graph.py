@@ -105,7 +105,7 @@ class Graph(BaseModel):
         """
         return [e for e in self.edges if e.target == node_id]
 
-    def validate(self) -> list[str]:
+    def validate_structure(self) -> list[str]:
         """Validate graph structure.
 
         Returns:
@@ -139,5 +139,25 @@ class Graph(BaseModel):
                 errors.append(f"Node '{node.id}': SUBGRAPH type requires subgraph_name")
             elif node.type == NodeType.CONDITION and not node.condition:
                 errors.append(f"Node '{node.id}': CONDITION type requires condition function")
+
+        # Check for unreachable nodes (nodes with no incoming edges except entry node)
+        if self.nodes:
+            reachable_nodes = {self.entry_node}
+            # BFS from entry node to find all reachable nodes
+            queue = [self.entry_node]
+            while queue:
+                current = queue.pop(0)
+                for edge in self.get_outgoing_edges(current):
+                    if edge.target not in reachable_nodes:
+                        reachable_nodes.add(edge.target)
+                        queue.append(edge.target)
+            
+            # Check for unreachable nodes (warn, but don't error - might be intentional)
+            all_node_ids = {n.id for n in self.nodes}
+            unreachable = all_node_ids - reachable_nodes
+            if unreachable and self.exit_node:
+                # Only warn if exit node is unreachable, otherwise it's just unused nodes
+                if self.exit_node in unreachable:
+                    errors.append(f"Exit node '{self.exit_node}' is unreachable from entry node")
 
         return errors

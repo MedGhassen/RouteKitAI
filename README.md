@@ -1,10 +1,44 @@
 # RouteKit
 
-**An agent development + orchestration framework**
+<div align="center">
 
-RouteKit is a minimal, clean framework for building and orchestrating AI agents. Built with Python 3.11+, type hints, and async-first APIs.
+**A minimal, production-ready framework for building and orchestrating AI agents**
 
-## Installation
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue)](http://mypy-lang.org/)
+
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Examples](#examples) • [Contributing](#contributing)
+
+</div>
+
+---
+
+RouteKit is a Python framework for building AI agents with **graph-based orchestration**, **built-in tracing**, and **deterministic replay**. Unlike other frameworks, RouteKit treats observability and testability as first-class features from day one.
+
+## ✨ Features
+
+### 🎯 Core Capabilities
+
+- **Graph-Native Orchestration**: Define agent workflows as explicit graphs with clear control flow
+- **Automatic Tracing**: Every execution produces a complete, immutable trace log
+- **Deterministic Replay**: Reproduce any agent run exactly for testing and debugging
+- **Type-Safe APIs**: Full type hints with mypy compliance
+- **Async-First**: Built for modern Python async/await patterns
+- **Minimal API**: Just 5 core primitives—no bloat
+
+### 🛡️ Production Features
+
+- **Security Hooks**: PII redaction, tool allow/deny lists, approval gates
+- **Memory Support**: Episodic, retrieval, and vector memory backends
+- **Policy System**: ReAct, Supervisor, Graph, and custom policies
+- **Error Handling**: Comprehensive error types with context
+- **CLI Tools**: Run, trace, replay, and test agents from the command line
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 pip install routekit
@@ -16,9 +50,7 @@ For development with CLI tools:
 pip install "routekit[dev]"
 ```
 
-## Quick Start
-
-### Basic Agent
+### Basic Example
 
 ```python
 import asyncio
@@ -46,7 +78,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### Graph-Based Orchestration
+### Graph-Based Workflow
 
 ```python
 import asyncio
@@ -56,14 +88,13 @@ from routekit.graphs import Graph, GraphNode, GraphEdge, NodeType
 from routekit.providers.local import FakeModel
 from routekit.core.tools import EchoTool
 
-# Create models
+# Create models and agents
 model1 = FakeModel(name="model1")
 model1.add_response("Processing input...")
 
 model2 = FakeModel(name="model2")
 model2.add_response("Finalizing result...")
 
-# Create agents
 agent1 = Agent(name="agent1", model=model1, tools=[EchoTool()])
 agent2 = Agent(name="agent2", model=model2, tools=[])
 
@@ -102,7 +133,7 @@ graph = Graph(
 # Create agent with graph policy
 agent = Agent(
     name="graph_agent",
-    model=model1,  # Base model (not used in graph execution)
+    model=model1,
     policy=GraphPolicy(graph=graph)
 )
 
@@ -114,26 +145,22 @@ async def main():
 asyncio.run(main())
 ```
 
-### With Memory
+## 📚 Documentation
 
-```python
-from routekit import Agent
-from routekit.memory.episodic import EpisodicMemory
-from routekit.providers.local import FakeModel
+- **[Architecture Guide](docs/architecture.md)**: Deep dive into RouteKit's design
+- **[Security & Governance](docs/security-and-governance.md)**: Security features and best practices
+- **[API Reference](https://routekit.readthedocs.io)**: Complete API documentation (coming soon)
 
-# Create agent with episodic memory
-memory = EpisodicMemory()
-agent = Agent(
-    name="agent_with_memory",
-    model=FakeModel(name="test"),
-    memory=memory
-)
+## 🎓 Examples
 
-# Agent can now use memory for context
-result = await agent.run("Remember this: RouteKit is great!")
-```
+Check out the [`examples/`](examples/) directory for complete examples:
 
-## CLI Commands
+- **[Basic Agent](examples/hello_routekit.py)**: Simple agent with tools
+- **[Graph Orchestration](examples/graph_agent.py)**: Multi-agent workflow
+- **[Supervisor Pattern](examples/supervisor_agent.py)**: Supervisor delegating to sub-agents
+- **[Evaluation Harness](examples/eval_regression.py)**: Testing agents with datasets
+
+## 🛠️ CLI Commands
 
 RouteKit provides a CLI for common operations:
 
@@ -151,81 +178,88 @@ routekit replay <trace_id> --agent my_agent
 routekit test-agent
 ```
 
-## MVP Wedge
-
-RouteKit's MVP focuses on three first-class features:
-
-1. **Graph-based Orchestration**: Compose agents into workflows with explicit control flow
-2. **Tracing**: Built-in observability for debugging and understanding agent behavior
-3. **Replay**: Reproduce and debug agent runs with full trace data
-
-These features are not afterthoughts—they're core to RouteKit's design philosophy.
-
-## Core Primitives
+## 🏗️ Core Primitives
 
 RouteKit keeps it minimal with 5 core primitives:
 
-- **Model**: LLM interface abstraction
-- **Message**: Conversation message representation
-- **Tool**: Callable function/tool definition
-- **Agent**: Agent with model and tools
-- **Runtime**: Orchestration and execution engine
+1. **Model**: LLM interface abstraction
+2. **Message**: Conversation message representation
+3. **Tool**: Callable function/tool definition
+4. **Agent**: Agent with model and tools
+5. **Runtime**: Orchestration and execution engine
 
-## API Examples
+## 🧪 Development
 
-### Sync Wrapper (Optional)
-
-```python
-from routekit import Agent
-from routekit.providers.local import FakeModel
-
-model = FakeModel(name="test")
-model.add_response("Hello!")
-
-agent = Agent(name="my_agent", model=model)
-
-# Use sync wrapper
-result = agent.run_sync("Hello!")
-print(result.output.content)
-```
-
-### Policies
-
-```python
-from routekit import Agent
-from routekit.core.policies import ReActPolicy, SupervisorPolicy, GraphPolicy
-from routekit.graphs import Graph
-
-# ReAct policy (default)
-agent = Agent(name="agent", model=model, policy=ReActPolicy())
-
-# Supervisor policy
-supervisor = SupervisorPolicy(
-    sub_agents={"research": research_agent},
-    delegation_keywords={"research": ["research", "find"]}
-)
-agent = Agent(name="supervisor", model=model, policy=supervisor)
-
-# Graph policy
-agent = Agent(name="graph_agent", model=model, policy=GraphPolicy(graph=my_graph))
-```
-
-## Development
+### Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/routekit/routekit.git
+cd routekit
+
 # Install with dev dependencies
 pip install -e ".[dev]"
+```
 
-# Run tests
+### Running Tests
+
+```bash
+# Run all tests
 pytest
 
+# Run with coverage
+pytest --cov=routekit --cov-report=html
+
+# Run specific test file
+pytest tests/test_runtime.py
+```
+
+### Code Quality
+
+```bash
 # Type checking
 mypy src/
 
 # Linting
 ruff check src/
+
+# Format code
+ruff format src/
 ```
 
-## License
+## 🤝 Contributing
 
-MIT
+Contributions are welcome! Please read our contributing guidelines (coming soon) and:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📋 Requirements
+
+- Python 3.11 or higher
+- Pydantic 2.0+
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+RouteKit is inspired by the need for testable, observable AI agent frameworks. Special thanks to the open-source community for their contributions and feedback.
+
+## 🔗 Links
+
+- **GitHub**: [https://github.com/routekit/routekit](https://github.com/routekit/routekit)
+- **Documentation**: [https://routekit.readthedocs.io](https://routekit.readthedocs.io) (coming soon)
+- **Issues**: [https://github.com/routekit/routekit/issues](https://github.com/routekit/routekit/issues)
+
+---
+
+<div align="center">
+
+Made with ❤️ by the RouteKit contributors
+
+</div>

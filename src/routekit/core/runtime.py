@@ -474,6 +474,16 @@ class Runtime(BaseModel):
         """
         async with semaphore:
             start_time = time.time()
+            
+            # Add step_started event for trace completeness
+            trace.add_event(
+                "step_started",
+                {
+                    "step_id": step.step_id,
+                    "step_type": step.step_type,
+                    "input_data": step.input_data,
+                },
+            )
 
             try:
                 if step.step_type == "model_call":
