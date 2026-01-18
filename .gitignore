@@ -48,6 +48,9 @@ dmypy.json
 # Linting
 .ruff_cache/
 
+# RouteKit
+.routekit/
+
 # OS
 .DS_Store
 Thumbs.db
