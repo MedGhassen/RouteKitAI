@@ -43,22 +43,29 @@ async def test_episodic_memory_persistence() -> None:
 
         # Create memory and store episodes
         memory1 = EpisodicMemory(db_path=db_path)
-        await memory1.set("ep1", {"content": "Episode 1", "metadata": {"type": "test"}})
-        await memory1.append({"content": "Episode 2", "metadata": {"type": "test"}})
+        try:
+            await memory1.set("ep1", {"content": "Episode 1", "metadata": {"type": "test"}})
+            await memory1.append({"content": "Episode 2", "metadata": {"type": "test"}})
+            memory1.close()  # Ensure connections are closed on Windows
 
-        # Verify persistence: create new instance and check data
-        memory2 = EpisodicMemory(db_path=db_path)
-        ep1 = await memory2.get("ep1")
-        assert ep1 is not None
-        # Content is stored as dict with "content" key
-        if isinstance(ep1["content"], dict):
-            assert ep1["content"].get("content") == "Episode 1"
-        else:
-            assert ep1["content"] == "Episode 1"
+            # Verify persistence: create new instance and check data
+            memory2 = EpisodicMemory(db_path=db_path)
+            try:
+                ep1 = await memory2.get("ep1")
+                assert ep1 is not None
+                # Content is stored as dict with "content" key
+                if isinstance(ep1["content"], dict):
+                    assert ep1["content"].get("content") == "Episode 1"
+                else:
+                    assert ep1["content"] == "Episode 1"
 
-        # Test get_recent
-        recent = await memory2.get_recent(limit=5)
-        assert len(recent) >= 2
+                # Test get_recent
+                recent = await memory2.get_recent(limit=5)
+                assert len(recent) >= 2
+            finally:
+                memory2.close()  # Ensure connections are closed on Windows
+        finally:
+            memory1.close()  # Ensure connections are closed on Windows
 
 
 @pytest.mark.asyncio
@@ -67,16 +74,18 @@ async def test_episodic_memory_search() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
         memory = EpisodicMemory(db_path=db_path)
+        try:
+            # Store episodes
+            await memory.append({"content": "Python programming tutorial", "metadata": {}})
+            await memory.append({"content": "JavaScript web development", "metadata": {}})
+            await memory.append({"content": "Python data science", "metadata": {}})
 
-        # Store episodes
-        await memory.append({"content": "Python programming tutorial", "metadata": {}})
-        await memory.append({"content": "JavaScript web development", "metadata": {}})
-        await memory.append({"content": "Python data science", "metadata": {}})
-
-        # Search
-        results = await memory.search("Python", k=5)
-        assert len(results) == 2
-        assert all("Python" in str(r["content"]) for r in results)
+            # Search
+            results = await memory.search("Python", k=5)
+            assert len(results) == 2
+            assert all("Python" in str(r["content"]) for r in results)
+        finally:
+            memory.close()  # Ensure connections are closed on Windows
 
 
 @pytest.mark.asyncio

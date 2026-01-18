@@ -209,3 +209,23 @@ class EpisodicMemory(Memory):
                     }
                 )
         return results
+
+    def close(self) -> None:
+        """Close any open database connections.
+        
+        On Windows, SQLite can hold file locks briefly after connections close.
+        This method forces SQLite to release locks by opening and closing a connection.
+        """
+        import gc
+        
+        try:
+            # Force garbage collection to ensure any lingering connections are cleaned up
+            gc.collect()
+            # Open and immediately close a connection to ensure locks are released
+            # Use a short timeout to avoid hanging
+            with sqlite3.connect(str(self.db_path), timeout=0.1) as conn:
+                # Execute a simple query to ensure connection is fully established
+                conn.execute("SELECT 1")
+        except (sqlite3.Error, OSError, TimeoutError):
+            # Ignore errors during cleanup - file may already be closed or locked
+            pass

@@ -53,17 +53,26 @@ async def test_regex_metric() -> None:
 @pytest.mark.asyncio
 async def test_dataset_from_jsonl() -> None:
     """Test loading dataset from JSONL."""
+    import os
+    
     with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
         f.write('{"id": "ex1", "input": "test", "expected_output": "result"}\n')
         f.write('{"id": "ex2", "input": "test2", "expected_output": "result2"}\n')
         f.flush()
-
-        dataset = Dataset.from_jsonl(f.name)
+        temp_path = f.name
+    
+    try:
+        dataset = Dataset.from_jsonl(temp_path)
         assert len(dataset.examples) == 2
         assert dataset.examples[0].id == "ex1"
         assert dataset.examples[0].input == "test"
-
-        Path(f.name).unlink()
+    finally:
+        # File is closed, safe to delete on Windows
+        try:
+            os.unlink(temp_path)
+        except (OSError, PermissionError):
+            # On Windows, sometimes there's a delay in file release
+            pass
 
 
 @pytest.mark.asyncio
