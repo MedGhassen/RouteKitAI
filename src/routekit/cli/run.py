@@ -15,9 +15,7 @@ else:
         from rich.console import Console
         from rich.markdown import Markdown
     except ImportError:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        )
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
 
 app = typer.Typer(name="run", help="Run an agent with a prompt or script")
 console = Console()

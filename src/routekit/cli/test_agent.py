@@ -21,9 +21,7 @@ else:
         from rich.panel import Panel
         from rich.table import Table
     except ImportError:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        )
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
 
 app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
 console = Console()
@@ -40,6 +38,7 @@ def test_command(
         routekit test-agent
         routekit test-agent --verbose
     """
+
     async def _run_tests() -> None:
         console.print("[bold]Running RouteKit agent sanity checks...[/bold]\n")
 

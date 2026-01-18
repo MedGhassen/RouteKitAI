@@ -54,13 +54,13 @@ async def test_regex_metric() -> None:
 async def test_dataset_from_jsonl() -> None:
     """Test loading dataset from JSONL."""
     import os
-    
+
     with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
         f.write('{"id": "ex1", "input": "test", "expected_output": "result"}\n')
         f.write('{"id": "ex2", "input": "test2", "expected_output": "result2"}\n')
         f.flush()
         temp_path = f.name
-    
+
     try:
         dataset = Dataset.from_jsonl(temp_path)
         assert len(dataset.examples) == 2

@@ -17,9 +17,7 @@ else:
         from rich.console import Console
         from rich.markdown import Markdown
     except ImportError:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        )
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
 
 app = typer.Typer(name="replay", help="Replay agent execution traces")
 console = Console()
@@ -42,6 +40,7 @@ def replay_command(
         routekit replay abc123 --agent my_agent --no-verify
         routekit replay abc123 --agent my_agent --trace-dir ./custom_traces
     """
+
     async def _replay() -> None:
         # Determine trace directory
         if trace_dir is None:

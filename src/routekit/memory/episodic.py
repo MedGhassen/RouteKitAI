@@ -214,14 +214,14 @@ class EpisodicMemory(Memory):
 
     def close(self) -> None:
         """Close any open database connections.
-        
+
         On Windows, SQLite can hold file locks briefly after connections close.
         This method forces SQLite to release locks by opening and closing a connection.
         """
         import gc
         import sys
         import time
-        
+
         try:
             # Force garbage collection to ensure any lingering connections are cleaned up
             gc.collect()

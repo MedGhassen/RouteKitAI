@@ -39,7 +39,7 @@ async def test_working_memory() -> None:
 async def test_episodic_memory_persistence() -> None:
     """Test EpisodicMemory SQLite persistence."""
     import sys
-    
+
     # Use ignore_cleanup_errors on Windows to handle file locking issues
     ignore_errors = sys.platform == "win32"
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=ignore_errors) as tmpdir:
@@ -76,7 +76,7 @@ async def test_episodic_memory_persistence() -> None:
 async def test_episodic_memory_search() -> None:
     """Test EpisodicMemory search functionality."""
     import sys
-    
+
     # Use ignore_cleanup_errors on Windows to handle file locking issues
     ignore_errors = sys.platform == "win32"
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=ignore_errors) as tmpdir:
