@@ -50,7 +50,7 @@ async def _run_agent_from_script(script_path: Path) -> None:
         console.print("[yellow]Warning: No main() function found in script[/yellow]")
 
 
-@app.command()  # type: ignore[misc]
+@app.command()
 def run(
     prompt_or_script: str = typer.Argument(..., help="Prompt string or path to Python script"),
     agent_name: str = typer.Option("default", "--agent", "-a", help="Agent name (if using script)"),
