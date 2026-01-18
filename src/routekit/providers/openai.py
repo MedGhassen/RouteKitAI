@@ -1,14 +1,12 @@
 """OpenAI-compatible model provider."""
 
 import json
-from typing import Any, AsyncIterator
-
-try:
-    import httpx
-except ImportError:
-    httpx = None  # type: ignore
+from typing import TYPE_CHECKING, Any, AsyncIterator
 
 from routekit.core.errors import ModelError
+
+if TYPE_CHECKING:
+    import httpx
 from routekit.core.message import Message, MessageRole
 from routekit.core.model import Model, ModelResponse, StreamEvent, ToolCall, Usage
 from routekit.core.tool import Tool
@@ -54,10 +52,15 @@ class OpenAIChatModel(Model):
         """Return the provider name."""
         return self._provider
 
-    def _get_client(self) -> httpx.AsyncClient:
+    def _get_client(self) -> "httpx.AsyncClient":
         """Get or create HTTP client."""
-        if httpx is None:
-            raise ModelError("httpx is required for OpenAI provider. Install with: pip install httpx")
+        try:
+            import httpx
+        except ImportError as e:
+            raise ModelError(
+                "httpx is required for OpenAI provider. Install with: pip install httpx"
+            ) from e
+
         if self._client is None:
             headers = {"Content-Type": "application/json"}
             if self.api_key:

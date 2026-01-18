@@ -15,11 +15,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-try:
-    import numpy as np
-except ImportError:
-    np = None  # type: ignore
-
 from pydantic import BaseModel, Field
 
 from routekit.core.errors import RuntimeError as RouteKitRuntimeError
@@ -248,17 +243,25 @@ class VectorMemory(BaseModel):
 
     def _initialize_faiss(self) -> None:
         """Initialize FAISS index if available and enabled."""
-        if not self.use_faiss or np is None:
+        if not self.use_faiss:
             return
 
         try:
+            import numpy as np
             import faiss
-
-            # Use L2 distance index (we'll convert to cosine similarity)
-            self._faiss_index = faiss.IndexFlatL2(self.dimension)
-        except ImportError:
-            # FAISS not available, fall back to linear search
+        except ImportError as e:
+            # FAISS or numpy not available, fall back to linear search
             self.use_faiss = False
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                f"FAISS not available ({e}). Falling back to linear search. "
+                "Install with: pip install faiss-cpu numpy"
+            )
+            return
+
+        # Use L2 distance index (we'll convert to cosine similarity)
+        self._faiss_index = faiss.IndexFlatL2(self.dimension)
 
     async def add(self, text: str, metadata: dict[str, Any] | None = None) -> str:
         """Add text to vector memory with automatic embedding.
@@ -297,21 +300,24 @@ class VectorMemory(BaseModel):
         self._embeddings[vector_id] = embedding
 
         # Add to FAISS index if enabled
-        if self.use_faiss and np is not None:
+        if self.use_faiss:
             if self._faiss_index is None:
                 self._initialize_faiss()
 
             if self._faiss_index is not None:
                 try:
+                    import numpy as np
                     import faiss
-                except ImportError:
-                    faiss = None  # type: ignore
+                except ImportError as e:
+                    raise VectorMemoryError(
+                        f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
+                        context={"operation": "add", "use_faiss": True}
+                    ) from e
 
-                if faiss is not None:
-                    embedding_array = np.array([embedding], dtype=np.float32)
-                    idx = self._faiss_index.ntotal  # type: ignore[attr-defined]
-                    self._faiss_index.add(embedding_array)  # type: ignore[no-untyped-call]
-                    self._id_to_vector_id[idx] = vector_id
+                embedding_array = np.array([embedding], dtype=np.float32)
+                idx = self._faiss_index.ntotal
+                self._faiss_index.add(embedding_array)
+                self._id_to_vector_id[idx] = vector_id
 
         return vector_id
 
@@ -362,7 +368,14 @@ class VectorMemory(BaseModel):
                 self._initialize_faiss()
 
             if self._faiss_index is not None:
-                import faiss
+                try:
+                    import numpy as np
+                    import faiss
+                except ImportError as e:
+                    raise VectorMemoryError(
+                        f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
+                        context={"operation": "add_batch", "use_faiss": True}
+                    ) from e
 
                 embedding_array = np.array(embeddings, dtype=np.float32)
                 start_idx = self._faiss_index.ntotal
@@ -414,20 +427,51 @@ class VectorMemory(BaseModel):
 
         results = []
 
-        if self.use_faiss and self._faiss_index is not None and np is not None:
+        if self.use_faiss and self._faiss_index is not None:
             # Use FAISS for efficient search
             try:
+                import numpy as np
                 import faiss
-            except ImportError:
-                faiss = None  # type: ignore
+            except ImportError as e:
+                raise VectorMemoryError(
+                    f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
+                    context={"operation": "search", "use_faiss": True}
+                ) from e
 
-            if faiss is not None:
-                query_array = np.array([query_embedding], dtype=np.float32)
+            query_array = np.array([query_embedding], dtype=np.float32)
             k = min(top_k * 2, self._faiss_index.ntotal)  # Get more candidates for filtering
 
             if k > 0:
                 distances, indices = self._faiss_index.search(query_array, k)
 
+                for dist, idx in zip(distances[0], indices[0]):
+                    vector_id = self._id_to_vector_id.get(idx)
+                    if vector_id is None:
+                        continue
+
+                    vector_data = self._vectors[vector_id]
+                    vector_embedding = self._embeddings[vector_id]
+
+                    # Convert L2 distance to cosine similarity
+                    # L2_dist^2 = 2 * (1 - cos_sim)
+                    # cos_sim = 1 - (L2_dist^2 / 2)
+                    similarity = 1.0 - (dist * dist / 2.0)
+
+                    if similarity >= threshold:
+                        # Apply metadata filter
+                        if filter_metadata:
+                            if not all(
+                                vector_data.get("metadata", {}).get(k) == v for k, v in filter_metadata.items()
+                            ):
+                                continue
+
+                        results.append({
+                            "id": vector_id,
+                            "text": vector_data["text"],
+                            "metadata": vector_data["metadata"],
+                            "score": similarity,
+                            "distance": dist,
+                        })
         else:
             # Linear search with cosine similarity
             for vector_id, vector_data in self._vectors.items():
@@ -538,11 +582,26 @@ class VectorMemory(BaseModel):
         instance._embeddings = data.get("embeddings", {})
         instance._id_to_vector_id = data.get("id_to_vector_id", {})
 
+        # Rebuild vocabulary for SimpleEmbeddingBackend if needed
+        if instance.backend == "simple" and instance._vectors:
+            backend = instance._get_embedding_backend()
+            if isinstance(backend, SimpleEmbeddingBackend):
+                existing_texts = [v["text"] for v in instance._vectors.values()]
+                if existing_texts:
+                    backend._build_vocab(existing_texts)
+
         # Rebuild FAISS index if needed
         if instance.use_faiss and instance._embeddings:
             instance._initialize_faiss()
             if instance._faiss_index is not None:
-                import faiss
+                try:
+                    import numpy as np
+                    import faiss
+                except ImportError as e:
+                    raise VectorMemoryError(
+                        f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
+                        context={"operation": "load", "use_faiss": True}
+                    ) from e
 
                 embeddings_list = [instance._embeddings[vid] for vid in instance._vectors.keys()]
                 if embeddings_list:
