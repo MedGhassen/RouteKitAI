@@ -38,11 +38,21 @@ class OpenAIChatModel(Model):
             **kwargs: Additional configuration
         """
         super().__init__()
-        self.name = name
-        self.provider = provider
+        self._name = name
+        self._provider = provider
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
         self._client: httpx.AsyncClient | None = None
+
+    @property
+    def name(self) -> str:
+        """Return the model name."""
+        return self._name
+
+    @property
+    def provider(self) -> str:
+        """Return the provider name."""
+        return self._provider
 
     def _get_client(self) -> httpx.AsyncClient:
         """Get or create HTTP client."""
@@ -141,9 +151,6 @@ class OpenAIChatModel(Model):
         Raises:
             ModelError: If API call fails
         """
-        if stream:
-            raise NotImplementedError("Streaming not yet implemented")
-
         client = self._get_client()
 
         # Convert messages
@@ -153,6 +160,7 @@ class OpenAIChatModel(Model):
         request_data: dict[str, Any] = {
             "model": self.name,
             "messages": openai_messages,
+            "stream": stream,
             **kwargs,  # Allow temperature, max_tokens, etc.
         }
 
@@ -161,35 +169,127 @@ class OpenAIChatModel(Model):
             request_data["tools"] = self._tools_to_openai(tools)
 
         try:
-            response = await client.post("/chat/completions", json=request_data)
-            response.raise_for_status()
-            data = response.json()
+            if stream:
+                # Streaming mode
+                async def stream_generator() -> AsyncIterator[StreamEvent]:  # type: ignore[no-untyped-def]
+                    async with client.stream("POST", "/chat/completions", json=request_data) as response:
+                        response.raise_for_status()
+                        content_buffer = ""
+                        tool_calls_buffer: dict[str, dict[str, Any]] = {}
+                        
+                        async for line in response.aiter_lines():
+                            if not line.strip() or line.startswith("data: [DONE]"):
+                                continue
+                            
+                            if line.startswith("data: "):
+                                line = line[6:]  # Remove "data: " prefix
+                            
+                            try:
+                                chunk_data = json.loads(line)
+                                delta = chunk_data.get("choices", [{}])[0].get("delta", {})
+                                
+                                # Handle content delta
+                                if "content" in delta:
+                                    content_chunk = delta["content"]
+                                    content_buffer += content_chunk
+                                    yield StreamEvent(
+                                        type="content",
+                                        content=content_chunk,
+                                        metadata={"chunk": chunk_data}
+                                    )
+                                
+                                # Handle tool calls delta
+                                if "tool_calls" in delta:
+                                    for tool_call_delta in delta["tool_calls"]:
+                                        index = tool_call_delta.get("index", 0)
+                                        if index not in tool_calls_buffer:
+                                            tool_calls_buffer[index] = {
+                                                "id": "",
+                                                "name": "",
+                                                "arguments": "",
+                                            }
+                                        
+                                        if "id" in tool_call_delta:
+                                            tool_calls_buffer[index]["id"] = tool_call_delta["id"]
+                                        if "function" in tool_call_delta:
+                                            func = tool_call_delta["function"]
+                                            if "name" in func:
+                                                tool_calls_buffer[index]["name"] = func["name"]
+                                            if "arguments" in func:
+                                                tool_calls_buffer[index]["arguments"] += func["arguments"]
+                                
+                                # Handle usage (usually in last chunk)
+                                if "usage" in chunk_data:
+                                    usage_data = chunk_data["usage"]
+                                    yield StreamEvent(
+                                        type="usage",
+                                        usage=Usage(
+                                            prompt_tokens=usage_data.get("prompt_tokens", 0),
+                                            completion_tokens=usage_data.get("completion_tokens", 0),
+                                            total_tokens=usage_data.get("total_tokens", 0),
+                                        ),
+                                        metadata={"chunk": chunk_data}
+                                    )
+                                
+                            except json.JSONDecodeError:
+                                continue
+                        
+                        # Final event with complete content and tool calls
+                        tool_calls = None
+                        if tool_calls_buffer:
+                            tool_calls = []
+                            for idx in sorted(tool_calls_buffer.keys()):
+                                tc_data = tool_calls_buffer[idx]
+                                try:
+                                    arguments = json.loads(tc_data["arguments"])
+                                except json.JSONDecodeError:
+                                    arguments = {}
+                                tool_calls.append(
+                                    ToolCall(
+                                        id=tc_data["id"],
+                                        name=tc_data["name"],
+                                        arguments=arguments,
+                                    )
+                                )
+                        
+                        yield StreamEvent(
+                            type="done",
+                            content=content_buffer if content_buffer else None,
+                            tool_calls=tool_calls,
+                        )
+                
+                return stream_generator()
+            else:
+                # Non-streaming mode
+                response = await client.post("/chat/completions", json=request_data)
+                response.raise_for_status()
+                data = response.json()
 
-            # Parse response
-            choice = data.get("choices", [{}])[0]
-            message = choice.get("message", {})
-            content = message.get("content", "")
-            tool_calls_data = message.get("tool_calls", [])
+                # Parse response
+                choice = data.get("choices", [{}])[0]
+                message = choice.get("message", {})
+                content = message.get("content", "")
+                tool_calls_data = message.get("tool_calls", [])
 
-            # Convert tool calls
-            tool_calls = None
-            if tool_calls_data:
-                tool_calls = self._openai_to_tool_calls(tool_calls_data)
+                # Convert tool calls
+                tool_calls = None
+                if tool_calls_data:
+                    tool_calls = self._openai_to_tool_calls(tool_calls_data)
 
-            # Parse usage
-            usage_data = data.get("usage", {})
-            usage = Usage(
-                prompt_tokens=usage_data.get("prompt_tokens", 0),
-                completion_tokens=usage_data.get("completion_tokens", 0),
-                total_tokens=usage_data.get("total_tokens", 0),
-            )
+                # Parse usage
+                usage_data = data.get("usage", {})
+                usage = Usage(
+                    prompt_tokens=usage_data.get("prompt_tokens", 0),
+                    completion_tokens=usage_data.get("completion_tokens", 0),
+                    total_tokens=usage_data.get("total_tokens", 0),
+                )
 
-            return ModelResponse(
-                content=content,
-                tool_calls=tool_calls,
-                usage=usage,
-                metadata={"raw_response": data},
-            )
+                return ModelResponse(
+                    content=content,
+                    tool_calls=tool_calls,
+                    usage=usage,
+                    metadata={"raw_response": data},
+                )
 
         except httpx.HTTPStatusError as e:
             raise ModelError(f"OpenAI API error: {e.response.status_code} - {e.response.text}") from e

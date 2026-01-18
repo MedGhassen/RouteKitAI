@@ -55,7 +55,6 @@ class GraphExecutor(BaseModel):
         # Check for cycles before execution
         cycle = self._detect_cycles()
         if cycle:
-            from routekit.core.errors import RuntimeError as RouteKitRuntimeError
             raise RouteKitRuntimeError(
                 f"Graph contains a cycle: {' -> '.join(cycle)}",
                 context={"graph_name": self.graph.name}
@@ -326,13 +325,45 @@ class GraphExecutor(BaseModel):
 
         Returns:
             Node output
+
+        Raises:
+            RouteKitRuntimeError: If subgraph not found or execution fails
         """
         if not node.subgraph_name:
             raise RouteKitRuntimeError(f"Node '{node.id}': SUBGRAPH type requires subgraph_name")
 
-        # For now, subgraphs are not implemented
-        # This would require a graph registry
-        raise NotImplementedError("Subgraph execution not yet implemented")
+        # Check if subgraph is registered in runtime's graph registry
+        # For now, we'll look for a graph with the same name in the runtime's config
+        graph_registry = self.runtime.config.get("graph_registry", {})
+        
+        if node.subgraph_name not in graph_registry:
+            raise RouteKitRuntimeError(
+                f"Subgraph '{node.subgraph_name}' not found in graph registry",
+                context={"node_id": node.id, "subgraph_name": node.subgraph_name}
+            )
+
+        subgraph = graph_registry[node.subgraph_name]
+        
+        # Create a new executor for the subgraph
+        subgraph_executor = GraphExecutor(
+            runtime=self.runtime,
+            graph=subgraph,
+            max_iterations=self.max_iterations,
+        )
+
+        # Execute subgraph with inputs
+        try:
+            subgraph_result = await subgraph_executor.execute(input_data=inputs)
+            # Return the subgraph's output
+            return {
+                "output": subgraph_result.get("output"),
+                "state": subgraph_result.get("state", {}),
+            }
+        except Exception as e:
+            raise RouteKitRuntimeError(
+                f"Subgraph '{node.subgraph_name}' execution failed: {e}",
+                context={"node_id": node.id, "subgraph_name": node.subgraph_name}
+            ) from e
 
     async def _execute_condition_node(self, node: GraphNode, inputs: dict[str, Any]) -> dict[str, Any]:
         """Execute a condition node.

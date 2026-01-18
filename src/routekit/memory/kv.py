@@ -20,12 +20,9 @@ class KVMemory(BaseModel):
             key: Key to retrieve
 
         Returns:
-            Stored value
-
-        Raises:
-            NotImplementedError: Not yet implemented
+            Stored value or None if not found
         """
-        raise NotImplementedError("KV memory not yet implemented")
+        return self.store.get(key)
 
     async def set(self, key: str, value: Any) -> None:
         """Set value by key.
@@ -33,8 +30,5 @@ class KVMemory(BaseModel):
         Args:
             key: Key to set
             value: Value to store
-
-        Raises:
-            NotImplementedError: Not yet implemented
         """
-        raise NotImplementedError("KV memory not yet implemented")
+        self.store[key] = value
