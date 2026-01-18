@@ -1,7 +1,6 @@
 """Tests for Tool primitive."""
 
 import pytest
-
 from pydantic import BaseModel, Field
 
 from routekit.core.errors import ToolError

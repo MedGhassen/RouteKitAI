@@ -3,7 +3,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from routekit.observability.exporters.jsonl import JSONLExporter
 
@@ -18,8 +18,8 @@ else:
         from rich.console import Console
         from rich.json import JSON
         from rich.table import Table
-    except ImportError:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
+    except ImportError as e:
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 app = typer.Typer(name="trace", help="View and inspect agent execution traces")
 console = Console()

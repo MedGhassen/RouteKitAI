@@ -1,7 +1,6 @@
 """Example: Evaluation with regression testing."""
 
 import asyncio
-import json
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -73,14 +72,14 @@ async def main() -> None:
         print("\nRunning evaluation...")
         report = await runner.run("eval_agent", dataset)
 
-        print(f"\nEvaluation Report:")
+        print("\nEvaluation Report:")
         print(f"  Dataset: {report.dataset_name}")
         print(f"  Agent: {report.agent_name}")
         print(f"  Total: {report.total_examples}")
         print(f"  Passed: {report.passed}")
         print(f"  Failed: {report.failed}")
         print(f"  Errors: {report.errors}")
-        print(f"  Average Scores:")
+        print("  Average Scores:")
         for metric_name, score in report.average_scores.items():
             print(f"    {metric_name}: {score:.2f}")
 
@@ -102,7 +101,7 @@ async def main() -> None:
         )
 
         regression_report = await regression_runner.run("eval_agent", dataset)
-        print(f"\nRegression Report:")
+        print("\nRegression Report:")
         print(f"  Passed: {regression_report.passed}")
         print(f"  Failed: {regression_report.failed}")
         if "regression" in regression_report.average_scores:

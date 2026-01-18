@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.memory import Memory
 from routekit.core.message import Message
 
 if TYPE_CHECKING:
-    from routekit.core.agent import Agent
+    pass
 
 
 class Action(BaseModel):

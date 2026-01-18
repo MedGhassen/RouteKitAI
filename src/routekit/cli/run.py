@@ -1,9 +1,8 @@
 """CLI command for running agents."""
 
 import asyncio
-import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import typer
@@ -14,8 +13,8 @@ else:
         import typer
         from rich.console import Console
         from rich.markdown import Markdown
-    except ImportError:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
+    except ImportError as e:
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 app = typer.Typer(name="run", help="Run an agent with a prompt or script")
 console = Console()
@@ -76,9 +75,9 @@ def run(
     else:
         # Run as prompt (requires agent to be registered)
         console.print(
-            f"[yellow]Note: Direct prompt execution requires a registered agent.[/yellow]"
+            "[yellow]Note: Direct prompt execution requires a registered agent.[/yellow]"
         )
-        console.print(f"[yellow]Consider using a script or the Python API instead.[/yellow]")
+        console.print("[yellow]Consider using a script or the Python API instead.[/yellow]")
         console.print(f"\n[dim]Prompt: {prompt_or_script}[/dim]")
         console.print("[dim]Agent: {agent_name}[/dim]")
         console.print("\n[blue]Example Python usage:[/blue]")

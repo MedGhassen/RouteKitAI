@@ -1,12 +1,11 @@
 """Concrete policy implementations for RouteKit."""
 
-import uuid
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
 from routekit.core.message import Message, MessageRole
-from routekit.core.model import ModelResponse, ToolCall
+from routekit.core.model import ModelResponse
 from routekit.core.policy import (
     Action,
     Final,
@@ -15,12 +14,11 @@ from routekit.core.policy import (
     Policy,
     ToolAction,
 )
-from routekit.core.runtime import Policy as RuntimePolicy, Step
 
 if TYPE_CHECKING:
     from routekit.core.agent import Agent
-    from routekit.graphs.graph import Graph
     from routekit.core.runtime import Runtime
+    from routekit.graphs.graph import Graph
 
 
 class ReActPolicy(Policy):
@@ -40,7 +38,6 @@ class ReActPolicy(Policy):
         Returns:
             List of actions (single action per step)
         """
-        agent: Agent = state["agent"]
         messages: list[Message] = state.get("messages", [])
         iteration: int = state.get("iteration", 0)
 
@@ -99,9 +96,6 @@ class FunctionCallingPolicy(Policy):
             if messages and messages[-1].role == MessageRole.ASSISTANT:
                 return [Final(output=messages[-1])]
             return [Final(output=Message.assistant("Max iterations reached"))]
-
-        # Get available tool schemas
-        tool_schemas = [{"name": t.name, "parameters": t.parameters} for t in agent.tools]
 
         # If no messages, start with model call
         if not messages:
@@ -208,7 +202,6 @@ class PlanExecutePolicy(Policy):
         Returns:
             List of actions
         """
-        agent: Agent = state["agent"]
         messages: list[Message] = state.get("messages", [])
         phase: str = state.get("phase", "planning")
         iteration: int = state.get("iteration", 0)
@@ -304,10 +297,9 @@ class SupervisorPolicy(Policy, BaseModel):
         Returns:
             List of actions
         """
-        agent: Agent = state["agent"]  # Supervisor agent
         messages: list[Message] = state.get("messages", [])
         iteration: int = state.get("iteration", 0)
-        runtime: "Runtime | None" = state.get("runtime") or self.runtime
+        runtime: Runtime | None = state.get("runtime") or self.runtime
 
         if iteration >= self.max_iterations:
             return [Final(output=Message.assistant("Max iterations reached"))]

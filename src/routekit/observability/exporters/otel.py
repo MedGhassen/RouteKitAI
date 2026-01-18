@@ -101,7 +101,7 @@ class OTELExporter(BaseModel):
                     raise OTELExporterError(
                         "httpx is required for OTEL export. Install with: pip install httpx",
                         context={"endpoint": self.endpoint},
-                    )
+                    ) from None
                 except Exception as e:
                     raise OTELExporterError(
                         f"Failed to export trace to OTEL endpoint: {e}",

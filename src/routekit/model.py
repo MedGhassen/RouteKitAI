@@ -1,6 +1,7 @@
 """Model primitive for RouteKit."""
 
-from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Iterator
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 

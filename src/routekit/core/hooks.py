@@ -1,8 +1,8 @@
 """Policy hooks for RouteKit runtime."""
 
 import re
-from abc import ABC, abstractmethod
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from pydantic import BaseModel, Field
 

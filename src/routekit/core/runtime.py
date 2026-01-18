@@ -10,11 +10,12 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.errors import ModelError, RuntimeError as RouteKitRuntimeError, ToolError
-from routekit.core.hooks import ApprovalGate, PolicyHooks, ToolFilter
+from routekit.core.errors import ModelError, ToolError
+from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+from routekit.core.hooks import PolicyHooks
 from routekit.core.message import Message, MessageRole
-from routekit.core.model import ModelResponse, StreamEvent, ToolCall
-from routekit.core.tool import Tool, ToolPermission
+from routekit.core.model import ModelResponse
+from routekit.core.tool import Tool
 from routekit.observability.exporters.jsonl import JSONLExporter
 from routekit.observability.trace import Trace, TraceEvent
 from routekit.sandbox.permissions import PermissionManager
@@ -576,7 +577,7 @@ class Runtime(BaseModel):
 
                         if not matching_event:
                             raise ReplayMismatchError(
-                                f"Replay mismatch: could not find matching model call event",
+                                "Replay mismatch: could not find matching model call event",
                                 context={
                                     "step_id": step.step_id,
                                     "trace_id": trace.trace_id,
@@ -1036,7 +1037,7 @@ class Runtime(BaseModel):
             except asyncio.CancelledError:
                 # Don't retry on cancellation
                 raise
-            except asyncio.TimeoutError as e:
+            except TimeoutError as e:
                 last_error = e
                 if attempt < self.max_retries:
                     # Exponential backoff: base * (2^attempt), capped at max
@@ -1049,10 +1050,6 @@ class Runtime(BaseModel):
                     f"Tool '{tool.name}' timed out after {timeout}s",
                     context={"tool_name": tool.name, "timeout": timeout, "step_id": step_id},
                 ) from e
-
-            except asyncio.CancelledError:
-                # Don't retry on cancellation
-                raise
             except ToolError as e:
                 # Retry ToolError from execution failures (not validation/permission errors)
                 # Check if it's a retryable error by examining the message

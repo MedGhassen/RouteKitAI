@@ -2,7 +2,8 @@
 
 import contextlib
 import time
-from typing import Any, AsyncContextManager, AsyncGenerator, ContextManager, Generator
+from collections.abc import AsyncGenerator, Generator
+from typing import Any
 
 from pydantic import BaseModel, Field
 

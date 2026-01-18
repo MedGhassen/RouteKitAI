@@ -1,7 +1,8 @@
 """Local/Fake model provider for testing."""
 
 from collections import deque
-from typing import Any, AsyncIterator, Callable, Deque
+from collections.abc import AsyncIterator, Callable
+from typing import Any
 
 from pydantic import Field
 
@@ -26,7 +27,7 @@ class FakeModel(Model):
     response_fn: Callable[[list[Message], list[Tool] | None], str | dict[str, Any]] | None = Field(
         default=None, description="Function(message, tools) -> response"
     )
-    response_queue: Deque[str | dict[str, Any] | Callable] = Field(
+    response_queue: deque[str | dict[str, Any] | Callable] = Field(
         default_factory=deque, description="Queue of responses for sequential calls"
     )
     call_count: int = Field(default=0, exclude=True)
@@ -38,7 +39,7 @@ class FakeModel(Model):
         responses: dict[str, str | dict[str, Any]] | None = None,
         response_fn: Callable[[list[Message], list[Tool] | None], str | dict[str, Any]]
         | None = None,
-        response_queue: Deque[str | dict[str, Any] | Callable] | None = None,
+        response_queue: deque[str | dict[str, Any] | Callable] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize fake model.

@@ -5,7 +5,7 @@ import pytest
 from routekit.core.agent import Agent
 from routekit.core.runtime import Runtime
 from routekit.graphs.executors import GraphExecutor
-from routekit.graphs.graph import Graph, GraphEdge, GraphNode, NodeType
+from routekit.graphs.graph import Graph, GraphNode, NodeType
 from routekit.providers.local import FakeModel
 
 

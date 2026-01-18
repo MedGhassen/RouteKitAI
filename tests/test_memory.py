@@ -1,13 +1,11 @@
 """Tests for memory implementations."""
 
-import asyncio
 import tempfile
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from routekit.core.memory import Memory
 from routekit.memory.episodic import EpisodicMemory
 from routekit.memory.retrieval import RetrievalMemory
 from routekit.memory.working import WorkingMemory
@@ -205,7 +203,7 @@ async def test_memory_in_agent_state() -> None:
     runtime.register_agent(agent)
 
     policy = PolicyAdapter(MemoryAwarePolicy())
-    result = await runtime.run("test_agent", "Hello", policy=policy)
+    await runtime.run("test_agent", "Hello", policy=policy)
 
     # Verify memory was used
     assert await memory.get("test_key") == "test_value"

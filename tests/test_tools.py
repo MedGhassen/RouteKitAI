@@ -5,11 +5,10 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pydantic import BaseModel, Field
 
 from routekit.core.errors import ToolError
-from routekit.core.tool import Tool, ToolPermission
+from routekit.core.tool import Tool
 from routekit.core.tools import EchoTool, FileReadTool, HttpGetTool
 from routekit.observability.trace import Trace
 
@@ -189,7 +188,7 @@ async def test_file_read_tool_not_found() -> None:
 async def test_http_get_tool() -> None:
     """Test HttpGetTool (if httpx is available)."""
     try:
-        import httpx
+        import httpx  # noqa: F401
     except ImportError:
         pytest.skip("httpx not installed")
 
@@ -205,7 +204,7 @@ async def test_http_get_tool() -> None:
 async def test_http_get_tool_redaction() -> None:
     """Test that HttpGetTool redacts sensitive headers."""
     try:
-        import httpx
+        import httpx  # noqa: F401
     except ImportError:
         pytest.skip("httpx not installed")
 

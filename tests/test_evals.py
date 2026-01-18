@@ -1,6 +1,5 @@
 """Tests for evaluation harness."""
 
-import json
 import tempfile
 from pathlib import Path
 

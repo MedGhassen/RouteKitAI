@@ -1,8 +1,8 @@
 """Anthropic Claude model provider."""
 
-import json
 import os
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 from routekit.core.errors import ModelError
 

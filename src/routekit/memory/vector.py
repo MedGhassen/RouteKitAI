@@ -203,7 +203,7 @@ class VectorMemory(BaseModel):
                     raise VectorMemoryError(
                         "sentence-transformers not installed. Install with: pip install sentence-transformers",
                         context={"backend": self.backend},
-                    )
+                    ) from None
             elif self.backend == "openai":
                 try:
                     import os
@@ -221,7 +221,7 @@ class VectorMemory(BaseModel):
                     raise VectorMemoryError(
                         "openai package not installed. Install with: pip install openai",
                         context={"backend": self.backend},
-                    )
+                    ) from None
             else:
                 raise VectorMemoryError(
                     f"Unknown embedding backend: {self.backend}",
@@ -245,7 +245,7 @@ class VectorMemory(BaseModel):
         if len(vec1) != len(vec2):
             return 0.0
 
-        dot_product = sum(a * b for a, b in zip(vec1, vec2))
+        dot_product = sum(a * b for a, b in zip(vec1, vec2, strict=True))
         norm1 = math.sqrt(sum(a * a for a in vec1))
         norm2 = math.sqrt(sum(a * a for a in vec2))
 
@@ -260,8 +260,8 @@ class VectorMemory(BaseModel):
             return
 
         try:
-            import numpy as np
-            import faiss
+            import faiss  # noqa: F401
+            import numpy as np  # noqa: F401
         except ImportError as e:
             # FAISS or numpy not available, fall back to linear search
             self.use_faiss = False
@@ -320,8 +320,8 @@ class VectorMemory(BaseModel):
 
             if self._faiss_index is not None:
                 try:
+                    import faiss  # noqa: F401
                     import numpy as np
-                    import faiss
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
@@ -365,7 +365,7 @@ class VectorMemory(BaseModel):
         embeddings = backend.embed_batch(texts)
 
         vector_ids = []
-        for idx, (text, embedding) in enumerate(zip(texts, embeddings)):
+        for idx, (text, embedding) in enumerate(zip(texts, embeddings, strict=True)):
             vector_id = str(uuid.uuid4())
             metadata = metadata_list[idx] if metadata_list else None
 
@@ -385,8 +385,8 @@ class VectorMemory(BaseModel):
 
             if self._faiss_index is not None:
                 try:
+                    import faiss  # noqa: F401
                     import numpy as np
-                    import faiss
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
@@ -446,8 +446,8 @@ class VectorMemory(BaseModel):
         if self.use_faiss and self._faiss_index is not None:
             # Use FAISS for efficient search
             try:
+                import faiss  # noqa: F401
                 import numpy as np
-                import faiss
             except ImportError as e:
                 raise VectorMemoryError(
                     f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
@@ -460,7 +460,7 @@ class VectorMemory(BaseModel):
             if k > 0:
                 distances, indices = self._faiss_index.search(query_array, k)
 
-                for dist, idx in zip(distances[0], indices[0]):
+                for dist, idx in zip(distances[0], indices[0], strict=True):
                     vector_id = self._id_to_vector_id.get(idx)
                     if vector_id is None:
                         continue
@@ -615,8 +615,8 @@ class VectorMemory(BaseModel):
             instance._initialize_faiss()
             if instance._faiss_index is not None:
                 try:
+                    import faiss  # noqa: F401
                     import numpy as np
-                    import faiss
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
@@ -678,7 +678,7 @@ class OpenAIBackend(EmbeddingBackend):
             raise VectorMemoryError(
                 "openai package not installed. Install with: pip install openai",
                 context={"backend": "openai"},
-            )
+            ) from None
 
         self.client = OpenAI(api_key=api_key)
         self.model = model

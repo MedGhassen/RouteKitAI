@@ -1,11 +1,11 @@
 """Model primitive for RouteKit."""
 
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.errors import ModelError
 from routekit.core.message import Message
 from routekit.core.tool import Tool
 
@@ -60,7 +60,7 @@ class Model(ABC):
         """
         # Check for _name attribute first (set by subclasses like FakeModel)
         if hasattr(self, "_name"):
-            name_attr = getattr(self, "_name")
+            name_attr = self._name
             if isinstance(name_attr, str):
                 return name_attr
         # Fallback to class name

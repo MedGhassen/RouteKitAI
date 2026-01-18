@@ -1,22 +1,19 @@
 """Tests for Runtime capabilities."""
 
 import asyncio
-import json
 import tempfile
 from pathlib import Path
 
 import pytest
-
 from pydantic import BaseModel, Field
 
 from routekit.core.agent import Agent, RunResult
 from routekit.core.errors import ToolError
-from routekit.core.message import Message, MessageRole
+from routekit.core.message import MessageRole
 from routekit.core.model import Model, ModelResponse, ToolCall, Usage
-from routekit.core.runtime import DefaultPolicy, Policy, ReplayMismatchError, Runtime, Step
+from routekit.core.runtime import Policy, Runtime, Step
 from routekit.core.tool import Tool, ToolPermission
 from routekit.observability.exporters.jsonl import JSONLExporter
-from routekit.observability.trace import Trace
 from routekit.sandbox.permissions import PermissionLevel, PermissionManager
 
 
@@ -209,7 +206,6 @@ async def test_permission_guard() -> None:
 @pytest.mark.asyncio
 async def test_tool_timeout() -> None:
     """Test tool timeout handling."""
-    import asyncio
 
     class SlowTool(Tool):
         model_config = {"arbitrary_types_allowed": True}
@@ -247,7 +243,6 @@ async def test_tool_timeout() -> None:
 @pytest.mark.asyncio
 async def test_concurrent_tool_execution() -> None:
     """Test concurrent tool execution."""
-    import asyncio
 
     class ConcurrentTool(Tool):
         model_config = {"arbitrary_types_allowed": True}
@@ -313,7 +308,7 @@ async def test_concurrent_tool_execution() -> None:
             ]
 
     start_time = asyncio.get_event_loop().time()
-    result = await runtime.run("test_agent", "Hello", policy=ParallelPolicy())
+    await runtime.run("test_agent", "Hello", policy=ParallelPolicy())
     elapsed = asyncio.get_event_loop().time() - start_time
 
     # Should complete faster than sequential (3 * 0.1 = 0.3s)

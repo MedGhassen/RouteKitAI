@@ -5,7 +5,6 @@ from typing import Any
 import pytest
 
 from routekit.core.agent import Agent, RunResult
-from routekit.core.errors import ToolError
 from routekit.core.hooks import ApprovalGate, PIIRedactionHook, PolicyHooks, ToolFilter
 from routekit.core.runtime import Runtime
 from routekit.core.tools import EchoTool

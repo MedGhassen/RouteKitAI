@@ -135,7 +135,7 @@ class NetworkSandbox(BaseModel):
             raise NetworkSandboxError(
                 "httpx is required for network requests. Install with: pip install httpx",
                 context={"url": url, "method": method},
-            )
+            ) from None
         except Exception as e:
             raise NetworkSandboxError(
                 f"Network request failed: {e}", context={"url": url, "method": method}

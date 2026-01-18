@@ -6,9 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.agent import Agent, RunResult
 from routekit.core.runtime import Runtime
-from routekit.evals.dataset import Dataset, EvalExample
+from routekit.evals.dataset import Dataset
 from routekit.evals.metrics import Metric
 
 
@@ -163,7 +162,7 @@ class EvalRunner(BaseModel):
             return None
 
         try:
-            with open(baseline_file, "r", encoding="utf-8") as f:
+            with open(baseline_file, encoding="utf-8") as f:
                 data = json.load(f)
                 return EvalResult(**data)
         except Exception:

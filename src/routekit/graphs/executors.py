@@ -1,15 +1,12 @@
 """Graph execution engine."""
 
-import asyncio
 from typing import Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.agent import Agent, RunResult
 from routekit.core.errors import RuntimeError as RouteKitRuntimeError
-from routekit.core.message import Message
 from routekit.core.runtime import Runtime
-from routekit.graphs.graph import Graph, GraphEdge, GraphNode, NodeType
+from routekit.graphs.graph import Graph, GraphNode, NodeType
 
 
 class GraphExecutionState(BaseModel):
@@ -219,8 +216,6 @@ class GraphExecutor(BaseModel):
 
         if node.agent_name not in self.runtime.agents:
             raise RouteKitRuntimeError(f"Agent '{node.agent_name}' not found in runtime")
-
-        agent = self.runtime.agents[node.agent_name]
 
         # Extract prompt from inputs
         # Try common input keys, fallback to string representation

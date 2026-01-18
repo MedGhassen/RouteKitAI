@@ -4,8 +4,6 @@ import re
 from collections import Counter
 from typing import Any
 
-from pydantic import BaseModel
-
 from routekit.core.memory import Memory
 
 
@@ -112,7 +110,6 @@ class RetrievalMemory(Memory):
             List of documents with TF-IDF scores
         """
         query_terms = self._tokenize(query)
-        query_tf = Counter(query_terms)
 
         scores = []
         for doc in self._documents:

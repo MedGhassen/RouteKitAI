@@ -89,7 +89,7 @@ async def main() -> None:
     # Execute graph
     result = await executor.execute(input_data={"input": "Process this task"})
 
-    print(f"\nGraph execution result:")
+    print("\nGraph execution result:")
     print(f"  Final output: {result['output']}")
     print(f"  Execution path: {' -> '.join(result['execution_path'])}")
     print(f"  Visited nodes: {result['visited_nodes']}")

@@ -114,7 +114,7 @@ async def test_vector_memory_batch_add() -> None:
     assert len(vector_ids) == 3
 
     # Verify all were stored
-    for vector_id, expected_text in zip(vector_ids, texts):
+    for vector_id, expected_text in zip(vector_ids, texts, strict=True):
         vector_data = await memory.get(vector_id)
         assert vector_data is not None
         assert vector_data["text"] == expected_text

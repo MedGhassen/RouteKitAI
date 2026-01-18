@@ -1,6 +1,5 @@
 """Message primitive for RouteKit."""
 
-import json
 from enum import Enum
 from typing import Any
 

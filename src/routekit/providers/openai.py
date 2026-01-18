@@ -1,7 +1,8 @@
 """OpenAI-compatible model provider."""
 
 import json
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 from routekit.core.errors import ModelError
 

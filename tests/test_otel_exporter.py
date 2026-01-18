@@ -2,7 +2,7 @@
 
 import pytest
 
-from routekit.observability.exporters.otel import OTELExporter, OTELExporterError
+from routekit.observability.exporters.otel import OTELExporter
 from routekit.observability.trace import Trace
 
 

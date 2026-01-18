@@ -2,7 +2,7 @@
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from routekit.core.agent import Agent
 from routekit.core.runtime import Runtime
@@ -12,16 +12,14 @@ from routekit.providers.local import FakeModel
 if TYPE_CHECKING:
     import typer
     from rich.console import Console
-    from rich.panel import Panel
     from rich.table import Table
 else:
     try:
         import typer
         from rich.console import Console
-        from rich.panel import Panel
         from rich.table import Table
-    except ImportError:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
+    except ImportError as e:
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
 console = Console()
@@ -73,7 +71,7 @@ def test_command(
             test_results.append(("Agent execution", True, ""))
             tests_passed += 1
             if verbose:
-                console.print(f"  [green]✓[/green] Agent executed successfully")
+                console.print("  [green]✓[/green] Agent executed successfully")
                 console.print(f"  [dim]    Output: {result.output.content}[/dim]")
                 console.print(f"  [dim]    Trace ID: {result.trace_id}[/dim]")
         except Exception as e:
@@ -99,7 +97,7 @@ def test_command(
             test_results.append(("Tool execution", True, ""))
             tests_passed += 1
             if verbose:
-                console.print(f"  [green]✓[/green] Tool executed successfully")
+                console.print("  [green]✓[/green] Tool executed successfully")
                 console.print(f"  [dim]    Output: {result.output.content}[/dim]")
         except Exception as e:
             test_results.append(("Tool execution", False, str(e)))
@@ -125,7 +123,7 @@ def test_command(
             test_results.append(("Trace generation", True, ""))
             tests_passed += 1
             if verbose:
-                console.print(f"  [green]✓[/green] Trace generated successfully")
+                console.print("  [green]✓[/green] Trace generated successfully")
                 console.print(f"  [dim]    Events: {len(trace.events)}[/dim]")
         except Exception as e:
             test_results.append(("Trace generation", False, str(e)))
@@ -150,7 +148,7 @@ def test_command(
             test_results.append(("Trace replay", True, ""))
             tests_passed += 1
             if verbose:
-                console.print(f"  [green]✓[/green] Replay successful")
+                console.print("  [green]✓[/green] Replay successful")
                 console.print(
                     f"  [dim]    Output matches: {replay_result.output.content == result.output.content}[/dim]"
                 )

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from routekit.core.errors import PolicyError
 from routekit.core.memory import Memory
 from routekit.core.message import Message
 from routekit.core.model import Model
@@ -101,7 +100,7 @@ class Agent(BaseModel):
             RuntimeError: If called from within an async context
         """
         try:
-            loop = asyncio.get_running_loop()
+            asyncio.get_running_loop()
             # We're in an async context - need to use a different approach
             # Try to use nest_asyncio if available, otherwise raise error
             try:
@@ -113,7 +112,7 @@ class Agent(BaseModel):
                 raise RuntimeError(
                     "Cannot use run_sync() in an async context. "
                     "Either use 'await agent.run()' or install nest_asyncio: pip install nest-asyncio"
-                )
+                ) from None
         except RuntimeError:
             # No event loop exists, safe to use asyncio.run
             return asyncio.run(self.run(prompt, **kwargs))
@@ -173,7 +172,7 @@ class Agent(BaseModel):
             >>> agent = Agent.with_graph_policy("graph_agent", graph, model)
         """
         if TYPE_CHECKING:
-            from routekit.graphs.graph import Graph
+            pass
 
         from routekit.core.policies import GraphPolicy
 

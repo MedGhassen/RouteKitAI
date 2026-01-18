@@ -1,8 +1,6 @@
 """Built-in tools for RouteKit."""
 
-import asyncio
 from pathlib import Path
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -108,7 +106,7 @@ class HttpGetTool(Tool):
             except ImportError:
                 raise ToolError(
                     "httpx is required for HttpGetTool. Install with: pip install httpx"
-                )
+                ) from None
 
             async with httpx.AsyncClient(timeout=input.timeout) as client:
                 response = await client.get(input.url, headers=input.headers)

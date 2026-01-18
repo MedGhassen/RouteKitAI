@@ -7,8 +7,6 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel
-
 from routekit.core.memory import Memory
 
 

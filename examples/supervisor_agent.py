@@ -2,15 +2,13 @@
 
 import asyncio
 from pathlib import Path
-from typing import Any
 
-from routekit.core.agent import Agent, RunResult
+from routekit.core.agent import Agent
 from routekit.core.policies import SupervisorPolicy
 from routekit.core.policy_adapter import PolicyAdapter
 from routekit.core.runtime import Runtime
 from routekit.core.tools import EchoTool
 from routekit.providers.local import FakeModel
-
 
 # Note: Agent is now a concrete class, no need to subclass
 
@@ -61,7 +59,7 @@ async def main() -> None:
     # Run supervisor
     result = await runtime.run("supervisor", "Research information about RouteKit", policy=policy)
 
-    print(f"\nSupervisor result:")
+    print("\nSupervisor result:")
     print(f"  Output: {result.output.content}")
     print(f"  Trace ID: {result.trace_id}")
     print(f"  Messages: {len(result.messages)}")

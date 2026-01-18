@@ -2,8 +2,6 @@
 
 import json
 
-import pytest
-
 from routekit.core.message import Message, MessageRole
 
 

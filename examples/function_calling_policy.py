@@ -3,14 +3,14 @@
 import asyncio
 from pathlib import Path
 
+from pydantic import BaseModel, Field
+
 from routekit.core.agent import Agent
-from routekit.core.message import Message
 from routekit.core.model import Model, ModelResponse, ToolCall, Usage
 from routekit.core.policies import FunctionCallingPolicy
 from routekit.core.policy_adapter import PolicyAdapter
 from routekit.core.runtime import Runtime
 from routekit.core.tool import Tool
-from pydantic import BaseModel, Field
 
 
 class MockModel(Model):

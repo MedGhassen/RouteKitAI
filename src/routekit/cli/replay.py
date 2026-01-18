@@ -2,7 +2,7 @@
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from routekit.core.runtime import Runtime
 from routekit.observability.exporters.jsonl import JSONLExporter
@@ -10,14 +10,12 @@ from routekit.observability.exporters.jsonl import JSONLExporter
 if TYPE_CHECKING:
     import typer
     from rich.console import Console
-    from rich.markdown import Markdown
 else:
     try:
         import typer
         from rich.console import Console
-        from rich.markdown import Markdown
-    except ImportError:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich")
+    except ImportError as e:
+        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 app = typer.Typer(name="replay", help="Replay agent execution traces")
 console = Console()
@@ -60,7 +58,7 @@ def replay_command(
         runtime = Runtime(trace_dir=trace_dir_path)
         result = await runtime.replay(trace_id, agent_name, verify_output=verify)
 
-        console.print(f"\n[bold]Replay completed[/bold]")
+        console.print("\n[bold]Replay completed[/bold]")
         console.print(f"[green]Output:[/green] {result.output.content}")
         console.print(f"[dim]Trace ID: {result.trace_id}[/dim]")
 
@@ -74,11 +72,11 @@ def replay_command(
                     original_result = original_completed[0].data.get("result", {})
                     original_output = original_result.get("output", {}).get("content", "")
                     if original_output != result.output.content:
-                        console.print(f"\n[yellow]⚠ Warning: Output mismatch![/yellow]")
+                        console.print("\n[yellow]⚠ Warning: Output mismatch![/yellow]")
                         console.print(f"[dim]  Original: {original_output}[/dim]")
                         console.print(f"[dim]  Replay:   {result.output.content}[/dim]")
                     else:
-                        console.print(f"\n[green]✓ Output matches original trace[/green]")
+                        console.print("\n[green]✓ Output matches original trace[/green]")
 
     asyncio.run(_replay())
 

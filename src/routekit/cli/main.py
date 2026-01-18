@@ -1,12 +1,9 @@
 """Main CLI entry point for RouteKit."""
 
 import sys
-from pathlib import Path
 
 try:
     import typer
-    from rich.console import Console
-    from rich.table import Table
 except ImportError:
     print("Error: Typer and Rich are required for CLI. Install with: pip install 'routekit[dev]'")
     sys.exit(1)
