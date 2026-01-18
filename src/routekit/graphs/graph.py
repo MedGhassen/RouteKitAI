@@ -29,7 +29,9 @@ class GraphNode(BaseModel):
     type: NodeType = Field(..., description="Node type")
     agent_name: str | None = Field(default=None, description="Agent name (for MODEL nodes)")
     tool_name: str | None = Field(default=None, description="Tool name (for TOOL nodes)")
-    subgraph_name: str | None = Field(default=None, description="Subgraph name (for SUBGRAPH nodes)")
+    subgraph_name: str | None = Field(
+        default=None, description="Subgraph name (for SUBGRAPH nodes)"
+    )
     condition: Callable[[dict[str, Any]], str] | None = Field(
         default=None, description="Condition function for CONDITION nodes (returns edge ID)"
     )
@@ -67,9 +69,7 @@ class Graph(BaseModel):
     edges: list[GraphEdge] = Field(default_factory=list, description="Graph edges")
     entry_node: str = Field(..., description="Entry node ID")
     exit_node: str | None = Field(default=None, description="Exit node ID (optional)")
-    state_schema: dict[str, Any] = Field(
-        default_factory=dict, description="Schema for graph state"
-    )
+    state_schema: dict[str, Any] = Field(default_factory=dict, description="Schema for graph state")
     config: dict[str, Any] = Field(default_factory=dict, description="Graph configuration")
 
     def get_node(self, node_id: str) -> GraphNode | None:
@@ -151,7 +151,7 @@ class Graph(BaseModel):
                     if edge.target not in reachable_nodes:
                         reachable_nodes.add(edge.target)
                         queue.append(edge.target)
-            
+
             # Check for unreachable nodes (warn, but don't error - might be intentional)
             all_node_ids = {n.id for n in self.nodes}
             unreachable = all_node_ids - reachable_nodes

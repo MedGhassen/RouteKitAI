@@ -123,13 +123,13 @@ async def test_retrieval_memory_append() -> None:
 
     # Verify document was added
     assert len(memory._documents) > 0
-    
+
     # Should be able to search for the appended document
     results = await memory.search("document", k=1)
     assert len(results) > 0, f"Search should find document. Documents: {memory._documents}"
     # Verify the appended document is in results
     assert any("New document" in str(r.get("content", "")) for r in results)
-    
+
     # Also test get by ID
     doc_id = results[0].get("id")
     if doc_id:
@@ -175,13 +175,13 @@ async def test_memory_in_agent_state() -> None:
 
     memory = WorkingMemory()
     model = MockModel()
-    
+
     # Create a concrete agent implementation
     class TestAgent(Agent):
         async def run(self, prompt: str, **kwargs: Any) -> Any:
             # Not used in this test - runtime handles execution
             raise NotImplementedError("Use runtime.run() instead")
-    
+
     agent = TestAgent(name="test_agent", model=model, tools=[], memory=memory)
 
     runtime = Runtime()

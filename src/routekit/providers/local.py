@@ -36,7 +36,8 @@ class FakeModel(Model):
         name: str = "fake",
         provider: str = "local",
         responses: dict[str, str | dict[str, Any]] | None = None,
-        response_fn: Callable[[list[Message], list[Tool] | None], str | dict[str, Any]] | None = None,
+        response_fn: Callable[[list[Message], list[Tool] | None], str | dict[str, Any]]
+        | None = None,
         response_queue: Deque[str | dict[str, Any] | Callable] | None = None,
         **kwargs: Any,
     ) -> None:
@@ -60,7 +61,9 @@ class FakeModel(Model):
 
     def add_response(
         self,
-        response: str | dict[str, Any] | Callable[[list[Message], list[Tool] | None], str | dict[str, Any]],
+        response: str
+        | dict[str, Any]
+        | Callable[[list[Message], list[Tool] | None], str | dict[str, Any]],
     ) -> None:
         """Add a response to the queue.
 
@@ -140,7 +143,9 @@ class FakeModel(Model):
                     return ModelResponse(
                         content=result.get("content", ""),
                         tool_calls=result.get("tool_calls"),
-                        usage=result.get("usage", Usage(prompt_tokens=10, completion_tokens=20, total_tokens=30)),
+                        usage=result.get(
+                            "usage", Usage(prompt_tokens=10, completion_tokens=20, total_tokens=30)
+                        ),
                     )
                 elif isinstance(result, str):
                     return ModelResponse(
@@ -151,7 +156,7 @@ class FakeModel(Model):
                 raise ModelError(f"Response function failed: {e}") from e
 
         # Use responses dict
-        if last_message:
+        if last_message and self.responses:
             content = last_message.content.lower()
             for key, response in self.responses.items():
                 if key.lower() in content:

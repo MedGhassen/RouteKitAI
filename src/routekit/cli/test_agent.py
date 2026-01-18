@@ -2,26 +2,31 @@
 
 import asyncio
 from pathlib import Path
-from typing import Any
-
-try:
-    import typer
-    from rich.console import Console
-    from rich.table import Table
-    from rich.panel import Panel
-except ImportError:
-    typer = None
-    Console = None
-    Table = None
-    Panel = None
+from typing import TYPE_CHECKING, Any
 
 from routekit.core.agent import Agent
 from routekit.core.runtime import Runtime
 from routekit.core.tools import EchoTool
 from routekit.providers.local import FakeModel
 
+if TYPE_CHECKING:
+    import typer
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+else:
+    try:
+        import typer
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.table import Table
+    except ImportError:
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        )
+
 app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
-console = Console() if Console else None
+console = Console()
 
 
 def test_command(
@@ -35,10 +40,6 @@ def test_command(
         routekit test-agent
         routekit test-agent --verbose
     """
-    if console is None:
-        typer.echo("Error: Rich is required for CLI output. Install with: pip install 'routekit[dev]'")
-        raise typer.Exit(1)
-
     async def _run_tests() -> None:
         console.print("[bold]Running RouteKit agent sanity checks...[/bold]\n")
 
@@ -85,7 +86,14 @@ def test_command(
         console.print("\n[cyan]Test 3: Tool execution[/cyan]")
         try:
             model = FakeModel(name="test")
-            model.add_response({"content": "Calling echo", "tool_calls": [{"id": "call_1", "name": "echo", "arguments": {"message": "test"}}]})
+            model.add_response(
+                {
+                    "content": "Calling echo",
+                    "tool_calls": [
+                        {"id": "call_1", "name": "echo", "arguments": {"message": "test"}}
+                    ],
+                }
+            )
             model.add_response("Tool executed")
             agent = Agent(name="test_agent", model=model, tools=[EchoTool()])
             result = await agent.run("Use the echo tool")
@@ -107,9 +115,10 @@ def test_command(
             model.add_response("Traced response")
             agent = Agent(name="test_agent", model=model, tools=[], trace_dir=trace_dir)
             result = await agent.run("Test trace")
-            
+
             # Check if trace file exists
             from routekit.observability.exporters.jsonl import JSONLExporter
+
             exporter = JSONLExporter(output_dir=trace_dir)
             trace = await exporter.load(result.trace_id)
             assert trace is not None
@@ -143,7 +152,9 @@ def test_command(
             tests_passed += 1
             if verbose:
                 console.print(f"  [green]✓[/green] Replay successful")
-                console.print(f"  [dim]    Output matches: {replay_result.output.content == result.output.content}[/dim]")
+                console.print(
+                    f"  [dim]    Output matches: {replay_result.output.content == result.output.content}[/dim]"
+                )
         except Exception as e:
             test_results.append(("Trace replay", False, str(e)))
             tests_failed += 1

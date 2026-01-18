@@ -60,9 +60,11 @@ class Model(ABC):
         """
         # Check for _name attribute first (set by subclasses like FakeModel)
         if hasattr(self, "_name"):
-            return self._name
+            name_attr = getattr(self, "_name")
+            if isinstance(name_attr, str):
+                return name_attr
         # Fallback to class name
-        return self.__class__.__name__
+        return str(self.__class__.__name__)
 
     @abstractmethod
     async def chat(

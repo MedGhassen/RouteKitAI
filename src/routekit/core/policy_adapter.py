@@ -79,12 +79,17 @@ class PolicyAdapter(RuntimePolicy):
                             Step(
                                 step_id=str(uuid.uuid4()),
                                 step_type="model_call",
-                                input_data={"messages": action.messages or [Message.user(action.prompt or "")]},
+                                input_data={
+                                    "messages": action.messages
+                                    or [Message.user(action.prompt or "")]
+                                },
                             )
                         )
                 else:
                     # Use messages directly if available, otherwise create from prompt
-                    step_messages = action.messages if action.messages else [Message.user(action.prompt or "")]
+                    step_messages = (
+                        action.messages if action.messages else [Message.user(action.prompt or "")]
+                    )
                     steps.append(
                         Step(
                             step_id=str(uuid.uuid4()),

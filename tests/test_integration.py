@@ -22,6 +22,7 @@ class TestAgent(Agent):
 @pytest.mark.asyncio
 async def test_end_to_end_with_echo_tool() -> None:
     """Test full agent loop with EchoTool."""
+
     # Create fake model that returns tool call
     def response_fn(messages, tools):
         """Return response with tool call."""
@@ -57,6 +58,7 @@ async def test_end_to_end_with_echo_tool() -> None:
 
         # Verify trace file exists (give async export a moment to complete)
         import asyncio
+
         await asyncio.sleep(0.1)  # Small delay for async export
         trace_file = trace_dir / f"{result.trace_id}.jsonl"
         assert trace_file.exists(), f"Trace file should exist at {trace_file}"
@@ -119,6 +121,7 @@ async def test_trace_export_on_every_run() -> None:
 
         # Give async export tasks time to complete
         import asyncio
+
         await asyncio.sleep(0.1)
 
         # Verify all trace files exist
@@ -164,7 +167,10 @@ async def test_agent_with_tools_full_loop() -> None:
 
         # Verify full loop completed
         assert result.output is not None
-        assert "completed" in result.output.content.lower() or "echoed" in result.output.content.lower()
+        assert (
+            "completed" in result.output.content.lower()
+            or "echoed" in result.output.content.lower()
+        )
 
         # Verify tool was called
         tool_messages = [m for m in result.messages if m.role.value == "tool"]

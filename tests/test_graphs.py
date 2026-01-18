@@ -54,7 +54,12 @@ async def test_graph_execution_deterministic() -> None:
 async def test_graph_with_tool() -> None:
     """Test graph execution with tool node."""
     model = FakeModel(name="test")
-    model.add_response({"content": "Calling echo", "tool_calls": [{"id": "call_1", "name": "echo", "arguments": {"message": "test"}}]})
+    model.add_response(
+        {
+            "content": "Calling echo",
+            "tool_calls": [{"id": "call_1", "name": "echo", "arguments": {"message": "test"}}],
+        }
+    )
     model.add_response("Echo completed")
 
     agent = TestAgent(name="test_agent", model=model, tools=[EchoTool()])

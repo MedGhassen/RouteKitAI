@@ -25,7 +25,9 @@ class MockModel(Model):
         """Mock chat with function calling."""
         return ModelResponse(
             content="I'll get the weather for you.",
-            tool_calls=[ToolCall(id="call_1", name="get_weather", arguments={"city": "San Francisco"})],
+            tool_calls=[
+                ToolCall(id="call_1", name="get_weather", arguments={"city": "San Francisco"})
+            ],
             usage=Usage(prompt_tokens=10, completion_tokens=20, total_tokens=30),
         )
 
@@ -73,7 +75,9 @@ async def main() -> None:
 
     func_policy = FunctionCallingPolicy(max_iterations=10)
     policy = PolicyAdapter(func_policy)
-    result = await runtime.run("function_agent", "What's the weather in San Francisco?", policy=policy)
+    result = await runtime.run(
+        "function_agent", "What's the weather in San Francisco?", policy=policy
+    )
 
     print(f"Result: {result.output.content}")
     print(f"Trace ID: {result.trace_id}")

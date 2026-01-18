@@ -38,7 +38,9 @@ class Parallel(Action):
     """Action to execute multiple tool actions in parallel."""
 
     action_type: str = Field(default="parallel", description="Action type")
-    actions: list[Action] = Field(..., description="Actions to execute in parallel (typically ToolActions)")
+    actions: list[Action] = Field(
+        ..., description="Actions to execute in parallel (typically ToolActions)"
+    )
 
 
 class Final(Action):

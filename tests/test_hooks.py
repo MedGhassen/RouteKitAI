@@ -24,7 +24,7 @@ async def test_tool_filter_allow_list() -> None:
     """Test tool filter with allow list."""
     model = FakeModel(name="test")
     echo_tool = EchoTool()
-    
+
     # Create agent with tool filter (only allow echo)
     agent = TestAgent(
         name="test_agent",
@@ -46,7 +46,7 @@ async def test_tool_filter_deny_list() -> None:
     """Test tool filter with deny list."""
     model = FakeModel(name="test")
     echo_tool = EchoTool()
-    
+
     # Create agent with tool filter (deny echo)
     agent = TestAgent(
         name="test_agent",
@@ -70,6 +70,7 @@ async def test_tool_filter_deny_list() -> None:
     # Should fail - echo is denied
     # The error gets wrapped in RuntimeError
     from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+
     with pytest.raises(RouteKitRuntimeError, match="not allowed"):
         await runtime.run("test_agent", "test")
 
@@ -79,13 +80,11 @@ async def test_runtime_tool_filter() -> None:
     """Test runtime-level tool filter."""
     model = FakeModel(name="test")
     echo_tool = EchoTool()
-    
+
     agent = TestAgent(name="test_agent", model=model, tools=[echo_tool])
 
     # Runtime-level filter
-    runtime = Runtime(
-        policy_hooks=PolicyHooks(tool_filter=ToolFilter(denied_tools=["echo"]))
-    )
+    runtime = Runtime(policy_hooks=PolicyHooks(tool_filter=ToolFilter(denied_tools=["echo"])))
     runtime.register_agent(agent)
 
     def response_fn(messages, tools):
@@ -98,6 +97,7 @@ async def test_runtime_tool_filter() -> None:
 
     # Should fail - echo is denied at runtime level
     from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+
     with pytest.raises(RouteKitRuntimeError, match="not allowed"):
         await runtime.run("test_agent", "test")
 
@@ -108,7 +108,7 @@ async def test_approval_gate() -> None:
     from routekit.core.tool import ToolPermission
 
     model = FakeModel(name="test")
-    
+
     # Create tool that requires NETWORK permission
     class NetworkTool(EchoTool):
         def __init__(self):
@@ -151,6 +151,7 @@ async def test_approval_gate() -> None:
 
     # Should fail - network_tool requires approval but callback denies it
     from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+
     with pytest.raises(RouteKitRuntimeError, match="requires approval"):
         await runtime.run("test_agent", "test")
 
@@ -164,7 +165,7 @@ async def test_approval_gate_approved() -> None:
     from routekit.core.tool import ToolPermission
 
     model = FakeModel(name="test")
-    
+
     class NetworkTool(EchoTool):
         def __init__(self):
             super().__init__()
@@ -209,7 +210,7 @@ async def test_pii_redaction() -> None:
     """Test PII redaction hook."""
     model = FakeModel(name="test")
     echo_tool = EchoTool()
-    
+
     agent = TestAgent(name="test_agent", model=model, tools=[echo_tool])
 
     # Create PII redaction hook
@@ -219,10 +220,7 @@ async def test_pii_redaction() -> None:
     runtime.register_agent(agent)
 
     # Run with PII in prompt
-    result = await runtime.run(
-        "test_agent",
-        "Contact me at john.doe@example.com or 555-123-4567"
-    )
+    result = await runtime.run("test_agent", "Contact me at john.doe@example.com or 555-123-4567")
 
     # Verify PII was redacted in trace
     # (In a real scenario, we'd check the trace file)
@@ -233,7 +231,7 @@ async def test_pii_redaction() -> None:
 async def test_pii_redaction_dict() -> None:
     """Test PII redaction in dictionaries."""
     hook = PIIRedactionHook(redact_emails=True, redact_phones=True)
-    
+
     data = {
         "email": "test@example.com",
         "phone": "555-123-4567",
@@ -241,9 +239,9 @@ async def test_pii_redaction_dict() -> None:
             "contact": "user@test.com",
         },
     }
-    
+
     redacted = hook.redact_dict(data)
-    
+
     assert "[REDACTED]" in redacted["email"]
     assert "[REDACTED]" in redacted["phone"]
     assert "[REDACTED]" in redacted["nested"]["contact"]
@@ -254,7 +252,7 @@ async def test_agent_level_filter_overrides_runtime() -> None:
     """Test that agent-level filter takes precedence over runtime filter."""
     model = FakeModel(name="test")
     echo_tool = EchoTool()
-    
+
     # Agent allows echo, runtime denies it
     agent = TestAgent(
         name="test_agent",

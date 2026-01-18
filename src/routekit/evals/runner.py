@@ -34,7 +34,9 @@ class EvalReport(BaseModel):
     passed: int = Field(..., description="Number of passed examples")
     failed: int = Field(..., description="Number of failed examples")
     errors: int = Field(..., description="Number of errors")
-    average_scores: dict[str, float] = Field(default_factory=dict, description="Average scores per metric")
+    average_scores: dict[str, float] = Field(
+        default_factory=dict, description="Average scores per metric"
+    )
     results: list[EvalResult] = Field(default_factory=list, description="Individual results")
 
 
@@ -43,12 +45,12 @@ class EvalRunner(BaseModel):
 
     runtime: Runtime = Field(..., description="Runtime for agent execution")
     metrics: list[Metric] = Field(default_factory=list, description="Metrics to compute")
-    regression_mode: bool = Field(default=False, description="Enable regression mode (compare to baseline)")
+    regression_mode: bool = Field(
+        default=False, description="Enable regression mode (compare to baseline)"
+    )
     baseline_dir: Path | None = Field(default=None, description="Directory with baseline traces")
 
-    async def run(
-        self, agent_name: str, dataset: Dataset, **kwargs: Any
-    ) -> EvalReport:
+    async def run(self, agent_name: str, dataset: Dataset, **kwargs: Any) -> EvalReport:
         """Run evaluation on a dataset.
 
         Args:
@@ -124,9 +126,9 @@ class EvalRunner(BaseModel):
         # Compute average scores
         average_scores: dict[str, float] = {}
         if results:
-            metric_names = set()
-            for result in results:
-                metric_names.update(result.scores.keys())
+            metric_names: set[str] = set()
+            for eval_result in results:
+                metric_names.update(eval_result.scores.keys())
 
             for metric_name in metric_names:
                 scores_list = [r.scores.get(metric_name, 0.0) for r in results if r.error is None]

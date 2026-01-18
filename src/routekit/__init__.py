@@ -29,6 +29,7 @@ from routekit.core import (
 Agent.model_rebuild()
 Runtime.model_rebuild()
 from routekit.core.policies import SupervisorPolicy
+
 SupervisorPolicy.model_rebuild()
 
 __all__ = [

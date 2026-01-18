@@ -24,7 +24,9 @@ async def main() -> None:
     supervisor_model.add_response("I'll delegate this to the research agent.")
 
     research_model = FakeModel(name="research")
-    research_model.add_response("Research completed: RouteKit is a graph-native agent orchestration framework.")
+    research_model.add_response(
+        "Research completed: RouteKit is a graph-native agent orchestration framework."
+    )
 
     analysis_model = FakeModel(name="analysis")
     analysis_model.add_response("Analysis: The framework supports tracing and replay.")

@@ -1,8 +1,11 @@
 """Model primitive for RouteKit."""
 
-from typing import Any, AsyncIterator, Iterator
+from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from routekit.core.message import Message
 
 
 class Model(BaseModel):

@@ -37,12 +37,11 @@ class Tool(BaseModel, ABC):
     permissions: list[ToolPermission] = Field(
         default_factory=list, description="Required permissions"
     )
-    rate_limit: int | None = Field(
-        default=None, description="Rate limit (calls per second)"
-    )
+    rate_limit: int | None = Field(default=None, description="Rate limit (calls per second)")
     timeout: float | None = Field(default=None, description="Timeout in seconds")
     redact_fields: list[str] = Field(
-        default_factory=list, description="Field names to redact in traces (e.g., ['api_key', 'password'])"
+        default_factory=list,
+        description="Field names to redact in traces (e.g., ['api_key', 'password'])",
     )
 
     @property
@@ -71,7 +70,7 @@ class Tool(BaseModel, ABC):
         def _redact_recursive(obj: Any) -> Any:
             """Recursively redact fields in nested structures."""
             if isinstance(obj, dict):
-                redacted = {}
+                redacted: dict[str, Any] = {}
                 for key, value in obj.items():
                     if key in self.redact_fields:
                         redacted[key] = "[REDACTED]"
@@ -85,7 +84,9 @@ class Tool(BaseModel, ABC):
             else:
                 return obj
 
-        return _redact_recursive(data)
+        result = _redact_recursive(data)
+        assert isinstance(result, dict)
+        return result
 
     @abstractmethod
     async def run(self, input: BaseModel) -> BaseModel:
@@ -125,9 +126,11 @@ class Tool(BaseModel, ABC):
                     InputModel = create_model("InputModel")
                     input_instance = InputModel()
                 else:
-                    InputModel = create_model(
-                        "InputModel", **{k: (type(v), ...) for k, v in kwargs.items()}
-                    )
+                    # Dynamically create model from kwargs
+                    field_definitions: dict[str, Any] = {}
+                    for k, v in kwargs.items():
+                        field_definitions[k] = (type(v), ...)
+                    InputModel = create_model("InputModel", **field_definitions)
                     input_instance = InputModel(**kwargs)
 
             # Execute

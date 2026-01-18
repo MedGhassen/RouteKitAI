@@ -25,7 +25,7 @@ class NetworkSandbox(BaseModel):
     allowed_hosts: list[str] = Field(default_factory=list, description="Allowed hostnames")
     blocked_hosts: list[str] = Field(default_factory=list, description="Blocked hostnames")
     rate_limit: dict[str, Any] = Field(default_factory=dict, description="Rate limit config")
-    
+
     def __init__(self, **data: Any) -> None:
         """Initialize network sandbox."""
         super().__init__(**data)
@@ -83,8 +83,7 @@ class NetworkSandbox(BaseModel):
                 now = time.time()
                 # Clean old requests (older than 1 minute)
                 self._request_history[host] = [
-                    timestamp for timestamp in self._request_history[host]
-                    if now - timestamp < 60
+                    timestamp for timestamp in self._request_history[host] if now - timestamp < 60
                 ]
                 # Check if limit exceeded
                 if len(self._request_history[host]) >= requests_per_minute:
@@ -109,7 +108,7 @@ class NetworkSandbox(BaseModel):
         if not await self.check_request(url, method):
             raise NetworkSandboxError(
                 f"Network request not allowed: {method} {url}",
-                context={"url": url, "method": method}
+                context={"url": url, "method": method},
             )
 
         # Record request for rate limiting
@@ -120,6 +119,7 @@ class NetworkSandbox(BaseModel):
         # Execute request using httpx
         try:
             import httpx
+
             async with httpx.AsyncClient() as client:
                 response = await client.request(method, url, **kwargs)
                 response.raise_for_status()
@@ -127,15 +127,16 @@ class NetworkSandbox(BaseModel):
                     "status_code": response.status_code,
                     "headers": dict(response.headers),
                     "content": response.text,
-                    "json": response.json() if response.headers.get("content-type", "").startswith("application/json") else None,
+                    "json": response.json()
+                    if response.headers.get("content-type", "").startswith("application/json")
+                    else None,
                 }
         except ImportError:
             raise NetworkSandboxError(
                 "httpx is required for network requests. Install with: pip install httpx",
-                context={"url": url, "method": method}
+                context={"url": url, "method": method},
             )
         except Exception as e:
             raise NetworkSandboxError(
-                f"Network request failed: {e}",
-                context={"url": url, "method": method}
+                f"Network request failed: {e}", context={"url": url, "method": method}
             ) from e

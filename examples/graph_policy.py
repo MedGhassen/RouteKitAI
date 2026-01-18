@@ -42,7 +42,9 @@ async def main() -> None:
 
     print(f"Result: {result.output.content}")
     print(f"Trace ID: {result.trace_id}")
-    print("\nNote: GraphPolicy is a placeholder. Full graph execution will be implemented in the graphs module.")
+    print(
+        "\nNote: GraphPolicy is a placeholder. Full graph execution will be implemented in the graphs module."
+    )
 
 
 if __name__ == "__main__":

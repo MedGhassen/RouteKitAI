@@ -98,13 +98,17 @@ class SimpleEmbeddingBackend(EmbeddingBackend):
 
         # Build vocab with most frequent n-grams
         sorted_ngrams = sorted(ngram_counts.items(), key=lambda x: x[1], reverse=True)
-        self._vocab = {ngram: idx for idx, (ngram, _) in enumerate(sorted_ngrams[: self._dimension])}
+        self._vocab = {
+            ngram: idx for idx, (ngram, _) in enumerate(sorted_ngrams[: self._dimension])
+        }
 
         # Calculate IDF
         self._document_count = len(texts)
         for ngram in self._vocab.keys():
             doc_freq = sum(1 for doc_ngrams in self._document_ngrams if ngram in doc_ngrams)
-            self._idf[ngram] = math.log((self._document_count + 1) / (doc_freq + 1)) if doc_freq > 0 else 0.0
+            self._idf[ngram] = (
+                math.log((self._document_count + 1) / (doc_freq + 1)) if doc_freq > 0 else 0.0
+            )
 
     def embed(self, text: str) -> list[float]:
         """Generate embedding using TF-IDF on character n-grams."""
@@ -166,10 +170,14 @@ class VectorMemory(BaseModel):
     """
 
     dimension: int = Field(default=384, description="Vector dimension")
-    backend: str = Field(default="simple", description="Embedding backend (simple, sentence-transformers, openai)")
+    backend: str = Field(
+        default="simple", description="Embedding backend (simple, sentence-transformers, openai)"
+    )
     use_faiss: bool = Field(default=False, description="Use FAISS for large-scale indexing")
     persist_path: Path | None = Field(default=None, description="Path to persist vectors")
-    similarity_threshold: float = Field(default=0.0, description="Minimum similarity threshold for search")
+    similarity_threshold: float = Field(
+        default=0.0, description="Minimum similarity threshold for search"
+    )
 
     def __init__(self, **data: Any) -> None:
         """Initialize vector memory."""
@@ -194,7 +202,7 @@ class VectorMemory(BaseModel):
                 except ImportError:
                     raise VectorMemoryError(
                         "sentence-transformers not installed. Install with: pip install sentence-transformers",
-                        context={"backend": self.backend}
+                        context={"backend": self.backend},
                     )
             elif self.backend == "openai":
                 try:
@@ -204,18 +212,23 @@ class VectorMemory(BaseModel):
                     if not api_key:
                         raise VectorMemoryError(
                             "OPENAI_API_KEY environment variable not set",
-                            context={"backend": self.backend}
+                            context={"backend": self.backend},
                         )
-                    self._embedding_backend = OpenAIBackend(api_key=api_key, dimension=self.dimension)
+                    self._embedding_backend = OpenAIBackend(
+                        api_key=api_key, dimension=self.dimension
+                    )
                 except ImportError:
                     raise VectorMemoryError(
                         "openai package not installed. Install with: pip install openai",
-                        context={"backend": self.backend}
+                        context={"backend": self.backend},
                     )
             else:
                 raise VectorMemoryError(
                     f"Unknown embedding backend: {self.backend}",
-                    context={"backend": self.backend, "available": ["simple", "sentence-transformers", "openai"]}
+                    context={
+                        "backend": self.backend,
+                        "available": ["simple", "sentence-transformers", "openai"],
+                    },
                 )
         return self._embedding_backend
 
@@ -253,6 +266,7 @@ class VectorMemory(BaseModel):
             # FAISS or numpy not available, fall back to linear search
             self.use_faiss = False
             import logging
+
             logger = logging.getLogger(__name__)
             logger.warning(
                 f"FAISS not available ({e}). Falling back to linear search. "
@@ -311,7 +325,7 @@ class VectorMemory(BaseModel):
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
-                        context={"operation": "add", "use_faiss": True}
+                        context={"operation": "add", "use_faiss": True},
                     ) from e
 
                 embedding_array = np.array([embedding], dtype=np.float32)
@@ -321,7 +335,9 @@ class VectorMemory(BaseModel):
 
         return vector_id
 
-    async def add_batch(self, texts: list[str], metadata_list: list[dict[str, Any]] | None = None) -> list[str]:
+    async def add_batch(
+        self, texts: list[str], metadata_list: list[dict[str, Any]] | None = None
+    ) -> list[str]:
         """Add multiple texts to vector memory efficiently.
 
         Args:
@@ -374,7 +390,7 @@ class VectorMemory(BaseModel):
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
-                        context={"operation": "add_batch", "use_faiss": True}
+                        context={"operation": "add_batch", "use_faiss": True},
                     ) from e
 
                 embedding_array = np.array(embeddings, dtype=np.float32)
@@ -411,7 +427,7 @@ class VectorMemory(BaseModel):
             return []
 
         backend = self._get_embedding_backend()
-        
+
         # For simple backend, ensure vocab is built from existing vectors
         if isinstance(backend, SimpleEmbeddingBackend) and not backend._vocab:
             existing_texts = [v["text"] for v in self._vectors.values()]
@@ -420,7 +436,7 @@ class VectorMemory(BaseModel):
             else:
                 # No vectors yet, return empty
                 return []
-        
+
         query_embedding = backend.embed(query)
 
         threshold = min_similarity if min_similarity is not None else self.similarity_threshold
@@ -435,7 +451,7 @@ class VectorMemory(BaseModel):
             except ImportError as e:
                 raise VectorMemoryError(
                     f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
-                    context={"operation": "search", "use_faiss": True}
+                    context={"operation": "search", "use_faiss": True},
                 ) from e
 
             query_array = np.array([query_embedding], dtype=np.float32)
@@ -461,17 +477,20 @@ class VectorMemory(BaseModel):
                         # Apply metadata filter
                         if filter_metadata:
                             if not all(
-                                vector_data.get("metadata", {}).get(k) == v for k, v in filter_metadata.items()
+                                vector_data.get("metadata", {}).get(k) == v
+                                for k, v in filter_metadata.items()
                             ):
                                 continue
 
-                        results.append({
-                            "id": vector_id,
-                            "text": vector_data["text"],
-                            "metadata": vector_data["metadata"],
-                            "score": similarity,
-                            "distance": dist,
-                        })
+                        results.append(
+                            {
+                                "id": vector_id,
+                                "text": vector_data["text"],
+                                "metadata": vector_data["metadata"],
+                                "score": similarity,
+                                "distance": dist,
+                            }
+                        )
         else:
             # Linear search with cosine similarity
             for vector_id, vector_data in self._vectors.items():
@@ -480,7 +499,8 @@ class VectorMemory(BaseModel):
                 # Apply metadata filter first (early exit)
                 if filter_metadata:
                     if not all(
-                        vector_data.get("metadata", {}).get(k) == v for k, v in filter_metadata.items()
+                        vector_data.get("metadata", {}).get(k) == v
+                        for k, v in filter_metadata.items()
                     ):
                         continue
 
@@ -488,13 +508,15 @@ class VectorMemory(BaseModel):
                 similarity = self._cosine_similarity(query_embedding, vector_embedding)
 
                 if similarity >= threshold:
-                    results.append({
-                        "id": vector_id,
-                        "text": vector_data["text"],
-                        "metadata": vector_data["metadata"],
-                        "score": similarity,
-                        "distance": 1.0 - similarity,  # Convert similarity to distance
-                    })
+                    results.append(
+                        {
+                            "id": vector_id,
+                            "text": vector_data["text"],
+                            "metadata": vector_data["metadata"],
+                            "score": similarity,
+                            "distance": 1.0 - similarity,  # Convert similarity to distance
+                        }
+                    )
 
         # Sort by score descending and return top_k
         results.sort(key=lambda x: x["score"], reverse=True)
@@ -573,9 +595,7 @@ class VectorMemory(BaseModel):
             data = pickle.load(f)
 
         instance = cls(
-            dimension=data.get("dimension", 384),
-            backend=data.get("backend", "simple"),
-            **kwargs
+            dimension=data.get("dimension", 384), backend=data.get("backend", "simple"), **kwargs
         )
 
         instance._vectors = data.get("vectors", {})
@@ -600,7 +620,7 @@ class VectorMemory(BaseModel):
                 except ImportError as e:
                     raise VectorMemoryError(
                         f"FAISS dependencies not available: {e}. Install with: pip install faiss-cpu numpy",
-                        context={"operation": "load", "use_faiss": True}
+                        context={"operation": "load", "use_faiss": True},
                     ) from e
 
                 embeddings_list = [instance._embeddings[vid] for vid in instance._vectors.keys()]
@@ -624,25 +644,27 @@ class SentenceTransformerBackend(EmbeddingBackend):
 
     def embed(self, text: str) -> list[float]:
         """Generate embedding using sentence transformer."""
-        embedding = self.model.encode(text, convert_to_numpy=True)  # type: ignore[attr-defined]
-        result = embedding.tolist()  # type: ignore[attr-defined]
+        embedding = self.model.encode(text, convert_to_numpy=True)
+        result = embedding.tolist()
         return [float(x) for x in result]
 
     def embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Batch embed using sentence transformer."""
-        embeddings = self.model.encode(texts, convert_to_numpy=True)  # type: ignore[attr-defined]
-        return [[float(x) for x in e.tolist()] for e in embeddings]  # type: ignore[attr-defined]
+        embeddings = self.model.encode(texts, convert_to_numpy=True)
+        return [[float(x) for x in e.tolist()] for e in embeddings]
 
     @property
     def dimension(self) -> int:
         """Return embedding dimension."""
-        return int(self.model.get_sentence_embedding_dimension())  # type: ignore[attr-defined]
+        return int(self.model.get_sentence_embedding_dimension())
 
 
 class OpenAIBackend(EmbeddingBackend):
     """OpenAI embedding backend."""
 
-    def __init__(self, api_key: str, dimension: int = 1536, model: str = "text-embedding-3-small") -> None:
+    def __init__(
+        self, api_key: str, dimension: int = 1536, model: str = "text-embedding-3-small"
+    ) -> None:
         """Initialize OpenAI embedding backend.
 
         Args:
@@ -655,7 +677,7 @@ class OpenAIBackend(EmbeddingBackend):
         except ImportError:
             raise VectorMemoryError(
                 "openai package not installed. Install with: pip install openai",
-                context={"backend": "openai"}
+                context={"backend": "openai"},
             )
 
         self.client = OpenAI(api_key=api_key)
@@ -664,13 +686,13 @@ class OpenAIBackend(EmbeddingBackend):
 
     def embed(self, text: str) -> list[float]:
         """Generate embedding using OpenAI API."""
-        response = self.client.embeddings.create(model=self.model, input=text)  # type: ignore[attr-defined]
-        return list(response.data[0].embedding)  # type: ignore[attr-defined]
+        response = self.client.embeddings.create(model=self.model, input=text)
+        return list(response.data[0].embedding)
 
     def embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Batch embed using OpenAI API."""
-        response = self.client.embeddings.create(model=self.model, input=texts)  # type: ignore[attr-defined]
-        return [list(item.embedding) for item in response.data]  # type: ignore[attr-defined]
+        response = self.client.embeddings.create(model=self.model, input=texts)
+        return [list(item.embedding) for item in response.data]
 
     @property
     def dimension(self) -> int:

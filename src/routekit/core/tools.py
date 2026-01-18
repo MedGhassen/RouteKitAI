@@ -106,7 +106,9 @@ class HttpGetTool(Tool):
             try:
                 import httpx
             except ImportError:
-                raise ToolError("httpx is required for HttpGetTool. Install with: pip install httpx")
+                raise ToolError(
+                    "httpx is required for HttpGetTool. Install with: pip install httpx"
+                )
 
             async with httpx.AsyncClient(timeout=input.timeout) as client:
                 response = await client.get(input.url, headers=input.headers)

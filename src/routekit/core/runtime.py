@@ -84,9 +84,13 @@ class Runtime(BaseModel):
     permission_manager: PermissionManager | None = Field(
         default=None, description="Permission manager for tool execution"
     )
-    policy_hooks: PolicyHooks | None = Field(default=None, description="Policy hooks for governance")
+    policy_hooks: PolicyHooks | None = Field(
+        default=None, description="Policy hooks for governance"
+    )
     retry_backoff_base: float = Field(default=1.0, description="Base delay for exponential backoff")
-    retry_backoff_max: float = Field(default=60.0, description="Maximum delay for exponential backoff")
+    retry_backoff_max: float = Field(
+        default=60.0, description="Maximum delay for exponential backoff"
+    )
     config: dict[str, Any] = Field(default_factory=dict, description="Runtime configuration")
 
     def __init__(self, **kwargs: Any) -> None:
@@ -141,14 +145,16 @@ class Runtime(BaseModel):
             trace_id = self._replay_trace.trace_id
         else:
             trace_id = str(uuid.uuid4())
-        
+
         # Apply PII redaction to prompt if hook is configured
         redacted_prompt = prompt
         if self.policy_hooks and self.policy_hooks.pii_redaction:
             redacted_prompt = self.policy_hooks.pii_redaction.redact(prompt)
-        
+
         trace = Trace(trace_id=trace_id, metadata={"agent": agent_name, "prompt": redacted_prompt})
-        trace.add_event("run_started", {"trace_id": trace_id, "agent": agent_name, "prompt": redacted_prompt})
+        trace.add_event(
+            "run_started", {"trace_id": trace_id, "agent": agent_name, "prompt": redacted_prompt}
+        )
 
         # Export trace if trace_dir is set (lazy/async export)
         exporter = None
@@ -174,13 +180,13 @@ class Runtime(BaseModel):
                         cleaned_final_state[key] = str(value)
                 else:
                     cleaned_final_state[key] = str(value)  # Convert to string representation
-            
+
             # Store only serializable parts of result
             result_dict = {
-                "output": result.output.model_dump(mode='json'),
+                "output": result.output.model_dump(mode="json"),
                 "trace_id": result.trace_id,
                 "final_state": cleaned_final_state,
-                "messages": [msg.model_dump(mode='json') for msg in result.messages],
+                "messages": [msg.model_dump(mode="json") for msg in result.messages],
             }
             trace.add_event("run_completed", {"trace_id": trace_id, "result": result_dict})
 
@@ -248,7 +254,11 @@ class Runtime(BaseModel):
             # Wrap unknown exceptions in RouteKitRuntimeError
             raise RouteKitRuntimeError(
                 f"Runtime execution failed: {e}",
-                context={"trace_id": trace_id, "agent_name": agent_name, "error_type": type(e).__name__}
+                context={
+                    "trace_id": trace_id,
+                    "agent_name": agent_name,
+                    "error_type": type(e).__name__,
+                },
             ) from e
 
     async def _execute_steps(
@@ -281,6 +291,7 @@ class Runtime(BaseModel):
         if policy is None:
             from routekit.core.policies import ReActPolicy
             from routekit.core.policy_adapter import PolicyAdapter
+
             policy = PolicyAdapter(ReActPolicy())
 
         max_iterations = kwargs.get("max_iterations", 50)
@@ -290,10 +301,10 @@ class Runtime(BaseModel):
             # Check for cancellation
             if self._cancellation_token:
                 raise asyncio.CancelledError("Agent execution cancelled")
-            
+
             # Update state with current iteration
             state["iteration"] = iteration
-            
+
             # Get next steps from policy
             steps = await policy.next_steps(agent, messages, state)
 
@@ -315,10 +326,22 @@ class Runtime(BaseModel):
             for step_result in step_results:
                 if step_result.step_type == "model_call":
                     # Handle model response
-                    if step_result.output_data and isinstance(step_result.output_data, dict) and "response" in step_result.output_data:
+                    if (
+                        step_result.output_data
+                        and isinstance(step_result.output_data, dict)
+                        and "response" in step_result.output_data
+                    ):
                         response_data = step_result.output_data.get("response", {})
-                        content = response_data.get("content", "") if isinstance(response_data, dict) else ""
-                        tool_calls_data = response_data.get("tool_calls", []) if isinstance(response_data, dict) else []
+                        content = (
+                            response_data.get("content", "")
+                            if isinstance(response_data, dict)
+                            else ""
+                        )
+                        tool_calls_data = (
+                            response_data.get("tool_calls", [])
+                            if isinstance(response_data, dict)
+                            else []
+                        )
 
                         # Create assistant message with tool calls
                         tool_calls: list[dict[str, Any]] | None = None
@@ -328,10 +351,14 @@ class Runtime(BaseModel):
                                 {
                                     "id": str(tc.get("id", "")) if isinstance(tc, dict) else "",
                                     "name": str(tc.get("name", "")) if isinstance(tc, dict) else "",
-                                    "arguments": tc.get("arguments", {}) if isinstance(tc, dict) and isinstance(tc.get("arguments"), dict) else {},
+                                    "arguments": tc.get("arguments", {})
+                                    if isinstance(tc, dict)
+                                    and isinstance(tc.get("arguments"), dict)
+                                    else {},
                                 }
                                 for tc in tool_calls_data
-                                if isinstance(tc, dict) and tc.get("name")  # Only include valid tool calls with names
+                                if isinstance(tc, dict)
+                                and tc.get("name")  # Only include valid tool calls with names
                             ]
                             # Set to None if empty after filtering
                             if not tool_calls:
@@ -342,9 +369,13 @@ class Runtime(BaseModel):
                 elif step_result.step_type == "tool_call":
                     # Handle tool call result
                     if step_result.output_data and "result" in step_result.output_data:
-                        tool_name = step_result.input_data.get("tool_name", "") if step_result.input_data else ""
+                        tool_name = (
+                            step_result.input_data.get("tool_name", "")
+                            if step_result.input_data
+                            else ""
+                        )
                         tool_result = step_result.output_data["result"]
-                        
+
                         # Add tool result message
                         messages.append(
                             Message.tool(
@@ -355,10 +386,18 @@ class Runtime(BaseModel):
 
                 elif step_result.step_type == "subagent_call":
                     # Handle sub-agent call result (for supervisor policy)
-                    if step_result.output_data and isinstance(step_result.output_data, dict) and "result" in step_result.output_data:
-                        subagent_name = step_result.input_data.get("agent_name", "") if step_result.input_data else ""
+                    if (
+                        step_result.output_data
+                        and isinstance(step_result.output_data, dict)
+                        and "result" in step_result.output_data
+                    ):
+                        subagent_name = (
+                            step_result.input_data.get("agent_name", "")
+                            if step_result.input_data
+                            else ""
+                        )
                         subagent_result = step_result.output_data.get("result")
-                        
+
                         # Add sub-agent result message
                         if subagent_result is not None:
                             # Convert result to string for message content
@@ -370,13 +409,13 @@ class Runtime(BaseModel):
                                 result_content = str(subagent_result.content)
                             else:
                                 result_content = str(subagent_result)
-                            
+
                             messages.append(
                                 Message.assistant(
                                     f"Sub-agent {subagent_name} completed: {result_content}"
                                 )
                             )
-                            
+
                             # Update state for supervisor policy
                             state["subagent_result"] = {
                                 "agent": subagent_name,
@@ -398,6 +437,7 @@ class Runtime(BaseModel):
 
         # Import here to avoid circular import
         from routekit.core.agent import RunResult
+
         return RunResult(
             output=output_message,
             trace_id=trace.trace_id,
@@ -427,11 +467,11 @@ class Runtime(BaseModel):
         tasks = [self._execute_step(step, agent, trace, semaphore) for step in steps]
         # Use return_exceptions=True to collect all results, even if some fail
         results: list[Step | BaseException] = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Convert exceptions to steps with errors
         completed_steps: list[Step] = []
         first_error: BaseException | None = None
-        
+
         for i, result in enumerate(results):
             if isinstance(result, BaseException):
                 # Create a step with error
@@ -451,11 +491,11 @@ class Runtime(BaseModel):
                 completed_steps.append(step)
                 if first_error is None:
                     first_error = RuntimeError(f"Unexpected result type: {type(result).__name__}")
-        
+
         # Raise first error if any occurred
         if first_error:
             raise first_error
-        
+
         return completed_steps
 
     async def _execute_step(
@@ -474,7 +514,7 @@ class Runtime(BaseModel):
         """
         async with semaphore:
             start_time = time.time()
-            
+
             # Add step_started event for trace completeness
             trace.add_event(
                 "step_started",
@@ -491,7 +531,9 @@ class Runtime(BaseModel):
                     if self._replay_mode and self._replay_trace:
                         # Match by sequential order using step_completed events
                         # Find the next step_completed event of type model_call
-                        model_call_count = len([s for s in self._replay_step_index_history if s == "model_call"])
+                        model_call_count = len(
+                            [s for s in self._replay_step_index_history if s == "model_call"]
+                        )
                         matching_step_event = None
                         step_count = 0
                         for step_event in self._replay_step_events:
@@ -500,15 +542,21 @@ class Runtime(BaseModel):
                                     matching_step_event = step_event
                                     break
                                 step_count += 1
-                        
+
                         if matching_step_event:
                             # Find the corresponding model_called event by step_id
                             step_id = matching_step_event.data.get("step_id")
                             matching_event = next(
-                                (e for e in self._replay_model_events if e.data.get("step_id") == step_id),
-                                None
+                                (
+                                    e
+                                    for e in self._replay_model_events
+                                    if e.data.get("step_id") == step_id
+                                ),
+                                None,
                             )
-                            if not matching_event and model_call_count < len(self._replay_model_events):
+                            if not matching_event and model_call_count < len(
+                                self._replay_model_events
+                            ):
                                 # Fallback: use sequential order
                                 matching_event = self._replay_model_events[model_call_count]
                         elif model_call_count < len(self._replay_model_events):
@@ -522,20 +570,20 @@ class Runtime(BaseModel):
                                     "step_id": step.step_id,
                                     "trace_id": trace.trace_id,
                                     "expected_index": model_call_count,
-                                    "available_events": len(self._replay_model_events)
-                                }
+                                    "available_events": len(self._replay_model_events),
+                                },
                             )
-                        
+
                         if not matching_event:
                             raise ReplayMismatchError(
                                 f"Replay mismatch: could not find matching model call event",
                                 context={
                                     "step_id": step.step_id,
                                     "trace_id": trace.trace_id,
-                                    "model_call_count": model_call_count
-                                }
+                                    "model_call_count": model_call_count,
+                                },
                             )
-                        
+
                         self._replay_step_index_history.append("model_call")
                         response_data = matching_event.data.get("response", {})
                     else:
@@ -547,7 +595,7 @@ class Runtime(BaseModel):
                         if not isinstance(messages_data, list):
                             raise RouteKitRuntimeError(
                                 f"Invalid messages data in step: expected list, got {type(messages_data).__name__}",
-                                context={"step_id": step.step_id, "step_type": step.step_type}
+                                context={"step_id": step.step_id, "step_type": step.step_type},
                             )
                         # Convert dict messages to Message objects if needed (optimize: avoid conversion if already Message)
                         messages: list[Message] = []
@@ -560,12 +608,16 @@ class Runtime(BaseModel):
                                 except Exception as e:
                                     raise RouteKitRuntimeError(
                                         f"Invalid message format in step: {e}",
-                                        context={"step_id": step.step_id, "step_type": step.step_type, "message_data": str(msg_data)[:100]}
+                                        context={
+                                            "step_id": step.step_id,
+                                            "step_type": step.step_type,
+                                            "message_data": str(msg_data)[:100],
+                                        },
                                     ) from e
                             else:
                                 raise RouteKitRuntimeError(
                                     f"Invalid message format in step: expected Message or dict, got {type(msg_data).__name__}",
-                                    context={"step_id": step.step_id, "step_type": step.step_type}
+                                    context={"step_id": step.step_id, "step_type": step.step_type},
                                 )
                         response = await self._call_model(agent, messages, trace)
                         response_data = {
@@ -594,7 +646,9 @@ class Runtime(BaseModel):
                     # Check if in replay mode for tool calls
                     if self._replay_mode and self._replay_trace:
                         # Match tool calls by sequential order
-                        tool_call_index = len([s for s in self._replay_step_index_history if s == "tool_call"])
+                        tool_call_index = len(
+                            [s for s in self._replay_step_index_history if s == "tool_call"]
+                        )
                         if tool_call_index >= len(self._replay_tool_call_events):
                             raise ReplayMismatchError(
                                 f"Replay mismatch: expected tool call at index {tool_call_index}, "
@@ -603,12 +657,12 @@ class Runtime(BaseModel):
                                     "step_id": step.step_id,
                                     "trace_id": trace.trace_id,
                                     "tool_name": step.input_data.get("tool_name", "unknown"),
-                                    "expected_index": tool_call_index
-                                }
+                                    "expected_index": tool_call_index,
+                                },
                             )
                         matching_call = self._replay_tool_call_events[tool_call_index]
                         tool_name = matching_call.data.get("tool", "")
-                        
+
                         # Match tool result by sequential order (tool results should be in same order as tool calls)
                         if tool_call_index >= len(self._replay_tool_result_events):
                             # No result available - might be an error case
@@ -616,24 +670,28 @@ class Runtime(BaseModel):
                         else:
                             matching_result = self._replay_tool_result_events[tool_call_index]
                             tool_result = matching_result.data.get("result", "")
-                        
+
                         step.output_data = {"result": tool_result}
                         # Track that we processed a tool call
                         self._replay_step_index_history.append("tool_call")
                     else:
                         tool_name = step.input_data.get("tool_name")
                         tool_args = step.input_data.get("tool_args", {})
-                        
+
                         # Validate tool_name
                         if not tool_name:
                             raise RouteKitRuntimeError(
                                 "Missing tool_name in step input_data",
-                                context={"step_id": step.step_id, "step_type": step.step_type}
+                                context={"step_id": step.step_id, "step_type": step.step_type},
                             )
                         if not isinstance(tool_args, dict):
                             raise RouteKitRuntimeError(
                                 f"Invalid tool_args in step: expected dict, got {type(tool_args).__name__}",
-                                context={"step_id": step.step_id, "step_type": step.step_type, "tool_name": tool_name}
+                                context={
+                                    "step_id": step.step_id,
+                                    "step_type": step.step_type,
+                                    "tool_name": tool_name,
+                                },
                             )
 
                         # Find tool
@@ -642,20 +700,30 @@ class Runtime(BaseModel):
                             step.error = f"Tool {tool_name} not found"
                             raise ToolError(
                                 f"Tool '{tool_name}' not found in agent '{agent.name}'",
-                                context={"agent_name": agent.name, "tool_name": tool_name, "step_id": step.step_id}
+                                context={
+                                    "agent_name": agent.name,
+                                    "tool_name": tool_name,
+                                    "step_id": step.step_id,
+                                },
                             )
 
                         # Execute tool (pass agent for agent-level filters)
                         try:
-                            tool_result = await self._execute_tool(tool, tool_args, trace, step.step_id, agent=agent)
+                            tool_result = await self._execute_tool(
+                                tool, tool_args, trace, step.step_id, agent=agent
+                            )
                             step.output_data = {"result": tool_result}
                         except ToolError as e:
                             # Wrap ToolError from tool filters/approval gates in RouteKitRuntimeError for consistency
                             error_msg = str(e)
-                            if "not allowed" in error_msg or "filtered" in error_msg or "requires approval" in error_msg or "blocked" in error_msg:
+                            if (
+                                "not allowed" in error_msg
+                                or "filtered" in error_msg
+                                or "requires approval" in error_msg
+                                or "blocked" in error_msg
+                            ):
                                 raise RouteKitRuntimeError(
-                                    error_msg,
-                                    context=getattr(e, "context", {})
+                                    error_msg, context=getattr(e, "context", {})
                                 ) from e
                             raise
 
@@ -663,18 +731,22 @@ class Runtime(BaseModel):
                     # Execute sub-agent (for supervisor policy)
                     subagent_name = step.input_data.get("agent_name")
                     prompt = step.input_data.get("prompt", "")
-                    
+
                     # Validate subagent_name
                     if not subagent_name:
                         raise RouteKitRuntimeError(
                             "Missing agent_name in subagent_call step",
-                            context={"step_id": step.step_id, "step_type": step.step_type}
+                            context={"step_id": step.step_id, "step_type": step.step_type},
                         )
 
                     if subagent_name not in self.agents:
                         raise RouteKitRuntimeError(
                             f"Sub-agent '{subagent_name}' not found",
-                            context={"step_id": step.step_id, "step_type": step.step_type, "agent_name": subagent_name}
+                            context={
+                                "step_id": step.step_id,
+                                "step_type": step.step_type,
+                                "agent_name": subagent_name,
+                            },
                         )
 
                     # Execute sub-agent
@@ -717,7 +789,7 @@ class Runtime(BaseModel):
                 # Preserve context from original exception if available
                 if hasattr(e, "context") and isinstance(e.context, dict):
                     error_context.update(e.context)
-                
+
                 trace.add_event(
                     "error",
                     {
@@ -728,8 +800,7 @@ class Runtime(BaseModel):
                     },
                 )
                 raise RouteKitRuntimeError(
-                    f"Step execution failed: {e}",
-                    context=error_context
+                    f"Step execution failed: {e}", context=error_context
                 ) from e
 
             finally:
@@ -737,7 +808,9 @@ class Runtime(BaseModel):
 
             return step
 
-    async def _call_model(self, agent: "Agent", messages: list[Message], trace: Trace) -> ModelResponse:
+    async def _call_model(
+        self, agent: "Agent", messages: list[Message], trace: Trace
+    ) -> ModelResponse:
         """Call the agent's model.
 
         Args:
@@ -802,7 +875,7 @@ class Runtime(BaseModel):
             )
             raise ModelError(
                 f"Model call failed: {e}",
-                context={"model": agent.model.name, "error_type": type(e).__name__}
+                context={"model": agent.model.name, "error_type": type(e).__name__},
             ) from e
 
     async def _execute_tool(
@@ -843,7 +916,7 @@ class Runtime(BaseModel):
                 )
                 raise ToolError(
                     error_msg,
-                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"}
+                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"},
                 )
         # Runtime-level filter (only checked if agent doesn't have a filter)
         elif self.policy_hooks and self.policy_hooks.tool_filter:
@@ -859,13 +932,15 @@ class Runtime(BaseModel):
                 )
                 raise ToolError(
                     error_msg,
-                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"}
+                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"},
                 )
 
         # Check approval gate
         if self.policy_hooks and self.policy_hooks.approval_gate:
             # Convert ToolPermission enum to strings for approval gate
-            permission_strings = [p.value if hasattr(p, "value") else str(p) for p in (tool.permissions or [])]
+            permission_strings = [
+                p.value if hasattr(p, "value") else str(p) for p in (tool.permissions or [])
+            ]
             if self.policy_hooks.approval_gate.requires_approval(
                 tool.name, tool_args, permission_strings
             ):
@@ -880,9 +955,13 @@ class Runtime(BaseModel):
                         },
                     )
                     raise ToolError(
-                    error_msg,
-                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"}
-                )
+                        error_msg,
+                        context={
+                            "tool_name": tool.name,
+                            "step_id": step_id,
+                            "filter_level": "agent",
+                        },
+                    )
 
         # Check permissions
         if self.permission_manager:
@@ -901,17 +980,21 @@ class Runtime(BaseModel):
                             },
                         )
                         raise ToolError(
-                    error_msg,
-                    context={"tool_name": tool.name, "step_id": step_id, "filter_level": "agent"}
-                )
+                            error_msg,
+                            context={
+                                "tool_name": tool.name,
+                                "step_id": step_id,
+                                "filter_level": "agent",
+                            },
+                        )
 
         # Redact sensitive fields before logging
         redacted_args = tool.redact_data(tool_args)
-        
+
         # Apply PII redaction hook if configured
         if self.policy_hooks and self.policy_hooks.pii_redaction:
             redacted_args = self.policy_hooks.pii_redaction.redact_dict(redacted_args)
-        
+
         trace.add_event(
             "tool_called",
             {
@@ -931,7 +1014,7 @@ class Runtime(BaseModel):
                 # Check for cancellation
                 if self._cancellation_token:
                     raise asyncio.CancelledError("Tool execution cancelled")
-                
+
                 if timeout:
                     result = await asyncio.wait_for(tool.execute(**tool_args), timeout=timeout)
                 else:
@@ -958,14 +1041,13 @@ class Runtime(BaseModel):
                 if attempt < self.max_retries:
                     # Exponential backoff: base * (2^attempt), capped at max
                     backoff_delay = min(
-                        self.retry_backoff_base * (2 ** attempt),
-                        self.retry_backoff_max
+                        self.retry_backoff_base * (2**attempt), self.retry_backoff_max
                     )
                     await asyncio.sleep(backoff_delay)
                     continue
                 raise ToolError(
                     f"Tool '{tool.name}' timed out after {timeout}s",
-                    context={"tool_name": tool.name, "timeout": timeout, "step_id": step_id}
+                    context={"tool_name": tool.name, "timeout": timeout, "step_id": step_id},
                 ) from e
 
             except asyncio.CancelledError:
@@ -976,17 +1058,20 @@ class Runtime(BaseModel):
                 # Check if it's a retryable error by examining the message
                 error_msg = str(e).lower()
                 is_retryable = (
-                    "execution failed" in error_msg or
-                    "intentional failure" in error_msg or
-                    "failed:" in error_msg
-                ) and "validation" not in error_msg and "permission" not in error_msg
-                
+                    (
+                        "execution failed" in error_msg
+                        or "intentional failure" in error_msg
+                        or "failed:" in error_msg
+                    )
+                    and "validation" not in error_msg
+                    and "permission" not in error_msg
+                )
+
                 if is_retryable and attempt < self.max_retries:
                     last_error = e
                     # Exponential backoff
                     backoff_delay = min(
-                        self.retry_backoff_base * (2 ** attempt),
-                        self.retry_backoff_max
+                        self.retry_backoff_base * (2**attempt), self.retry_backoff_max
                     )
                     await asyncio.sleep(backoff_delay)
                     continue
@@ -997,20 +1082,19 @@ class Runtime(BaseModel):
                 if attempt < self.max_retries:
                     # Exponential backoff
                     backoff_delay = min(
-                        self.retry_backoff_base * (2 ** attempt),
-                        self.retry_backoff_max
+                        self.retry_backoff_base * (2**attempt), self.retry_backoff_max
                     )
                     await asyncio.sleep(backoff_delay)
                     continue
                 # Wrap unknown exceptions in ToolError
                 raise ToolError(
                     f"Tool {tool.name} failed: {e}",
-                    context={"tool_name": tool.name, "attempt": attempt + 1, "step_id": step_id}
+                    context={"tool_name": tool.name, "attempt": attempt + 1, "step_id": step_id},
                 ) from e
 
         raise ToolError(
             f"Tool {tool.name} failed after {self.max_retries} retries",
-            context={"tool_name": tool.name, "max_retries": self.max_retries, "step_id": step_id}
+            context={"tool_name": tool.name, "max_retries": self.max_retries, "step_id": step_id},
         ) from last_error
 
     async def replay(
@@ -1048,7 +1132,7 @@ class Runtime(BaseModel):
         if not self.trace_dir:
             raise RouteKitRuntimeError(
                 "trace_dir must be set for replay",
-                context={"trace_id": trace_id, "agent_name": agent_name}
+                context={"trace_id": trace_id, "agent_name": agent_name},
             )
 
         exporter = JSONLExporter(output_dir=self.trace_dir)
@@ -1056,7 +1140,7 @@ class Runtime(BaseModel):
         if not trace:
             raise RouteKitRuntimeError(
                 f"Trace {trace_id} not found",
-                context={"trace_id": trace_id, "trace_dir": str(self.trace_dir)}
+                context={"trace_id": trace_id, "trace_dir": str(self.trace_dir)},
             )
 
         # Verify agent matches original
@@ -1086,8 +1170,7 @@ class Runtime(BaseModel):
             # Extract prompt from trace
             if not run_started:
                 raise RouteKitRuntimeError(
-                    "Trace missing run_started event",
-                    context={"trace_id": trace_id}
+                    "Trace missing run_started event", context={"trace_id": trace_id}
                 )
             prompt = run_started[0].data.get("prompt", "")
 
@@ -1109,7 +1192,11 @@ class Runtime(BaseModel):
                         if strict:
                             raise ReplayMismatchError(
                                 error_msg,
-                                context={"trace_id": trace_id, "original_output": original_output, "replay_output": result.output.content}
+                                context={
+                                    "trace_id": trace_id,
+                                    "original_output": original_output,
+                                    "replay_output": result.output.content,
+                                },
                             )
                         else:
                             # Log warning but continue

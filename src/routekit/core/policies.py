@@ -105,7 +105,9 @@ class FunctionCallingPolicy(Policy):
 
         # If no messages, start with model call
         if not messages:
-            return [ModelAction(messages=[], prompt="You are a helpful assistant with access to tools.")]
+            return [
+                ModelAction(messages=[], prompt="You are a helpful assistant with access to tools.")
+            ]
 
         # If last message is not assistant, call model
         if messages[-1].role != MessageRole.ASSISTANT:
@@ -185,7 +187,9 @@ class GraphPolicy(Policy, BaseModel):
         graph_result = await executor.execute(input_data=input_data)
 
         # Return final output as result
-        final_output = graph_result.get("state", {}).get("output") or graph_result.get("state", {}).get("final_output", "Graph execution completed")
+        final_output = graph_result.get("state", {}).get("output") or graph_result.get(
+            "state", {}
+        ).get("final_output", "Graph execution completed")
         return [Final(output=Message.assistant(str(final_output)))]
 
 
@@ -214,7 +218,9 @@ class PlanExecutePolicy(Policy):
 
         if phase == "planning":
             # Planning phase: ask model to create a plan
-            planning_prompt = "Create a step-by-step plan to solve this task. List the steps clearly."
+            planning_prompt = (
+                "Create a step-by-step plan to solve this task. List the steps clearly."
+            )
             if messages:
                 planning_prompt = f"{messages[0].content}\n\n{planning_prompt}"
 
@@ -255,7 +261,11 @@ class PlanExecutePolicy(Policy):
             result = observation["result"]
             if isinstance(result, ModelResponse):
                 # Simple plan extraction (split by lines)
-                plan_lines = [line.strip() for line in result.content.split("\n") if line.strip() and line.strip()[0].isdigit()]
+                plan_lines = [
+                    line.strip()
+                    for line in result.content.split("\n")
+                    if line.strip() and line.strip()[0].isdigit()
+                ]
                 if plan_lines:
                     state["plan"] = plan_lines
                     state["phase"] = "executing"
@@ -276,7 +286,9 @@ class SupervisorPolicy(Policy, BaseModel):
 
     model_config = {"arbitrary_types_allowed": True}
 
-    sub_agents: dict[str, "Agent"] = Field(default_factory=dict, description="Sub-agents available for delegation")
+    sub_agents: dict[str, "Agent"] = Field(
+        default_factory=dict, description="Sub-agents available for delegation"
+    )
     runtime: Any = Field(default=None, description="Runtime for executing sub-agents")
     max_iterations: int = Field(default=20, description="Maximum iterations")
     delegation_keywords: dict[str, list[str]] = Field(
@@ -356,7 +368,11 @@ class SupervisorPolicy(Policy, BaseModel):
 
                 # Return a special action that will trigger sub-agent execution
                 # This is handled by the runtime adapter
-                return [ModelAction(messages=[Message.user(f"DELEGATE:{delegated_agent}:{original_prompt}")])]
+                return [
+                    ModelAction(
+                        messages=[Message.user(f"DELEGATE:{delegated_agent}:{original_prompt}")]
+                    )
+                ]
 
         # Check if we need to execute sub-agent (handled by adapter)
         if state.get("delegated_agent") and state.get("waiting_for_subagent") and runtime:

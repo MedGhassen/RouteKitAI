@@ -174,23 +174,25 @@ class OpenAIChatModel(Model):
         try:
             if stream:
                 # Streaming mode
-                async def stream_generator() -> AsyncIterator[StreamEvent]:  # type: ignore[no-untyped-def]
-                    async with client.stream("POST", "/chat/completions", json=request_data) as response:
+                async def stream_generator() -> AsyncIterator[StreamEvent]:
+                    async with client.stream(
+                        "POST", "/chat/completions", json=request_data
+                    ) as response:
                         response.raise_for_status()
                         content_buffer = ""
                         tool_calls_buffer: dict[str, dict[str, Any]] = {}
-                        
+
                         async for line in response.aiter_lines():
                             if not line.strip() or line.startswith("data: [DONE]"):
                                 continue
-                            
+
                             if line.startswith("data: "):
                                 line = line[6:]  # Remove "data: " prefix
-                            
+
                             try:
                                 chunk_data = json.loads(line)
                                 delta = chunk_data.get("choices", [{}])[0].get("delta", {})
-                                
+
                                 # Handle content delta
                                 if "content" in delta:
                                     content_chunk = delta["content"]
@@ -198,9 +200,9 @@ class OpenAIChatModel(Model):
                                     yield StreamEvent(
                                         type="content",
                                         content=content_chunk,
-                                        metadata={"chunk": chunk_data}
+                                        metadata={"chunk": chunk_data},
                                     )
-                                
+
                                 # Handle tool calls delta
                                 if "tool_calls" in delta:
                                     for tool_call_delta in delta["tool_calls"]:
@@ -211,7 +213,7 @@ class OpenAIChatModel(Model):
                                                 "name": "",
                                                 "arguments": "",
                                             }
-                                        
+
                                         if "id" in tool_call_delta:
                                             tool_calls_buffer[index]["id"] = tool_call_delta["id"]
                                         if "function" in tool_call_delta:
@@ -219,8 +221,10 @@ class OpenAIChatModel(Model):
                                             if "name" in func:
                                                 tool_calls_buffer[index]["name"] = func["name"]
                                             if "arguments" in func:
-                                                tool_calls_buffer[index]["arguments"] += func["arguments"]
-                                
+                                                tool_calls_buffer[index]["arguments"] += func[
+                                                    "arguments"
+                                                ]
+
                                 # Handle usage (usually in last chunk)
                                 if "usage" in chunk_data:
                                     usage_data = chunk_data["usage"]
@@ -228,15 +232,17 @@ class OpenAIChatModel(Model):
                                         type="usage",
                                         usage=Usage(
                                             prompt_tokens=usage_data.get("prompt_tokens", 0),
-                                            completion_tokens=usage_data.get("completion_tokens", 0),
+                                            completion_tokens=usage_data.get(
+                                                "completion_tokens", 0
+                                            ),
                                             total_tokens=usage_data.get("total_tokens", 0),
                                         ),
-                                        metadata={"chunk": chunk_data}
+                                        metadata={"chunk": chunk_data},
                                     )
-                                
+
                             except json.JSONDecodeError:
                                 continue
-                        
+
                         # Final event with complete content and tool calls
                         tool_calls = None
                         if tool_calls_buffer:
@@ -254,13 +260,13 @@ class OpenAIChatModel(Model):
                                         arguments=arguments,
                                     )
                                 )
-                        
+
                         yield StreamEvent(
                             type="done",
                             content=content_buffer if content_buffer else None,
                             tool_calls=tool_calls,
                         )
-                
+
                 return stream_generator()
             else:
                 # Non-streaming mode
@@ -295,7 +301,9 @@ class OpenAIChatModel(Model):
                 )
 
         except httpx.HTTPStatusError as e:
-            raise ModelError(f"OpenAI API error: {e.response.status_code} - {e.response.text}") from e
+            raise ModelError(
+                f"OpenAI API error: {e.response.status_code} - {e.response.text}"
+            ) from e
         except Exception as e:
             raise ModelError(f"Failed to call OpenAI API: {e}") from e
 
@@ -303,7 +311,9 @@ class OpenAIChatModel(Model):
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any
+    ) -> None:
         """Async context manager exit."""
         if self._client:
             await self._client.aclose()

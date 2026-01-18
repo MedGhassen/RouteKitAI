@@ -26,7 +26,14 @@ async def main() -> None:
     # Create models
     model1 = FakeModel(name="model1")
     model1.add_response("I'll process this and use the echo tool.")
-    model1.add_response({"content": "Calling echo", "tool_calls": [{"id": "call_1", "name": "echo", "arguments": {"message": "Hello from graph"}}]})
+    model1.add_response(
+        {
+            "content": "Calling echo",
+            "tool_calls": [
+                {"id": "call_1", "name": "echo", "arguments": {"message": "Hello from graph"}}
+            ],
+        }
+    )
     model1.add_response("Echo completed successfully")
 
     model2 = FakeModel(name="model2")

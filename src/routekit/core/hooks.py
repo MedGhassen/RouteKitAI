@@ -18,7 +18,9 @@ class PIIRedactionHook(BaseModel):
     redact_patterns: list[tuple[str, str]] = Field(
         default_factory=list, description="Custom (pattern, replacement) tuples"
     )
-    replacement: str = Field(default="[REDACTED]", description="Replacement string for redacted content")
+    replacement: str = Field(
+        default="[REDACTED]", description="Replacement string for redacted content"
+    )
 
     # Compiled regex patterns
     _email_pattern: re.Pattern[str] | None = None
@@ -28,9 +30,7 @@ class PIIRedactionHook(BaseModel):
         """Initialize PII redaction hook."""
         super().__init__(**kwargs)
         if self.redact_emails:
-            self._email_pattern = re.compile(
-                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
-            )
+            self._email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
         if self.redact_phones:
             # Matches various phone formats
             self._phone_pattern = re.compile(
@@ -69,14 +69,16 @@ class PIIRedactionHook(BaseModel):
         Returns:
             Dictionary with PII redacted
         """
-        redacted = {}
+        redacted: dict[str, Any] = {}
         for key, value in data.items():
             if isinstance(value, str):
                 redacted[key] = self.redact(value)
             elif isinstance(value, dict):
                 redacted[key] = self.redact_dict(value)
             elif isinstance(value, list):
-                redacted[key] = [self.redact(item) if isinstance(item, str) else item for item in value]
+                redacted[key] = [
+                    self.redact(item) if isinstance(item, str) else item for item in value
+                ]
             else:
                 redacted[key] = value
         return redacted
@@ -124,7 +126,9 @@ class ApprovalGate(BaseModel):
         default_factory=list, description="Permissions that require approval"
     )
 
-    def requires_approval(self, tool_name: str, tool_args: dict[str, Any], tool_permissions: list[str]) -> bool:
+    def requires_approval(
+        self, tool_name: str, tool_args: dict[str, Any], tool_permissions: list[str]
+    ) -> bool:
         """Check if a tool requires approval.
 
         Args:

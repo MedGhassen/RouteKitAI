@@ -72,7 +72,9 @@ class Message(BaseModel):
         Returns:
             Assistant message
         """
-        return cls(role=MessageRole.ASSISTANT, content=content, tool_calls=tool_calls, metadata=metadata)
+        return cls(
+            role=MessageRole.ASSISTANT, content=content, tool_calls=tool_calls, metadata=metadata
+        )
 
     @classmethod
     def tool(cls, content: str, tool_result: dict[str, Any], **metadata: Any) -> "Message":
@@ -86,7 +88,9 @@ class Message(BaseModel):
         Returns:
             Tool message
         """
-        return cls(role=MessageRole.TOOL, content=content, tool_result=tool_result, metadata=metadata)
+        return cls(
+            role=MessageRole.TOOL, content=content, tool_result=tool_result, metadata=metadata
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize message to dictionary.

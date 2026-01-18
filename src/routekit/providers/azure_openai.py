@@ -69,7 +69,9 @@ class AzureOpenAIModel(Model):
             ) from e
 
         if not self.endpoint:
-            raise ModelError("Azure OpenAI endpoint is required. Set AZURE_OPENAI_ENDPOINT env var or pass endpoint parameter")
+            raise ModelError(
+                "Azure OpenAI endpoint is required. Set AZURE_OPENAI_ENDPOINT env var or pass endpoint parameter"
+            )
         if self._client is None:
             headers = {
                 "Content-Type": "application/json",
@@ -168,7 +170,9 @@ class AzureOpenAIModel(Model):
             raise NotImplementedError("Streaming not yet implemented for Azure OpenAI")
 
         if not self.api_key:
-            raise ModelError("Azure OpenAI API key is required. Set AZURE_OPENAI_API_KEY env var or pass api_key parameter")
+            raise ModelError(
+                "Azure OpenAI API key is required. Set AZURE_OPENAI_API_KEY env var or pass api_key parameter"
+            )
 
         client = self._get_client()
 
@@ -220,7 +224,9 @@ class AzureOpenAIModel(Model):
             )
 
         except httpx.HTTPStatusError as e:
-            raise ModelError(f"Azure OpenAI API error: {e.response.status_code} - {e.response.text}") from e
+            raise ModelError(
+                f"Azure OpenAI API error: {e.response.status_code} - {e.response.text}"
+            ) from e
         except Exception as e:
             raise ModelError(f"Failed to call Azure OpenAI API: {e}") from e
 
@@ -228,7 +234,9 @@ class AzureOpenAIModel(Model):
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any) -> None:
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any
+    ) -> None:
         """Async context manager exit."""
         if self._client:
             await self._client.aclose()

@@ -11,7 +11,7 @@ from routekit.providers.local import FakeModel
 
 class SubgraphTestAgent(Agent):
     """Test agent for subgraph execution."""
-    
+
     async def run(self, prompt: str, **kwargs):
         raise NotImplementedError("Use graph executor instead")
 
@@ -21,12 +21,12 @@ async def test_subgraph_execution() -> None:
     """Test subgraph node execution."""
     model = FakeModel(name="test")
     model.add_response("Subgraph result")
-    
+
     agent = SubgraphTestAgent(name="test_agent", model=model, tools=[])
-    
+
     runtime = Runtime()
     runtime.register_agent(agent)
-    
+
     # Create a subgraph
     subgraph = Graph(
         name="subgraph",
@@ -36,10 +36,10 @@ async def test_subgraph_execution() -> None:
         ],
         edges=[],
     )
-    
+
     # Register subgraph in runtime config
     runtime.config["graph_registry"] = {"subgraph": subgraph}
-    
+
     # Create main graph with subgraph node
     main_graph = Graph(
         name="main_graph",
@@ -49,10 +49,10 @@ async def test_subgraph_execution() -> None:
         ],
         edges=[],
     )
-    
+
     executor = GraphExecutor(runtime=runtime, graph=main_graph)
     result = await executor.execute(input_data={"input": "test"})
-    
+
     assert "output" in result
     # The subgraph node "start" should be in the execution path
     assert "start" in result["execution_path"]
@@ -65,10 +65,10 @@ async def test_subgraph_not_found() -> None:
     """Test error when subgraph not found."""
     model = FakeModel(name="test")
     agent = SubgraphTestAgent(name="test_agent", model=model, tools=[])
-    
+
     runtime = Runtime()
     runtime.register_agent(agent)
-    
+
     graph = Graph(
         name="main_graph",
         entry_node="start",
@@ -77,9 +77,10 @@ async def test_subgraph_not_found() -> None:
         ],
         edges=[],
     )
-    
+
     executor = GraphExecutor(runtime=runtime, graph=graph)
-    
+
     from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+
     with pytest.raises(RouteKitRuntimeError, match="not found in graph registry"):
         await executor.execute()

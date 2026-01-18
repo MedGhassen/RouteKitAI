@@ -77,9 +77,7 @@ class FilesystemSandbox(BaseModel):
 
         return True
 
-    async def execute_operation(
-        self, path: Path, operation: str, **kwargs: Any
-    ) -> Any:
+    async def execute_operation(self, path: Path, operation: str, **kwargs: Any) -> Any:
         """Execute filesystem operation through sandbox.
 
         Args:
@@ -96,7 +94,7 @@ class FilesystemSandbox(BaseModel):
         if not self.check_path(path, operation):
             raise FilesystemSandboxError(
                 f"Operation '{operation}' not allowed on path: {path}",
-                context={"path": str(path), "operation": operation}
+                context={"path": str(path), "operation": operation},
             )
 
         try:
@@ -124,11 +122,10 @@ class FilesystemSandbox(BaseModel):
                 return {"success": True, "path": str(path)}
             else:
                 raise FilesystemSandboxError(
-                    f"Unknown operation: {operation}",
-                    context={"operation": operation}
+                    f"Unknown operation: {operation}", context={"operation": operation}
                 )
         except Exception as e:
             raise FilesystemSandboxError(
                 f"Filesystem operation failed: {e}",
-                context={"path": str(path), "operation": operation}
+                context={"path": str(path), "operation": operation},
             ) from e

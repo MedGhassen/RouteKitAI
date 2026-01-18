@@ -2,7 +2,7 @@
 
 import contextlib
 import time
-from typing import Any, AsyncContextManager, ContextManager
+from typing import Any, AsyncContextManager, AsyncGenerator, ContextManager, Generator
 
 from pydantic import BaseModel, Field
 
@@ -53,7 +53,7 @@ class Span(BaseModel):
 
 
 @contextlib.contextmanager
-def span(name: str, attributes: dict[str, Any] | None = None) -> ContextManager[Span]:
+def span(name: str, attributes: dict[str, Any] | None = None) -> Generator[Span, None, None]:
     """Context manager for creating a span.
 
     Args:
@@ -81,7 +81,9 @@ def span(name: str, attributes: dict[str, Any] | None = None) -> ContextManager[
 
 
 @contextlib.asynccontextmanager
-async def async_span(name: str, attributes: dict[str, Any] | None = None) -> AsyncContextManager[Span]:
+async def async_span(
+    name: str, attributes: dict[str, Any] | None = None
+) -> AsyncGenerator[Span, None]:
     """Async context manager for creating a span.
 
     Args:

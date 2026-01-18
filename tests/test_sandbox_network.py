@@ -11,7 +11,7 @@ async def test_network_sandbox_check_request() -> None:
     sandbox = NetworkSandbox(
         allowed_hosts=["example.com"],
     )
-    
+
     assert await sandbox.check_request("https://example.com/api") is True
     assert await sandbox.check_request("https://blocked.com/api") is False
 
@@ -22,7 +22,7 @@ async def test_network_sandbox_blocked_hosts() -> None:
     sandbox = NetworkSandbox(
         blocked_hosts=["malicious.com"],
     )
-    
+
     assert await sandbox.check_request("https://example.com/api") is True
     assert await sandbox.check_request("https://malicious.com/api") is False
 
@@ -31,19 +31,19 @@ async def test_network_sandbox_blocked_hosts() -> None:
 async def test_network_sandbox_rate_limiting() -> None:
     """Test rate limiting."""
     import time
-    
+
     sandbox = NetworkSandbox(
         rate_limit={"requests_per_minute": 2},
     )
-    
+
     # Manually add requests to history to test rate limiting logic
     host = "example.com"
     now = time.time()
     sandbox._request_history[host] = [now, now]  # Two requests in history
-    
+
     # Third request should be rate limited (within same minute)
     assert await sandbox.check_request("https://example.com/api") is False
-    
+
     # After clearing history, should work again
     sandbox._request_history[host] = []
     assert await sandbox.check_request("https://example.com/api") is True
@@ -55,6 +55,6 @@ async def test_network_sandbox_blocked_request() -> None:
     sandbox = NetworkSandbox(
         allowed_hosts=["example.com"],
     )
-    
+
     with pytest.raises(NetworkSandboxError):
         await sandbox.execute_request("https://blocked.com/api", "GET")

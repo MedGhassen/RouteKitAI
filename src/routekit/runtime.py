@@ -4,8 +4,8 @@ from typing import Any, AsyncIterator
 
 from pydantic import BaseModel, Field
 
-from routekit.agent import Agent
-from routekit.message import Message
+from routekit.core.agent import Agent
+from routekit.core.message import Message
 
 
 class Runtime(BaseModel):
@@ -41,4 +41,6 @@ class Runtime(BaseModel):
         if agent_name not in self.agents:
             raise ValueError(f"Agent {agent_name} not found")
         agent = self.agents[agent_name]
-        yield await agent.process(message, **kwargs)
+        # Convert Message to string prompt for agent.run()
+        result = await agent.run(message.content, **kwargs)
+        yield result.output

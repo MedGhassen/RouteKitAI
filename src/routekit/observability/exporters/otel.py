@@ -47,20 +47,16 @@ class OTELExporter(BaseModel):
                     {"key": "trace.id", "value": {"stringValue": trace.trace_id}},
                 ],
             }
-            
+
             # Add event data as attributes
             for key, value in event.data.items():
                 if isinstance(value, (str, int, float, bool)):
-                    span["attributes"].append({
-                        "key": key,
-                        "value": {"stringValue": str(value)}
-                    })
+                    span["attributes"].append({"key": key, "value": {"stringValue": str(value)}})
                 elif isinstance(value, dict):
-                    span["attributes"].append({
-                        "key": key,
-                        "value": {"stringValue": json.dumps(value)}
-                    })
-            
+                    span["attributes"].append(
+                        {"key": key, "value": {"stringValue": json.dumps(value)}}
+                    )
+
             spans.append(span)
 
         return {
@@ -71,11 +67,7 @@ class OTELExporter(BaseModel):
                             {"key": "service.name", "value": {"stringValue": "routekit"}},
                         ]
                     },
-                    "scopeSpans": [
-                        {
-                            "spans": spans
-                        }
-                    ]
+                    "scopeSpans": [{"spans": spans}],
                 }
             ]
         }
@@ -91,11 +83,12 @@ class OTELExporter(BaseModel):
         """
         try:
             otel_data = self._convert_trace_to_otel(trace)
-            
+
             if self.endpoint:
                 # Export to OTEL collector endpoint
                 try:
                     import httpx
+
                     async with httpx.AsyncClient() as client:
                         response = await client.post(
                             self.endpoint,
@@ -107,20 +100,20 @@ class OTELExporter(BaseModel):
                 except ImportError:
                     raise OTELExporterError(
                         "httpx is required for OTEL export. Install with: pip install httpx",
-                        context={"endpoint": self.endpoint}
+                        context={"endpoint": self.endpoint},
                     )
                 except Exception as e:
                     raise OTELExporterError(
                         f"Failed to export trace to OTEL endpoint: {e}",
-                        context={"endpoint": self.endpoint, "trace_id": trace.trace_id}
+                        context={"endpoint": self.endpoint, "trace_id": trace.trace_id},
                     ) from e
             else:
                 # No endpoint specified - just log the OTEL format (for debugging)
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.debug(f"OTEL trace (no endpoint): {json.dumps(otel_data, indent=2)}")
         except Exception as e:
             raise OTELExporterError(
-                f"OTEL export failed: {e}",
-                context={"trace_id": trace.trace_id}
+                f"OTEL export failed: {e}", context={"trace_id": trace.trace_id}
             ) from e

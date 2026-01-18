@@ -159,9 +159,7 @@ class EpisodicMemory(Memory):
 
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            cursor = conn.execute(
-                "SELECT id, ts, content, metadata FROM episodes ORDER BY ts DESC"
-            )
+            cursor = conn.execute("SELECT id, ts, content, metadata FROM episodes ORDER BY ts DESC")
             for row in cursor:
                 content_str = json.dumps(row["content"]).lower()
                 if query_lower in content_str:

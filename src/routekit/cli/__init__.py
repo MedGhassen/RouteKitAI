@@ -3,7 +3,7 @@
 # TODO: Implement CLI commands
 try:
     from routekit.cli.replay import replay_command
-    from routekit.cli.run import run_command
+    from routekit.cli.run import run as run_command
     from routekit.cli.test_agent import test_command
     from routekit.cli.trace import trace_command
 

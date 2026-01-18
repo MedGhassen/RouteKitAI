@@ -36,9 +36,7 @@ class MockModel(Model):
         tool_calls = None
         if self.call_count == 1 and tools:
             # First call: return tool call
-            tool_calls = [
-                ToolCall(id="call_1", name="test_tool", arguments={"value": "test"})
-            ]
+            tool_calls = [ToolCall(id="call_1", name="test_tool", arguments={"value": "test"})]
         return ModelResponse(
             content=content,
             tool_calls=tool_calls,
@@ -127,6 +125,7 @@ async def test_runtime_trace_export() -> None:
 
         # Give async export a moment to complete
         import asyncio
+
         await asyncio.sleep(0.1)
 
         # Check trace file exists
@@ -161,6 +160,7 @@ async def test_runtime_replay() -> None:
 
         # Give async trace export time to complete
         import asyncio
+
         await asyncio.sleep(0.1)
 
         # Replay
@@ -174,23 +174,26 @@ async def test_runtime_replay() -> None:
 @pytest.mark.asyncio
 async def test_permission_guard() -> None:
     """Test that permission guard blocks disallowed tool calls."""
+
     # Create a model that returns a tool call for restricted_tool
     class RestrictedModel(MockModel):
         async def chat(self, messages, tools=None, stream=False, **kwargs):
             self.call_count += 1
             return ModelResponse(
                 content="I'll use the restricted tool",
-                tool_calls=[ToolCall(id="call_1", name="restricted_tool", arguments={"value": "test"})],
+                tool_calls=[
+                    ToolCall(id="call_1", name="restricted_tool", arguments={"value": "test"})
+                ],
                 usage=Usage(prompt_tokens=10, completion_tokens=20, total_tokens=30),
             )
 
     # Create permission manager that denies by default
     perm_manager = PermissionManager(default_level=PermissionLevel.NONE)
-    
+
     runtime = Runtime(permission_manager=perm_manager)
     agent = MockAgent()
     agent.model = RestrictedModel()
-    
+
     # Create a tool that requires network permission
     restricted_tool = TestTool(name="restricted_tool")
     restricted_tool.permissions = [ToolPermission.NETWORK]
@@ -284,11 +287,11 @@ async def test_concurrent_tool_execution() -> None:
                         input_data={"messages": [m.model_dump() for m in messages]},
                     )
                 ]
-            
+
             # Check if we've already executed tools (avoid infinite loop)
             if state.get("tools_executed"):
                 return []  # Finalize
-            
+
             # Return parallel tool calls
             state["tools_executed"] = True
             return [

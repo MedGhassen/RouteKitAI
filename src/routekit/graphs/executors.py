@@ -57,7 +57,7 @@ class GraphExecutor(BaseModel):
         if cycle:
             raise RouteKitRuntimeError(
                 f"Graph contains a cycle: {' -> '.join(cycle)}",
-                context={"graph_name": self.graph.name}
+                context={"graph_name": self.graph.name},
             )
 
         # Validate entry node exists
@@ -65,7 +65,7 @@ class GraphExecutor(BaseModel):
         if not entry_node:
             raise RouteKitRuntimeError(
                 f"Entry node '{self.graph.entry_node}' not found in graph '{self.graph.name}'",
-                context={"graph_name": self.graph.name, "entry_node": self.graph.entry_node}
+                context={"graph_name": self.graph.name, "entry_node": self.graph.entry_node},
             )
 
         # Initialize execution state
@@ -92,15 +92,15 @@ class GraphExecutor(BaseModel):
                         "graph_name": self.graph.name,
                         "node_id": current_node_id,
                         "execution_path": exec_state.execution_path,
-                        "iteration": iteration
-                    }
+                        "iteration": iteration,
+                    },
                 )
 
             # Mark node as visited (track both set and path for different purposes)
             # Set is for cycle detection, path is for execution history
             exec_state.visited_nodes.add(current_node_id)
             exec_state.execution_path.append(current_node_id)
-            
+
             # Detect if we're revisiting a node (potential infinite loop, even if not a cycle)
             if exec_state.execution_path.count(current_node_id) > 1:
                 # Warn but don't fail - might be intentional for retry logic
@@ -113,8 +113,8 @@ class GraphExecutor(BaseModel):
                             "node_id": current_node_id,
                             "graph_name": self.graph.name,
                             "execution_path": exec_state.execution_path,
-                            "visit_count": visit_count
-                        }
+                            "visit_count": visit_count,
+                        },
                     )
 
             # Execute node
@@ -127,7 +127,11 @@ class GraphExecutor(BaseModel):
                 # Wrap unknown exceptions
                 raise RouteKitRuntimeError(
                     f"Node '{current_node_id}' execution failed: {e}",
-                    context={"node_id": current_node_id, "node_type": node.type.value, "graph_name": self.graph.name}
+                    context={
+                        "node_id": current_node_id,
+                        "node_type": node.type.value,
+                        "graph_name": self.graph.name,
+                    },
                 ) from e
 
             # Update state with node output (safely merge, don't overwrite critical keys)
@@ -158,7 +162,9 @@ class GraphExecutor(BaseModel):
             iteration += 1
 
         if iteration >= self.max_iterations:
-            raise RouteKitRuntimeError(f"Graph execution exceeded max iterations ({self.max_iterations})")
+            raise RouteKitRuntimeError(
+                f"Graph execution exceeded max iterations ({self.max_iterations})"
+            )
 
         return {
             "output": exec_state.state.get("output", exec_state.state),
@@ -270,7 +276,7 @@ class GraphExecutor(BaseModel):
         # Execute tool using execute() method which handles input validation
         # First, extract the actual tool arguments from inputs
         tool_args = {}
-        
+
         if isinstance(inputs, dict):
             # Check for explicit arguments key
             if "arguments" in inputs and isinstance(inputs["arguments"], dict):
@@ -301,10 +307,10 @@ class GraphExecutor(BaseModel):
                         tool_args = inputs
         else:
             tool_args = {"message": str(inputs)}
-        
+
         # Execute tool
         result = await tool.execute(**tool_args)
-        
+
         # Convert result to string if it's a Pydantic model
         if hasattr(result, "model_dump"):
             result_dict = result.model_dump()
@@ -316,7 +322,9 @@ class GraphExecutor(BaseModel):
 
         return {"result": result, "output": str(result)}
 
-    async def _execute_subgraph_node(self, node: GraphNode, inputs: dict[str, Any]) -> dict[str, Any]:
+    async def _execute_subgraph_node(
+        self, node: GraphNode, inputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a subgraph node.
 
         Args:
@@ -335,15 +343,15 @@ class GraphExecutor(BaseModel):
         # Check if subgraph is registered in runtime's graph registry
         # For now, we'll look for a graph with the same name in the runtime's config
         graph_registry = self.runtime.config.get("graph_registry", {})
-        
+
         if node.subgraph_name not in graph_registry:
             raise RouteKitRuntimeError(
                 f"Subgraph '{node.subgraph_name}' not found in graph registry",
-                context={"node_id": node.id, "subgraph_name": node.subgraph_name}
+                context={"node_id": node.id, "subgraph_name": node.subgraph_name},
             )
 
         subgraph = graph_registry[node.subgraph_name]
-        
+
         # Create a new executor for the subgraph
         subgraph_executor = GraphExecutor(
             runtime=self.runtime,
@@ -362,10 +370,12 @@ class GraphExecutor(BaseModel):
         except Exception as e:
             raise RouteKitRuntimeError(
                 f"Subgraph '{node.subgraph_name}' execution failed: {e}",
-                context={"node_id": node.id, "subgraph_name": node.subgraph_name}
+                context={"node_id": node.id, "subgraph_name": node.subgraph_name},
             ) from e
 
-    async def _execute_condition_node(self, node: GraphNode, inputs: dict[str, Any]) -> dict[str, Any]:
+    async def _execute_condition_node(
+        self, node: GraphNode, inputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a condition node.
 
         Args:
@@ -376,7 +386,9 @@ class GraphExecutor(BaseModel):
             Node output with selected edge
         """
         if not node.condition:
-            raise RouteKitRuntimeError(f"Node '{node.id}': CONDITION type requires condition function")
+            raise RouteKitRuntimeError(
+                f"Node '{node.id}': CONDITION type requires condition function"
+            )
 
         # Evaluate condition
         selected_edge = node.condition(inputs)

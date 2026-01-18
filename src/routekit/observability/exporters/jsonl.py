@@ -44,7 +44,7 @@ class JSONLExporter(TraceExporter, BaseModel):
         with trace_file.open("w") as f:
             for event in trace.events:
                 # Use mode='json' to ensure all data is JSON-serializable
-                f.write(json.dumps(event.model_dump(mode='json')) + "\n")
+                f.write(json.dumps(event.model_dump(mode="json")) + "\n")
 
     async def load(self, trace_id: str) -> Trace | None:
         """Load trace from JSONL file.

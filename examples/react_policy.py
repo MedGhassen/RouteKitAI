@@ -29,7 +29,9 @@ class MockModel(Model):
             # First call: return tool call
             return ModelResponse(
                 content="I'll calculate that for you.",
-                tool_calls=[ToolCall(id="call_1", name="calculator", arguments={"a": 2, "b": 3, "op": "+"})],
+                tool_calls=[
+                    ToolCall(id="call_1", name="calculator", arguments={"a": 2, "b": 3, "op": "+"})
+                ],
                 usage=Usage(prompt_tokens=10, completion_tokens=20, total_tokens=30),
             )
         # Second call: return final answer

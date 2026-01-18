@@ -144,13 +144,17 @@ class AnthropicModel(Model):
             raise NotImplementedError("Streaming not yet implemented for Anthropic")
 
         if not self.api_key:
-            raise ModelError("Anthropic API key is required. Set ANTHROPIC_API_KEY env var or pass api_key parameter")
+            raise ModelError(
+                "Anthropic API key is required. Set ANTHROPIC_API_KEY env var or pass api_key parameter"
+            )
 
         client = self._get_client()
 
         # Separate system messages from conversation
         system_messages = [msg.content for msg in messages if msg.role == MessageRole.SYSTEM]
-        conversation_messages = [self._message_to_anthropic(msg) for msg in messages if msg.role != MessageRole.SYSTEM]
+        conversation_messages = [
+            self._message_to_anthropic(msg) for msg in messages if msg.role != MessageRole.SYSTEM
+        ]
 
         # Prepare request
         request_data: dict[str, Any] = {
@@ -161,7 +165,9 @@ class AnthropicModel(Model):
         }
 
         if system_messages:
-            request_data["system"] = system_messages[0] if len(system_messages) == 1 else "\n".join(system_messages)
+            request_data["system"] = (
+                system_messages[0] if len(system_messages) == 1 else "\n".join(system_messages)
+            )
 
         if tools:
             request_data["tools"] = self._tools_to_anthropic(tools)
@@ -203,7 +209,9 @@ class AnthropicModel(Model):
             )
 
         except httpx.HTTPStatusError as e:
-            raise ModelError(f"Anthropic API error: {e.response.status_code} - {e.response.text}") from e
+            raise ModelError(
+                f"Anthropic API error: {e.response.status_code} - {e.response.text}"
+            ) from e
         except Exception as e:
             raise ModelError(f"Failed to call Anthropic API: {e}") from e
 
@@ -211,7 +219,9 @@ class AnthropicModel(Model):
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any) -> None:
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any
+    ) -> None:
         """Async context manager exit."""
         if self._client:
             await self._client.aclose()

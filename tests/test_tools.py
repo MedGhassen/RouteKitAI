@@ -264,7 +264,7 @@ async def test_tool_retry() -> None:
         tool,
         {"message": "test", "api_key": "dummy", "password": "dummy"},
         Trace(trace_id="test"),
-        None
+        None,
     )
     assert result is not None
 

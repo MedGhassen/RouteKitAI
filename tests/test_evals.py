@@ -109,11 +109,15 @@ async def test_eval_runner() -> None:
         # All results should have scores (unless error)
         for result in report.results:
             if result.error is None:
-                assert len(result.scores) > 0, f"Result {result.example_id} should have scores: {result.scores}"
-        
+                assert len(result.scores) > 0, (
+                    f"Result {result.example_id} should have scores: {result.scores}"
+                )
+
         # Average scores should be computed if any results succeeded
         if any(r.error is None for r in report.results):
-            assert len(report.average_scores) > 0, f"Average scores should be computed: {report.average_scores}"
+            assert len(report.average_scores) > 0, (
+                f"Average scores should be computed: {report.average_scores}"
+            )
 
 
 @pytest.mark.asyncio
@@ -164,7 +168,9 @@ async def test_eval_regression_mode() -> None:
 
         # Should pass regression (same output)
         # Regression score is added to individual results, check if any have it
-        regression_scores = [r.scores.get("regression") for r in report2.results if "regression" in r.scores]
+        regression_scores = [
+            r.scores.get("regression") for r in report2.results if "regression" in r.scores
+        ]
         if regression_scores:
             # If regression mode worked, scores should be 1.0 (no change)
             assert all(score == 1.0 for score in regression_scores)

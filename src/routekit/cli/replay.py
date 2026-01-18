@@ -2,29 +2,38 @@
 
 import asyncio
 from pathlib import Path
-from typing import Any
-
-try:
-    import typer
-    from rich.console import Console
-    from rich.markdown import Markdown
-except ImportError:
-    typer = None
-    Console = None
-    Markdown = None
+from typing import TYPE_CHECKING, Any
 
 from routekit.core.runtime import Runtime
 from routekit.observability.exporters.jsonl import JSONLExporter
 
+if TYPE_CHECKING:
+    import typer
+    from rich.console import Console
+    from rich.markdown import Markdown
+else:
+    try:
+        import typer
+        from rich.console import Console
+        from rich.markdown import Markdown
+    except ImportError:
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        )
+
 app = typer.Typer(name="replay", help="Replay agent execution traces")
-console = Console() if Console else None
+console = Console()
 
 
 def replay_command(
     trace_id: str = typer.Argument(..., help="Trace ID to replay"),
     agent_name: str = typer.Option(..., "--agent", "-a", help="Agent name to use for replay"),
-    trace_dir: str | None = typer.Option(None, "--trace-dir", "-t", help="Directory containing trace files"),
-    verify: bool = typer.Option(True, "--verify/--no-verify", help="Verify outputs match original trace"),
+    trace_dir: str | None = typer.Option(
+        None, "--trace-dir", "-t", help="Directory containing trace files"
+    ),
+    verify: bool = typer.Option(
+        True, "--verify/--no-verify", help="Verify outputs match original trace"
+    ),
 ) -> None:
     """Replay a trace with deterministic execution.
 
@@ -33,10 +42,6 @@ def replay_command(
         routekit replay abc123 --agent my_agent --no-verify
         routekit replay abc123 --agent my_agent --trace-dir ./custom_traces
     """
-    if console is None:
-        typer.echo("Error: Rich is required for CLI output. Install with: pip install 'routekit[dev]'")
-        raise typer.Exit(1)
-
     async def _replay() -> None:
         # Determine trace directory
         if trace_dir is None:

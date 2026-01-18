@@ -17,6 +17,7 @@ from routekit.core.tool import Tool
 
 if TYPE_CHECKING:
     from routekit.core.hooks import ToolFilter
+    from routekit.graphs.graph import Graph
 
 
 class RunResult(BaseModel):
@@ -39,9 +40,13 @@ class Agent(BaseModel):
     name: str = Field(..., description="Agent name")
     model: Model = Field(..., description="Model used by the agent")
     tools: list[Tool] = Field(default_factory=list, description="Tools available to the agent")
-    policy: Policy | dict[str, Any] | None = Field(default=None, description="Agent policy or policy configuration")
+    policy: Policy | dict[str, Any] | None = Field(
+        default=None, description="Agent policy or policy configuration"
+    )
     memory: Memory | None = Field(default=None, description="Agent memory system")
-    tool_filter: "ToolFilter | None" = Field(default=None, description="Agent-level tool allow/deny list")
+    tool_filter: "ToolFilter | None" = Field(
+        default=None, description="Agent-level tool allow/deny list"
+    )
     trace_dir: Path | None = Field(default=None, description="Directory for trace files")
 
     def __init__(self, **data: Any) -> None:
@@ -76,8 +81,9 @@ class Agent(BaseModel):
             elif isinstance(self.policy, dict):
                 # Legacy dict-based policy config - convert to appropriate policy
                 from routekit.core.policies import ReActPolicy
+
                 policy_adapter = PolicyAdapter(ReActPolicy(**self.policy))
-        
+
         # Run via runtime
         return await self._runtime.run(self.name, prompt, policy=policy_adapter, **kwargs)
 
@@ -100,6 +106,7 @@ class Agent(BaseModel):
             # Try to use nest_asyncio if available, otherwise raise error
             try:
                 import nest_asyncio
+
                 nest_asyncio.apply()
                 return asyncio.run(self.run(prompt, **kwargs))
             except ImportError:
@@ -167,7 +174,7 @@ class Agent(BaseModel):
         """
         if TYPE_CHECKING:
             from routekit.graphs.graph import Graph
-        
+
         from routekit.core.policies import GraphPolicy
 
         if runtime is None:
