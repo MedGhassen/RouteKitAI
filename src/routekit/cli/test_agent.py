@@ -19,7 +19,9 @@ else:
         from rich.console import Console
         from rich.table import Table
     except ImportError as e:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        ) from e
 
 app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
 console = Console()

@@ -19,7 +19,9 @@ else:
         from rich.json import JSON
         from rich.table import Table
     except ImportError as e:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        ) from e
 
 app = typer.Typer(name="trace", help="View and inspect agent execution traces")
 console = Console()

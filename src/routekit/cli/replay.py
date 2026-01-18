@@ -15,7 +15,9 @@ else:
         import typer
         from rich.console import Console
     except ImportError as e:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        ) from e
 
 app = typer.Typer(name="replay", help="Replay agent execution traces")
 console = Console()

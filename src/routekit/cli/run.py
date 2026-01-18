@@ -14,7 +14,9 @@ else:
         from rich.console import Console
         from rich.markdown import Markdown
     except ImportError as e:
-        raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
+        raise ImportError(
+            "CLI dependencies not installed. Install with: pip install typer rich"
+        ) from e
 
 app = typer.Typer(name="run", help="Run an agent with a prompt or script")
 console = Console()
@@ -74,9 +76,7 @@ def run(
         asyncio.run(_run_agent_from_script(script_path))
     else:
         # Run as prompt (requires agent to be registered)
-        console.print(
-            "[yellow]Note: Direct prompt execution requires a registered agent.[/yellow]"
-        )
+        console.print("[yellow]Note: Direct prompt execution requires a registered agent.[/yellow]")
         console.print("[yellow]Consider using a script or the Python API instead.[/yellow]")
         console.print(f"\n[dim]Prompt: {prompt_or_script}[/dim]")
         console.print("[dim]Agent: {agent_name}[/dim]")
