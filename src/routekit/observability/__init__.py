@@ -1,6 +1,6 @@
 """Observability and tracing for RouteKit."""
 
-# TODO: Implement observability features
+from routekit.observability.analyzer import TraceAnalyzer, TraceMetrics
 from routekit.observability.exporters.jsonl import JSONLExporter
 from routekit.observability.exporters.otel import OTELExporter
 from routekit.observability.spans import Span, SpanContext
@@ -13,4 +13,6 @@ __all__ = [
     "SpanContext",
     "JSONLExporter",
     "OTELExporter",
+    "TraceAnalyzer",
+    "TraceMetrics",
 ]
