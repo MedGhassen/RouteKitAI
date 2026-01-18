@@ -187,6 +187,11 @@ routekit trace-search "tool" --event-type tool_called  # Filter by event type
 # Replay a trace
 routekit replay <trace_id> --agent my_agent
 
+# Start web UI for trace visualization
+routekit serve                    # Start on default port 8080
+routekit serve --port 3000        # Custom port
+routekit serve --host 0.0.0.0     # Make accessible from network
+
 # Run sanity checks
 routekit test-agent
 ```
