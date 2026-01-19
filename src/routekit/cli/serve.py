@@ -125,7 +125,7 @@ async def get_trace(trace_id: str) -> JSONResponse:
                         "index": entry.get("index", 0),
                     }
                 )
-            except Exception as e:
+            except Exception:
                 # Skip problematic entries
                 continue
 
@@ -140,9 +140,7 @@ async def get_trace(trace_id: str) -> JSONResponse:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error loading trace: {str(e)}"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"Error loading trace: {str(e)}") from e
 
 
 @app.get("/api/traces/{trace_id}/events")
@@ -224,20 +222,20 @@ def _get_dashboard_html() -> str:
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #f5f5f5;
             color: #333;
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
             background: white;
             padding: 20px;
@@ -245,19 +243,19 @@ def _get_dashboard_html() -> str:
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
+
         h1 {
             color: #2563eb;
             margin-bottom: 10px;
         }
-        
+
         .trace-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
-        
+
         .trace-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -267,18 +265,18 @@ def _get_dashboard_html() -> str:
             transition: all 0.2s;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        
+
         .trace-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border-color: #2563eb;
         }
-        
+
         .trace-card.selected {
             border-color: #2563eb;
             background: #eff6ff;
         }
-        
+
         .trace-card h3 {
             color: #1f2937;
             margin-bottom: 10px;
@@ -286,28 +284,28 @@ def _get_dashboard_html() -> str:
             font-weight: 600;
             word-break: break-all;
         }
-        
+
         .trace-card .metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             font-size: 12px;
         }
-        
+
         .trace-card .metric {
             display: flex;
             justify-content: space-between;
         }
-        
+
         .trace-card .metric-label {
             color: #6b7280;
         }
-        
+
         .trace-card .metric-value {
             font-weight: 600;
             color: #1f2937;
         }
-        
+
         .trace-detail {
             background: white;
             border-radius: 8px;
@@ -315,11 +313,11 @@ def _get_dashboard_html() -> str:
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: none;
         }
-        
+
         .trace-detail.active {
             display: block;
         }
-        
+
         .detail-header {
             display: flex;
             justify-content: space-between;
@@ -328,11 +326,11 @@ def _get_dashboard_html() -> str:
             padding-bottom: 15px;
             border-bottom: 2px solid #e5e7eb;
         }
-        
+
         .detail-header h2 {
             color: #1f2937;
         }
-        
+
         .close-btn {
             background: #ef4444;
             color: white;
@@ -342,44 +340,44 @@ def _get_dashboard_html() -> str:
             cursor: pointer;
             font-size: 14px;
         }
-        
+
         .close-btn:hover {
             background: #dc2626;
         }
-        
+
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
-        
+
         .metric-card {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
             padding: 15px;
         }
-        
+
         .metric-card h4 {
             color: #6b7280;
             font-size: 12px;
             text-transform: uppercase;
             margin-bottom: 8px;
         }
-        
+
         .metric-card .value {
             font-size: 24px;
             font-weight: 700;
             color: #1f2937;
         }
-        
+
         .metric-card .unit {
             font-size: 14px;
             color: #6b7280;
             margin-left: 4px;
         }
-        
+
         .chart-container {
             background: white;
             border: 1px solid #e5e7eb;
@@ -387,16 +385,16 @@ def _get_dashboard_html() -> str:
             padding: 20px;
             margin-bottom: 20px;
         }
-        
+
         .chart-container h3 {
             margin-bottom: 15px;
             color: #1f2937;
         }
-        
+
         .timeline-container {
             margin-top: 20px;
         }
-        
+
         .timeline-event {
             display: flex;
             align-items: center;
@@ -407,35 +405,35 @@ def _get_dashboard_html() -> str:
             border-radius: 4px;
             cursor: pointer;
         }
-        
+
         .timeline-event:hover {
             background: #f3f4f6;
         }
-        
+
         .timeline-event.error {
             border-left-color: #ef4444;
         }
-        
+
         .timeline-event.model {
             border-left-color: #10b981;
         }
-        
+
         .timeline-event.tool {
             border-left-color: #f59e0b;
         }
-        
+
         .event-time {
             min-width: 100px;
             font-size: 12px;
             color: #6b7280;
         }
-        
+
         .event-type {
             min-width: 150px;
             font-weight: 600;
             color: #1f2937;
         }
-        
+
         .event-details {
             flex: 1;
             font-size: 12px;
@@ -444,13 +442,13 @@ def _get_dashboard_html() -> str:
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
+
         .loading {
             text-align: center;
             padding: 40px;
             color: #6b7280;
         }
-        
+
         .error {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -459,11 +457,11 @@ def _get_dashboard_html() -> str:
             border-radius: 6px;
             margin: 20px 0;
         }
-        
+
         .steps-container {
             margin-top: 20px;
         }
-        
+
         .step-card {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
@@ -471,24 +469,24 @@ def _get_dashboard_html() -> str:
             padding: 15px;
             margin-bottom: 15px;
         }
-        
+
         .step-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .step-id {
             font-weight: 600;
             color: #1f2937;
         }
-        
+
         .step-duration {
             font-size: 12px;
             color: #6b7280;
         }
-        
+
         .step-error {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -506,27 +504,27 @@ def _get_dashboard_html() -> str:
             <h1>🔍 RouteKit Trace Viewer</h1>
             <p>Visualize and analyze agent execution traces</p>
         </header>
-        
+
         <div id="trace-list" class="trace-list">
             <div class="loading">Loading traces...</div>
         </div>
-        
+
         <div id="trace-detail" class="trace-detail">
             <div class="detail-header">
                 <h2 id="detail-title">Trace Details</h2>
                 <button class="close-btn" onclick="closeDetail()">Close</button>
             </div>
-            
+
             <div id="detail-content">
                 <div class="loading">Loading trace data...</div>
             </div>
         </div>
     </div>
-    
+
     <script>
         let currentTraceId = null;
         let charts = {};
-        
+
         // Load traces on page load
         async function loadTraces() {
             try {
@@ -537,19 +535,19 @@ def _get_dashboard_html() -> str:
                 const data = await response.json();
                 renderTraceList(data.traces || []);
             } catch (error) {
-                document.getElementById('trace-list').innerHTML = 
+                document.getElementById('trace-list').innerHTML =
                     '<div class="error">Error loading traces: ' + error.message + '</div>';
             }
         }
-        
+
         function renderTraceList(traces) {
             const container = document.getElementById('trace-list');
-            
+
             if (traces.length === 0) {
                 container.innerHTML = '<div class="loading">No traces found</div>';
                 return;
             }
-            
+
             container.innerHTML = traces.map(trace => `
                 <div class="trace-card" onclick="loadTrace('${trace.trace_id}')">
                     <h3>${trace.trace_id}</h3>
@@ -586,10 +584,10 @@ def _get_dashboard_html() -> str:
                 </div>
             `).join('');
         }
-        
+
         async function loadTrace(traceId) {
             currentTraceId = traceId;
-            
+
             // Update selected card
             document.querySelectorAll('.trace-card').forEach(card => {
                 card.classList.remove('selected');
@@ -597,11 +595,11 @@ def _get_dashboard_html() -> str:
                     card.classList.add('selected');
                 }
             });
-            
+
             // Show detail panel
             document.getElementById('trace-detail').classList.add('active');
             document.getElementById('detail-content').innerHTML = '<div class="loading">Loading...</div>';
-            
+
             try {
                 const response = await fetch(`/api/traces/${traceId}`);
                 if (!response.ok) {
@@ -621,16 +619,16 @@ def _get_dashboard_html() -> str:
                 const data = await response.json();
                 renderTraceDetail(data);
             } catch (error) {
-                document.getElementById('detail-content').innerHTML = 
+                document.getElementById('detail-content').innerHTML =
                     '<div class="error">Error loading trace: ' + error.message + '</div>';
             }
         }
-        
+
         function renderTraceDetail(data) {
             const metrics = data.metrics;
             const timeline = data.timeline;
             const steps = data.steps;
-            
+
             let html = `
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -685,7 +683,7 @@ def _get_dashboard_html() -> str:
                     ` : ''}
                 </div>
             `;
-            
+
             // Add charts
             if (metrics.total_tokens > 0) {
                 html += `
@@ -695,7 +693,7 @@ def _get_dashboard_html() -> str:
                     </div>
                 `;
             }
-            
+
             if (timeline.length > 0) {
                 html += `
                     <div class="chart-container">
@@ -704,7 +702,7 @@ def _get_dashboard_html() -> str:
                     </div>
                 `;
             }
-            
+
             // Add timeline events
             html += `
                 <div class="timeline-container">
@@ -712,7 +710,7 @@ def _get_dashboard_html() -> str:
                     <div id="timeline-events"></div>
                 </div>
             `;
-            
+
             // Add steps
             if (steps.length > 0) {
                 html += `
@@ -735,26 +733,26 @@ def _get_dashboard_html() -> str:
                     </div>
                 `;
             }
-            
+
             document.getElementById('detail-content').innerHTML = html;
-            
+
             // Render charts
             if (metrics.total_tokens > 0) {
                 renderTokenChart(metrics);
             }
-            
+
             if (timeline.length > 0) {
                 renderTimelineChart(timeline);
                 renderTimelineEvents(timeline);
             }
         }
-        
+
         function renderTokenChart(metrics) {
             const ctx = document.getElementById('tokenChart');
             if (charts.tokenChart) {
                 charts.tokenChart.destroy();
             }
-            
+
             charts.tokenChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -774,20 +772,20 @@ def _get_dashboard_html() -> str:
                 }
             });
         }
-        
+
         function renderTimelineChart(timeline) {
             const ctx = document.getElementById('timelineChart');
             if (charts.timelineChart) {
                 charts.timelineChart.destroy();
             }
-            
+
             const eventTypes = {};
             timeline.forEach(entry => {
                 const event = entry.event || {};
                 const type = event.type || 'unknown';
                 eventTypes[type] = (eventTypes[type] || 0) + 1;
             });
-            
+
             charts.timelineChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -813,20 +811,20 @@ def _get_dashboard_html() -> str:
                 }
             });
         }
-        
+
         function renderTimelineEvents(timeline) {
             const container = document.getElementById('timeline-events');
             container.innerHTML = timeline.map(entry => {
                 const event = entry.event || {};
                 const eventType = event.type || 'unknown';
-                const typeClass = eventType.includes('error') ? 'error' : 
-                                 eventType.includes('model') ? 'model' : 
+                const typeClass = eventType.includes('error') ? 'error' :
+                                 eventType.includes('model') ? 'model' :
                                  eventType.includes('tool') ? 'tool' : '';
-                
+
                 const eventData = event.data || {};
                 const details = JSON.stringify(eventData).substring(0, 100);
                 const relativeTime = entry.relative_time_ms || 0;
-                
+
                 return `
                     <div class="timeline-event ${typeClass}" onclick="showEventDetails(${entry.index || 0})">
                         <div class="event-time">${relativeTime.toFixed(2)}ms</div>
@@ -836,24 +834,24 @@ def _get_dashboard_html() -> str:
                 `;
             }).join('');
         }
-        
+
         function showEventDetails(index) {
             // Could show modal with full event details
             alert('Event details at index ' + index);
         }
-        
+
         function closeDetail() {
             document.getElementById('trace-detail').classList.remove('active');
             currentTraceId = null;
-            
+
             // Destroy charts
             Object.values(charts).forEach(chart => chart.destroy());
             charts = {};
         }
-        
+
         // Load traces on page load
         loadTraces();
-        
+
         // Auto-refresh every 5 seconds
         setInterval(loadTraces, 5000);
     </script>
