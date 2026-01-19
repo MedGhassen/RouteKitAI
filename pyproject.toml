@@ -115,6 +115,8 @@ module = [
     "typer.*",
     "rich.*",
     "nest_asyncio.*",
+    "fastapi.*",
+    "uvicorn.*",
 ]
 ignore_missing_imports = true
 
@@ -123,6 +125,12 @@ module = [
     "routekit.cli.*",
 ]
 disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = [
+    "routekit.cli.serve",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

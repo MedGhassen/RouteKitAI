@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 else:
     try:
         import typer
-        from fastapi import FastAPI, HTTPException
-        from fastapi.middleware.cors import CORSMiddleware
-        from fastapi.responses import HTMLResponse, JSONResponse
+        from fastapi import FastAPI, HTTPException  # type: ignore[import-not-found]
+        from fastapi.middleware.cors import CORSMiddleware  # type: ignore[import-not-found]
+        from fastapi.responses import HTMLResponse, JSONResponse  # type: ignore[import-not-found]
     except ImportError as e:
         raise ImportError(
             "Web UI dependencies not installed. Install with: pip install 'routekit[ui]'"
