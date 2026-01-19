@@ -35,6 +35,7 @@ RouteKit is a Python framework for building AI agents with **graph-based orchest
 - **Policy System**: ReAct, Supervisor, Graph, and custom policies
 - **Error Handling**: Comprehensive error types with context
 - **CLI Tools**: Run, trace, replay, and test agents from the command line
+- **Trace Analysis**: Metrics, timeline visualization, step-by-step debugging, and search
 
 ## 🚀 Quick Start
 
@@ -168,11 +169,28 @@ RouteKit provides a CLI for common operations:
 # Run an agent script
 routekit run agent_script.py
 
-# View a trace
-routekit trace <trace_id>
+# View a trace (multiple formats available)
+routekit trace <trace_id>                    # Table view (default)
+routekit trace <trace_id> --format timeline  # Timeline visualization
+routekit trace <trace_id> --format steps     # Step-by-step execution
+routekit trace <trace_id> --format json      # JSON output
+routekit trace <trace_id> --format raw       # Raw JSONL
+
+# Analyze trace metrics
+routekit trace-analyze <trace_id>            # Performance metrics, token usage, costs
+
+# Search traces
+routekit trace-search "error"                # Search all traces for "error"
+routekit trace-search "model" --trace-id abc # Search specific trace
+routekit trace-search "tool" --event-type tool_called  # Filter by event type
 
 # Replay a trace
 routekit replay <trace_id> --agent my_agent
+
+# Start web UI for trace visualization
+routekit serve                    # Start on default port 8080
+routekit serve --port 3000        # Custom port
+routekit serve --host 0.0.0.0     # Make accessible from network
 
 # Run sanity checks
 routekit test-agent

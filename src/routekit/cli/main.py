@@ -10,8 +10,11 @@ except ImportError:
 
 from routekit.cli.replay import replay_command
 from routekit.cli.run import run as run_command
+from routekit.cli.serve import serve_command
 from routekit.cli.test_agent import test_command
 from routekit.cli.trace import trace_command
+from routekit.cli.trace_analyze import analyze_command
+from routekit.cli.trace_search import search_command
 
 app = typer.Typer(
     name="routekit",
@@ -21,6 +24,9 @@ app = typer.Typer(
 
 app.command(name="run")(run_command)
 app.command(name="trace")(trace_command)
+app.command(name="trace-analyze")(analyze_command)
+app.command(name="trace-search")(search_command)
+app.command(name="serve")(serve_command)
 app.command(name="replay")(replay_command)
 app.command(name="test-agent")(test_command)
 
