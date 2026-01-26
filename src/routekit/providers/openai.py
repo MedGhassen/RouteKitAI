@@ -1,13 +1,12 @@
 """OpenAI-compatible model provider."""
 
 import json
+import httpx
 from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any
-
 from routekit.core.errors import ModelError
 
-if TYPE_CHECKING:
-    import httpx
+
 from routekit.core.message import Message, MessageRole
 from routekit.core.model import Model, ModelResponse, StreamEvent, ToolCall, Usage
 from routekit.core.tool import Tool
@@ -278,7 +277,8 @@ class OpenAIChatModel(Model):
                 # Parse response
                 choice = data.get("choices", [{}])[0]
                 message = choice.get("message", {})
-                content = message.get("content", "")
+                # Handle None content (can happen when there are tool calls)
+                content = message.get("content") or ""
                 tool_calls_data = message.get("tool_calls", [])
 
                 # Convert tool calls

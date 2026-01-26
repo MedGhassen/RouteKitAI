@@ -1,9 +1,14 @@
 """Trace collection and management."""
 
+import asyncio
 import time
-from typing import Any
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from routekit.observability.streaming import TraceEventBroadcaster
 
 
 class TraceEvent(BaseModel):
@@ -12,6 +17,9 @@ class TraceEvent(BaseModel):
     type: str = Field(..., description="Event type")
     timestamp: float = Field(..., description="Event timestamp")
     data: dict[str, Any] = Field(..., description="Event data")
+
+
+TraceEventCallback = Callable[[TraceEvent], Awaitable[None] | None]
 
 
 class Trace(BaseModel):
@@ -23,6 +31,28 @@ class Trace(BaseModel):
     trace_id: str = Field(..., description="Trace ID")
     events: list[TraceEvent] = Field(default_factory=list, description="Trace events")
     metadata: dict[str, Any] = Field(default_factory=dict, description="Trace metadata")
+
+    def __init__(self, **data: Any) -> None:
+        """Initialize trace with callbacks."""
+        super().__init__(**data)
+        self._event_callbacks: list[TraceEventCallback] = []
+
+    def add_event_callback(self, callback: TraceEventCallback) -> None:
+        """Add a callback to be notified of new events.
+
+        Args:
+            callback: Callback function that receives TraceEvent
+        """
+        self._event_callbacks.append(callback)
+
+    def remove_event_callback(self, callback: TraceEventCallback) -> None:
+        """Remove an event callback.
+
+        Args:
+            callback: Callback function to remove
+        """
+        if callback in self._event_callbacks:
+            self._event_callbacks.remove(callback)
 
     def add_event(self, event_type: str, data: dict[str, Any] | None = None) -> None:
         """Add an event to the trace.
@@ -37,6 +67,41 @@ class Trace(BaseModel):
             data=data or {},
         )
         self.events.append(event)
+
+        # Notify callbacks
+        for callback in self._event_callbacks:
+            try:
+                result = callback(event)
+                # If callback is async, schedule it
+                if asyncio.iscoroutine(result):
+                    # Create task if we're in an event loop, otherwise this will be handled by caller
+                    try:
+                        loop = asyncio.get_event_loop()
+                        if loop.is_running():
+                            asyncio.create_task(result)
+                    except RuntimeError:
+                        # No event loop, skip async callback
+                        pass
+            except Exception:
+                # Don't let callback errors break trace collection
+                pass
+
+        # Broadcast to streaming subscribers (lazy import to avoid circular dependency)
+        try:
+            from routekit.observability.streaming import get_broadcaster
+
+            broadcaster = get_broadcaster()
+            # Schedule broadcast in event loop if available
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(broadcaster.broadcast(event))
+            except RuntimeError:
+                # No event loop, skip broadcasting
+                pass
+        except Exception:
+            # Don't let broadcasting errors break trace collection
+            pass
 
     def get_events_by_type(self, event_type: str) -> list[TraceEvent]:
         """Get all events of a specific type.

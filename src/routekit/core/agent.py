@@ -1,6 +1,7 @@
 """Agent primitive for RouteKit."""
 
 import asyncio
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -85,6 +86,150 @@ class Agent(BaseModel):
 
         # Run via runtime
         return await self._runtime.run(self.name, prompt, policy=policy_adapter, **kwargs)
+
+    async def run_stream(self, prompt: str, **kwargs: Any) -> AsyncIterator[dict[str, Any]]:
+        """Run the agent with streaming updates.
+
+        Yields trace events and progress updates in real-time.
+
+        Args:
+            prompt: User prompt
+            **kwargs: Additional run parameters
+
+        Yields:
+            Dicts with event information:
+            - type: Event type (trace_event, progress_update, result)
+            - data: Event data
+            - result: Final RunResult (only in last event)
+
+        Examples:
+            >>> async for event in agent.run_stream("Hello"):
+            ...     if event["type"] == "trace_event":
+            ...         print(f"Event: {event['data']['type']}")
+            ...     elif event["type"] == "progress_update":
+            ...         print(f"Progress: {event['data']['progress_percent']}%")
+        """
+        import asyncio
+        from routekit.observability.trace import TraceEvent
+
+        # Use queues to collect events and progress updates
+        trace_queue: asyncio.Queue[TraceEvent] = asyncio.Queue()
+        progress_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+        result_queue: asyncio.Queue[RunResult] = asyncio.Queue()
+
+        def trace_callback(event: TraceEvent) -> None:
+            trace_queue.put_nowait(event)
+
+        def progress_callback(progress: dict[str, Any]) -> None:
+            progress_queue.put_nowait(progress)
+
+        # Convert policy to PolicyAdapter if needed
+        policy_adapter = None
+        if self.policy:
+            if isinstance(self.policy, Policy):
+                policy_adapter = PolicyAdapter(self.policy)
+            elif isinstance(self.policy, dict):
+                from routekit.core.policies import ReActPolicy
+
+                policy_adapter = PolicyAdapter(ReActPolicy(**self.policy))
+
+        # Add callbacks to runtime
+        self._runtime.add_progress_callback(progress_callback)
+
+        # Create a trace to capture events
+        import uuid
+        from routekit.observability.trace import Trace
+
+        trace_id = str(uuid.uuid4())
+        trace = Trace(trace_id=trace_id, metadata={"agent": self.name, "prompt": prompt})
+        trace.add_event_callback(trace_callback)
+
+        # Run agent in background task
+        async def run_agent() -> None:
+            try:
+                result = await self._runtime.run(self.name, prompt, policy=policy_adapter, **kwargs)
+                result_queue.put_nowait(result)
+            except Exception as e:
+                # Put error in result queue
+                result_queue.put_nowait(None)  # type: ignore[arg-type]
+                trace_queue.put_nowait(
+                    TraceEvent(
+                        type="error",
+                        timestamp=asyncio.get_event_loop().time(),
+                        data={"error": str(e), "error_type": type(e).__name__},
+                    )
+                )
+
+        run_task = asyncio.create_task(run_agent())
+
+        try:
+            # Stream events as they arrive
+            while True:
+                # Check all queues with timeout
+                done, pending = await asyncio.wait(
+                    [
+                        asyncio.create_task(trace_queue.get()),
+                        asyncio.create_task(progress_queue.get()),
+                        asyncio.create_task(result_queue.get()),
+                        run_task,
+                    ],
+                    return_when=asyncio.FIRST_COMPLETED,
+                    timeout=0.1,
+                )
+
+                if not done:
+                    continue
+
+                for task in done:
+                    try:
+                        result = await task
+                        if task == run_task:
+                            # Agent run completed
+                            if result is not None:
+                                # Type guard: result should be RunResult when task is run_task
+                                from routekit.core.agent import RunResult
+                                assert isinstance(result, RunResult), "Expected RunResult from run_task"
+                                yield {
+                                    "type": "result",
+                                    "result": {
+                                        "output": result.output.model_dump(mode="json"),
+                                        "trace_id": result.trace_id,
+                                        "final_state": result.final_state,
+                                        "messages": [
+                                            msg.model_dump(mode="json") for msg in result.messages
+                                        ],
+                                    },
+                                }
+                            return
+                        elif isinstance(result, TraceEvent):
+                            yield {
+                                "type": "trace_event",
+                                "data": {
+                                    "type": result.type,
+                                    "timestamp": result.timestamp,
+                                    "data": result.data,
+                                },
+                            }
+                        elif isinstance(result, dict):
+                            yield {"type": "progress_update", "data": result}
+                    except asyncio.CancelledError:
+                        return
+                    except Exception:
+                        pass
+
+                # Cancel pending tasks
+                for task in pending:
+                    task.cancel()
+
+        finally:
+            # Clean up callbacks
+            self._runtime.remove_progress_callback(progress_callback)
+            if not run_task.done():
+                run_task.cancel()
+                try:
+                    await run_task
+                except asyncio.CancelledError:
+                    pass
 
     def run_sync(self, prompt: str, **kwargs: Any) -> RunResult:
         """Synchronous wrapper for agent.run().

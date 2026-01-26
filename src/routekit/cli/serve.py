@@ -1,20 +1,21 @@
 """CLI command for starting the trace visualization web server."""
 
 import os
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import typer
-    from fastapi import FastAPI, HTTPException
+    from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import HTMLResponse, JSONResponse
+    from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 else:
     try:
         import typer
-        from fastapi import FastAPI, HTTPException  # type: ignore[import-not-found]
+        from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect  # type: ignore[import-not-found]
         from fastapi.middleware.cors import CORSMiddleware  # type: ignore[import-not-found]
-        from fastapi.responses import HTMLResponse, JSONResponse  # type: ignore[import-not-found]
+        from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse  # type: ignore[import-not-found]
     except ImportError as e:
         raise ImportError(
             "Web UI dependencies not installed. Install with: pip install 'routekit[ui]'"
@@ -22,6 +23,7 @@ else:
 
 from routekit.observability.analyzer import TraceAnalyzer
 from routekit.observability.exporters.jsonl import JSONLExporter
+from routekit.observability.streaming import get_broadcaster
 
 app = FastAPI(title="RouteKit Trace Viewer", version="0.1.0")
 
@@ -197,6 +199,79 @@ async def search_trace(
     results = analyzer.search(trace, query)
 
     return JSONResponse({"results": [e.model_dump() for e in results]})
+
+
+@app.websocket("/ws/traces/{trace_id}")
+async def websocket_trace_stream(websocket: WebSocket, trace_id: str) -> None:
+    """WebSocket endpoint for real-time trace event streaming.
+
+    Args:
+        websocket: WebSocket connection
+        trace_id: Trace ID to stream (use '*' for all traces)
+    """
+    await websocket.accept()
+    broadcaster = get_broadcaster()
+    queue = await broadcaster.subscribe()
+
+    try:
+        while True:
+            try:
+                # Get event from queue
+                event = await queue.get()
+                queue.task_done()
+
+                # Filter by trace_id if not '*'
+                if trace_id != "*" and event.data.get("trace_id") != trace_id:
+                    continue
+
+                # Send event as JSON
+                await websocket.send_json(
+                    {
+                        "type": event.type,
+                        "timestamp": event.timestamp,
+                        "data": event.data,
+                    }
+                )
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                await websocket.send_json({"error": str(e)})
+                break
+    finally:
+        await broadcaster.unsubscribe(queue)
+
+
+@app.get("/api/traces/{trace_id}/stream")
+async def sse_trace_stream(trace_id: str) -> StreamingResponse:
+    """Server-Sent Events (SSE) endpoint for real-time trace event streaming.
+
+    Args:
+        trace_id: Trace ID to stream (use '*' for all traces)
+
+    Returns:
+        StreamingResponse with SSE-formatted events
+    """
+    broadcaster = get_broadcaster()
+
+    async def event_generator() -> AsyncIterator[str]:
+        queue = await broadcaster.subscribe()
+        try:
+            async for event_data in broadcaster.stream_events(
+                queue, trace_id if trace_id != "*" else None
+            ):
+                yield event_data
+        finally:
+            await broadcaster.unsubscribe(queue)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.get("/")

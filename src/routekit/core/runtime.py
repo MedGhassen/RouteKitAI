@@ -5,7 +5,9 @@ import json
 import time
 import uuid
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from pathlib import Path
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
@@ -14,7 +16,7 @@ from routekit.core.errors import ModelError, ToolError
 from routekit.core.errors import RuntimeError as RouteKitRuntimeError
 from routekit.core.hooks import PolicyHooks
 from routekit.core.message import Message, MessageRole
-from routekit.core.model import ModelResponse
+from routekit.core.model import ModelResponse, StreamEvent
 from routekit.core.tool import Tool
 from routekit.observability.exporters.jsonl import JSONLExporter
 from routekit.observability.trace import Trace, TraceEvent
@@ -102,6 +104,10 @@ class Runtime(BaseModel):
         self._replay_step_index: int = 0
         self._replay_step_map: dict[str, TraceEvent] = {}  # Map step_id -> event for replay
         self._cancellation_token: asyncio.CancelledError | None = None
+        # Progress tracking
+        self._current_step: int = 0
+        self._total_steps: int = 0
+        self._progress_callbacks: list[Callable[[dict[str, Any]], None]] = []
 
     def register_agent(self, agent: "Agent") -> None:
         """Register an agent with the runtime.
@@ -110,6 +116,54 @@ class Runtime(BaseModel):
             agent: Agent to register
         """
         self.agents[agent.name] = agent
+
+    def add_progress_callback(self, callback: Callable[[dict[str, Any]], None]) -> None:
+        """Add a callback for progress updates.
+
+        Args:
+            callback: Function that receives progress dict with keys:
+                     - current_step: int
+                     - total_steps: int
+                     - progress_percent: float
+                     - current_step_type: str | None
+        """
+        self._progress_callbacks.append(callback)
+
+    def remove_progress_callback(self, callback: Callable[[dict[str, Any]], None]) -> None:
+        """Remove a progress callback.
+
+        Args:
+            callback: Callback to remove
+        """
+        if callback in self._progress_callbacks:
+            self._progress_callbacks.remove(callback)
+
+    def _emit_progress(self, trace: Trace, step_type: str | None = None) -> None:
+        """Emit progress update to callbacks and trace.
+
+        Args:
+            trace: Trace to add progress event to
+            step_type: Optional current step type
+        """
+        progress_data = {
+            "current_step": self._current_step,
+            "total_steps": self._total_steps,
+            "progress_percent": (
+                (self._current_step / self._total_steps * 100) if self._total_steps > 0 else 0.0
+            ),
+            "current_step_type": step_type,
+        }
+
+        # Notify callbacks
+        for callback in self._progress_callbacks:
+            try:
+                callback(progress_data)
+            except Exception:
+                # Don't let callback errors break execution
+                pass
+
+        # Add to trace
+        trace.add_event("progress_update", progress_data)
 
     async def run(
         self,
@@ -297,6 +351,11 @@ class Runtime(BaseModel):
 
         max_iterations = kwargs.get("max_iterations", 50)
         iteration = 0
+        self._current_step = 0
+        self._total_steps = max_iterations  # Estimate, will be updated as we go
+
+        # Emit initial progress
+        self._emit_progress(trace, "initialization")
 
         while iteration < max_iterations:
             # Check for cancellation
@@ -305,6 +364,7 @@ class Runtime(BaseModel):
 
             # Update state with current iteration
             state["iteration"] = iteration
+            self._current_step = iteration
 
             # Get next steps from policy
             steps = await policy.next_steps(agent, messages, state)
@@ -315,10 +375,19 @@ class Runtime(BaseModel):
                     output_message = messages[-1]
                 else:
                     # Generate final response
-                    final_response = await self._call_model(agent, messages, trace)
+                    final_response = await self._call_model(agent, messages, trace, stream=False)
+                    assert isinstance(final_response, ModelResponse), "Expected ModelResponse when stream=False"
                     output_message = Message.assistant(final_response.content)
                     messages.append(output_message)
                 break
+
+            # Update total steps estimate if we have more steps
+            if len(steps) > 0:
+                self._total_steps = max(self._total_steps, iteration + len(steps))
+
+            # Emit progress before executing steps
+            step_type = steps[0].step_type if steps else None
+            self._emit_progress(trace, step_type)
 
             # Execute steps (potentially in parallel)
             step_results = await self._execute_steps_parallel(steps, agent, trace)
@@ -432,7 +501,8 @@ class Runtime(BaseModel):
             if messages and messages[-1].role == MessageRole.ASSISTANT:
                 output_message = messages[-1]
             else:
-                final_response = await self._call_model(agent, messages, trace)
+                final_response = await self._call_model(agent, messages, trace, stream=False)
+                assert isinstance(final_response, ModelResponse), "Expected ModelResponse when stream=False"
                 output_message = Message.assistant(final_response.content)
                 messages.append(output_message)
 
@@ -620,7 +690,8 @@ class Runtime(BaseModel):
                                     f"Invalid message format in step: expected Message or dict, got {type(msg_data).__name__}",
                                     context={"step_id": step.step_id, "step_type": step.step_type},
                                 )
-                        response = await self._call_model(agent, messages, trace)
+                        response = await self._call_model(agent, messages, trace, stream=False)
+                        assert isinstance(response, ModelResponse), "Expected ModelResponse when stream=False"
                         response_data = {
                             "content": response.content,
                             "tool_calls": [
@@ -810,24 +881,85 @@ class Runtime(BaseModel):
             return step
 
     async def _call_model(
-        self, agent: "Agent", messages: list[Message], trace: Trace
-    ) -> ModelResponse:
+        self,
+        agent: "Agent",
+        messages: list[Message],
+        trace: Trace,
+        stream: bool = False,
+    ) -> ModelResponse | AsyncIterator[StreamEvent]:
         """Call the agent's model.
 
         Args:
             agent: Agent instance
             messages: Messages to send
             trace: Trace for recording
+            stream: Whether to stream the response
 
         Returns:
-            Model response
+            Model response or stream of events
         """
         start_time = time.time()
         try:
-            response = await agent.model.chat(messages, tools=agent.tools, stream=False)
+            response = await agent.model.chat(messages, tools=agent.tools, stream=stream)
             latency_ms = (time.time() - start_time) * 1000
 
-            # Ensure we have a ModelResponse (not a stream)
+            if stream:
+                # Return streaming iterator
+                assert isinstance(response, AsyncIterator), "Expected AsyncIterator when stream=True"
+                async def stream_wrapper() -> AsyncIterator[StreamEvent]:
+                    content_buffer = ""
+                    tool_calls_buffer: list[dict[str, Any]] = []
+                    usage = None
+
+                    async for event in response:
+                        # Forward stream events to trace
+                        if event.content:
+                            content_buffer += event.content or ""
+                        if event.tool_calls:
+                            tool_calls_buffer.extend(
+                                [
+                                    {
+                                        "id": tc.id,
+                                        "name": tc.name,
+                                        "arguments": tc.arguments,
+                                    }
+                                    for tc in (event.tool_calls or [])
+                                ]
+                            )
+                        if event.usage:
+                            usage = event.usage
+
+                        # Emit streaming event to trace
+                        trace.add_event(
+                            "model_stream_chunk",
+                            {
+                                "model": agent.model.name,
+                                "chunk": event.content or "",
+                                "event_type": event.type,
+                            },
+                        )
+
+                        yield event
+
+                    # Emit final model_called event with complete response
+                    trace.add_event(
+                        "model_called",
+                        {
+                            "model": agent.model.name,
+                            "messages_count": len(messages),
+                            "response": {
+                                "content": content_buffer,
+                                "tool_calls": tool_calls_buffer,
+                                "usage": usage.model_dump() if usage else None,
+                            },
+                            "latency_ms": latency_ms,
+                            "streamed": True,
+                        },
+                    )
+
+                return stream_wrapper()
+
+            # Non-streaming mode
             if not isinstance(response, ModelResponse):
                 raise ModelError("Model returned a stream when stream=False was requested")
 

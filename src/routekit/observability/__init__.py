@@ -4,6 +4,7 @@ from routekit.observability.analyzer import TraceAnalyzer, TraceMetrics
 from routekit.observability.exporters.jsonl import JSONLExporter
 from routekit.observability.exporters.otel import OTELExporter
 from routekit.observability.spans import Span, SpanContext
+from routekit.observability.streaming import TraceEventBroadcaster, get_broadcaster
 from routekit.observability.trace import Trace, TraceCollector
 
 __all__ = [
@@ -15,4 +16,6 @@ __all__ = [
     "OTELExporter",
     "TraceAnalyzer",
     "TraceMetrics",
+    "TraceEventBroadcaster",
+    "get_broadcaster",
 ]
