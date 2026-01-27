@@ -7,14 +7,14 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel, Field
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.errors import ToolError
-from routekit.core.message import MessageRole
-from routekit.core.model import Model, ModelResponse, ToolCall, Usage
-from routekit.core.runtime import Policy, Runtime, Step
-from routekit.core.tool import Tool, ToolPermission
-from routekit.observability.exporters.jsonl import JSONLExporter
-from routekit.sandbox.permissions import PermissionLevel, PermissionManager
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.errors import ToolError
+from routekitai.core.message import MessageRole
+from routekitai.core.model import Model, ModelResponse, ToolCall, Usage
+from routekitai.core.runtime import Policy, Runtime, Step
+from routekitai.core.tool import Tool, ToolPermission
+from routekitai.observability.exporters.jsonl import JSONLExporter
+from routekitai.sandbox.permissions import PermissionLevel, PermissionManager
 
 
 class MockModel(Model):

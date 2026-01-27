@@ -5,10 +5,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.runtime import Runtime
-from routekit.evals import ContainsMetric, Dataset, EvalRunner, ExactMatchMetric
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.runtime import Runtime
+from routekitai.evals import ContainsMetric, Dataset, EvalRunner, ExactMatchMetric
+from routekitai.providers.local import FakeModel
 
 
 class EvalAgent(Agent):

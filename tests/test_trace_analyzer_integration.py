@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.observability.analyzer import TraceAnalyzer
-from routekit.observability.exporters.jsonl import JSONLExporter
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.observability.analyzer import TraceAnalyzer
+from routekitai.observability.exporters.jsonl import JSONLExporter
+from routekitai.providers.local import FakeModel
 
 
 class EvalTestAgent(Agent):

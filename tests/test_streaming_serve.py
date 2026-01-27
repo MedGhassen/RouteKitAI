@@ -5,9 +5,9 @@ import asyncio
 import pytest
 
 try:
-    from routekit.cli.serve import app
-    from routekit.observability.streaming import get_broadcaster
-    from routekit.observability.trace import TraceEvent
+    from routekitai.cli.serve import app
+    from routekitai.observability.streaming import get_broadcaster
+    from routekitai.observability.trace import TraceEvent
 except ImportError:
     pytest.skip("Web UI dependencies not installed", allow_module_level=True)
 

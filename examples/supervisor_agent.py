@@ -3,12 +3,12 @@
 import asyncio
 from pathlib import Path
 
-from routekit.core.agent import Agent
-from routekit.core.policies import SupervisorPolicy
-from routekit.core.policy_adapter import PolicyAdapter
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent
+from routekitai.core.policies import SupervisorPolicy
+from routekitai.core.policy_adapter import PolicyAdapter
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.providers.local import FakeModel
 
 # Note: Agent is now a concrete class, no need to subclass
 

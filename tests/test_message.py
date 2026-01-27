@@ -2,7 +2,7 @@
 
 import json
 
-from routekit.core.message import Message, MessageRole
+from routekitai.core.message import Message, MessageRole
 
 
 def test_message_creation() -> None:

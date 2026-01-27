@@ -4,12 +4,12 @@ import asyncio
 from pathlib import Path
 from typing import Any
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.graphs.executors import GraphExecutor
-from routekit.graphs.graph import Graph, GraphEdge, GraphNode, NodeType
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.graphs.executors import GraphExecutor
+from routekitai.graphs.graph import Graph, GraphEdge, GraphNode, NodeType
+from routekitai.providers.local import FakeModel
 
 
 class GraphAgent(Agent):

@@ -2,11 +2,11 @@
 
 import pytest
 
-from routekit.core.agent import Agent
-from routekit.core.runtime import Runtime
-from routekit.graphs.executors import GraphExecutor
-from routekit.graphs.graph import Graph, GraphNode, NodeType
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent
+from routekitai.core.runtime import Runtime
+from routekitai.graphs.executors import GraphExecutor
+from routekitai.graphs.graph import Graph, GraphNode, NodeType
+from routekitai.providers.local import FakeModel
 
 
 class SubgraphTestAgent(Agent):
@@ -80,7 +80,7 @@ async def test_subgraph_not_found() -> None:
 
     executor = GraphExecutor(runtime=runtime, graph=graph)
 
-    from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+    from routekitai.core.errors import RuntimeError as RouteKitRuntimeError
 
     with pytest.raises(RouteKitRuntimeError, match="not found in graph registry"):
         await executor.execute()

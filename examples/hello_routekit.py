@@ -4,10 +4,10 @@ import asyncio
 from pathlib import Path
 from typing import Any
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.providers.local import FakeModel
 
 
 class HelloAgent(Agent):

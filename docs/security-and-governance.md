@@ -1,6 +1,6 @@
 # Security and Governance
 
-RouteKit provides built-in security and governance features to control agent behavior, protect sensitive data, and enforce policies. This guide covers all security features and best practices.
+RouteKitAI provides built-in security and governance features to control agent behavior, protect sensitive data, and enforce policies. This guide covers all security features and best practices.
 
 ## Table of Contents
 
@@ -38,8 +38,8 @@ Automatically redact personally identifiable information (PII) from prompts, too
 ### Basic Usage
 
 ```python
-from routekit.core.hooks import PIIRedactionHook, PolicyHooks
-from routekit.core.runtime import Runtime
+from routekitai.core.hooks import PIIRedactionHook, PolicyHooks
+from routekitai.core.runtime import Runtime
 
 # Create PII redaction hook
 pii_hook = PIIRedactionHook(
@@ -101,8 +101,8 @@ Control which tools can be executed at the agent or runtime level.
 Restrict tools for a specific agent:
 
 ```python
-from routekit.core.hooks import ToolFilter
-from routekit.core.agent import Agent
+from routekitai.core.hooks import ToolFilter
+from routekitai.core.agent import Agent
 
 # Only allow specific tools
 agent = Agent(
@@ -118,8 +118,8 @@ agent = Agent(
 Deny specific tools globally:
 
 ```python
-from routekit.core.hooks import PolicyHooks, ToolFilter
-from routekit.core.runtime import Runtime
+from routekitai.core.hooks import PolicyHooks, ToolFilter
+from routekitai.core.runtime import Runtime
 
 # Deny specific tools globally
 runtime = Runtime(
@@ -147,8 +147,8 @@ Require explicit approval before executing tools with certain permissions.
 ### Basic Setup
 
 ```python
-from routekit.core.hooks import ApprovalGate, PolicyHooks
-from routekit.core.runtime import Runtime
+from routekitai.core.hooks import ApprovalGate, PolicyHooks
+from routekitai.core.runtime import Runtime
 
 def approval_callback(tool_name: str, tool_args: dict) -> bool:
     """Return True if tool is approved, False otherwise."""
@@ -172,7 +172,7 @@ runtime = Runtime(
 Tools can declare permissions:
 
 ```python
-from routekit.core.tool import ToolPermission
+from routekitai.core.tool import ToolPermission
 
 class NetworkTool(Tool):
     permissions = [ToolPermission.NETWORK]
@@ -204,7 +204,7 @@ Sandboxing provides isolation for tool execution. (Note: Sandboxing is planned f
 Control file system access:
 
 ```python
-from routekit.sandbox.filesystem import FilesystemSandbox
+from routekitai.sandbox.filesystem import FilesystemSandbox
 
 sandbox = FilesystemSandbox(
     allowed_paths=[Path("/safe/directory")],
@@ -218,7 +218,7 @@ sandbox = FilesystemSandbox(
 Control network access:
 
 ```python
-from routekit.sandbox.network import NetworkSandbox
+from routekitai.sandbox.network import NetworkSandbox
 
 sandbox = NetworkSandbox(
     allowed_hosts=["api.example.com"],
@@ -270,7 +270,7 @@ Cancel long-running executions gracefully:
 
 ```python
 import asyncio
-from routekit.core.runtime import Runtime
+from routekitai.core.runtime import Runtime
 
 runtime = Runtime()
 runtime.register_agent(agent)
@@ -296,7 +296,7 @@ Traces contain sensitive information. Protect them accordingly.
 
 ### Trace Storage
 
-- **Local storage**: Traces stored in `.routekit/traces/` by default
+- **Local storage**: Traces stored in `.RouteKitAI/traces/` by default
 - **Encryption**: Encrypt trace files if they contain sensitive data
 - **Access control**: Restrict file system permissions
 - **Retention**: Implement trace retention policies
@@ -307,7 +307,7 @@ PII redaction automatically applies to traces:
 
 ```python
 runtime = Runtime(
-    trace_dir=Path(".routekit/traces"),
+    trace_dir=Path(".RouteKitAI/traces"),
     policy_hooks=PolicyHooks(
         pii_redaction=PIIRedactionHook(redact_emails=True, redact_phones=True)
     )
@@ -400,15 +400,15 @@ replayed = await runtime.replay(trace_id, "agent_name")
 ```python
 import os
 from pathlib import Path
-from routekit.core.agent import Agent
-from routekit.core.hooks import (
+from routekitai.core.agent import Agent
+from routekitai.core.hooks import (
     ApprovalGate,
     PIIRedactionHook,
     PolicyHooks,
     ToolFilter,
 )
-from routekit.core.runtime import Runtime
-from routekit.providers.openai import OpenAIChatModel
+from routekitai.core.runtime import Runtime
+from routekitai.providers.openai import OpenAIChatModel
 
 # Create model with secure API key handling
 model = OpenAIChatModel(
@@ -435,7 +435,7 @@ runtime = Runtime(
     max_retries=3,
     retry_backoff_base=1.0,
     retry_backoff_max=60.0,
-    trace_dir=Path(".routekit/traces"),
+    trace_dir=Path(".RouteKitAI/traces"),
     policy_hooks=PolicyHooks(
         pii_redaction=PIIRedactionHook(
             redact_emails=True,
@@ -471,7 +471,7 @@ result = await runtime.run("secure_agent", "User prompt with email@example.com")
 If you discover a security vulnerability, please report it responsibly:
 
 1. **Do not** open a public issue
-2. Email security concerns to: security@routekit.dev (or your security contact)
+2. Email security concerns to: security@RouteKitAI.dev (or your security contact)
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce

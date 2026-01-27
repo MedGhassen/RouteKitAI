@@ -4,11 +4,11 @@ from typing import Any
 
 import pytest
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.hooks import ApprovalGate, PIIRedactionHook, PolicyHooks, ToolFilter
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.hooks import ApprovalGate, PIIRedactionHook, PolicyHooks, ToolFilter
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.providers.local import FakeModel
 
 
 class TestAgent(Agent):
@@ -68,7 +68,7 @@ async def test_tool_filter_deny_list() -> None:
 
     # Should fail - echo is denied
     # The error gets wrapped in RuntimeError
-    from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+    from routekitai.core.errors import RuntimeError as RouteKitRuntimeError
 
     with pytest.raises(RouteKitRuntimeError, match="not allowed"):
         await runtime.run("test_agent", "test")
@@ -95,7 +95,7 @@ async def test_runtime_tool_filter() -> None:
     model.response_fn = response_fn
 
     # Should fail - echo is denied at runtime level
-    from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+    from routekitai.core.errors import RuntimeError as RouteKitRuntimeError
 
     with pytest.raises(RouteKitRuntimeError, match="not allowed"):
         await runtime.run("test_agent", "test")
@@ -104,7 +104,7 @@ async def test_runtime_tool_filter() -> None:
 @pytest.mark.asyncio
 async def test_approval_gate() -> None:
     """Test approval gate for tools."""
-    from routekit.core.tool import ToolPermission
+    from routekitai.core.tool import ToolPermission
 
     model = FakeModel(name="test")
 
@@ -149,7 +149,7 @@ async def test_approval_gate() -> None:
     model.response_fn = response_fn
 
     # Should fail - network_tool requires approval but callback denies it
-    from routekit.core.errors import RuntimeError as RouteKitRuntimeError
+    from routekitai.core.errors import RuntimeError as RouteKitRuntimeError
 
     with pytest.raises(RouteKitRuntimeError, match="requires approval"):
         await runtime.run("test_agent", "test")
@@ -161,7 +161,7 @@ async def test_approval_gate() -> None:
 @pytest.mark.asyncio
 async def test_approval_gate_approved() -> None:
     """Test approval gate when tool is approved."""
-    from routekit.core.tool import ToolPermission
+    from routekitai.core.tool import ToolPermission
 
     model = FakeModel(name="test")
 

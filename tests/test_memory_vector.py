@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from routekit.memory.vector import VectorMemory, VectorMemoryError
+from routekitai.memory.vector import VectorMemory, VectorMemoryError
 
 
 @pytest.mark.asyncio

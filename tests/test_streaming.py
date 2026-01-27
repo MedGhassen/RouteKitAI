@@ -6,13 +6,13 @@ from collections.abc import AsyncIterator
 
 import pytest
 
-from routekit.core.agent import Agent
-from routekit.core.message import Message
-from routekit.core.model import ModelResponse, StreamEvent, Usage
-from routekit.core.runtime import Runtime
-from routekit.observability.streaming import TraceEventBroadcaster, get_broadcaster
-from routekit.observability.trace import Trace, TraceEvent
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent
+from routekitai.core.message import Message
+from routekitai.core.model import ModelResponse, StreamEvent, Usage
+from routekitai.core.runtime import Runtime
+from routekitai.observability.streaming import TraceEventBroadcaster, get_broadcaster
+from routekitai.observability.trace import Trace, TraceEvent
+from routekitai.providers.local import FakeModel
 
 
 class StreamingModel(FakeModel):

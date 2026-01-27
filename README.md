@@ -1,4 +1,4 @@
-# RouteKit
+# RouteKitAI
 
 <div align="center">
 
@@ -15,7 +15,7 @@
 
 ---
 
-RouteKit is a Python framework for building AI agents with **graph-based orchestration**, **built-in tracing**, and **deterministic replay**. Unlike other frameworks, RouteKit treats observability and testability as first-class features from day one.
+RouteKitAI is a Python framework for building AI agents with **graph-based orchestration**, **built-in tracing**, and **deterministic replay**. Unlike other frameworks, RouteKitAI treats observability and testability as first-class features from day one.
 
 ## ✨ Features
 
@@ -42,26 +42,26 @@ RouteKit is a Python framework for building AI agents with **graph-based orchest
 ### Installation
 
 ```bash
-pip install routekit
+pip install RouteKitAI
 ```
 
 For development with CLI tools:
 
 ```bash
-pip install "routekit[dev]"
+pip install "RouteKitAI[dev]"
 ```
 
 ### Basic Example
 
 ```python
 import asyncio
-from routekit import Agent
-from routekit.providers.local import FakeModel
-from routekit.core.tools import EchoTool
+from routekitai import Agent
+from routekitai.providers.local import FakeModel
+from routekitai.core.tools import EchoTool
 
 # Create a model
 model = FakeModel(name="test")
-model.add_response("Hello from RouteKit!")
+model.add_response("Hello from routekitai!")
 
 # Create an agent
 agent = Agent(
@@ -83,11 +83,11 @@ asyncio.run(main())
 
 ```python
 import asyncio
-from routekit import Agent
-from routekit.core.policies import GraphPolicy
-from routekit.graphs import Graph, GraphNode, GraphEdge, NodeType
-from routekit.providers.local import FakeModel
-from routekit.core.tools import EchoTool
+from routekitai import Agent
+from routekitai.core.policies import GraphPolicy
+from routekitai.graphs import Graph, GraphNode, GraphEdge, NodeType
+from routekitai.providers.local import FakeModel
+from routekitai.core.tools import EchoTool
 
 # Create models and agents
 model1 = FakeModel(name="model1")
@@ -148,57 +148,57 @@ asyncio.run(main())
 
 ## 📚 Documentation
 
-- **[Architecture Guide](docs/architecture.md)**: Deep dive into RouteKit's design
+- **[Architecture Guide](docs/architecture.md)**: Deep dive into RouteKitAI's design
 - **[Security & Governance](docs/security-and-governance.md)**: Security features and best practices
-- **[API Reference](https://routekit.readthedocs.io)**: Complete API documentation (coming soon)
+- **[API Reference](https://RouteKitAI.readthedocs.io)**: Complete API documentation (coming soon)
 
 ## 🎓 Examples
 
 Check out the [`examples/`](examples/) directory for complete examples:
 
-- **[Basic Agent](examples/hello_routekit.py)**: Simple agent with tools
+- **[Basic Agent](examples/hello_RouteKitAI.py)**: Simple agent with tools
 - **[Graph Orchestration](examples/graph_agent.py)**: Multi-agent workflow
 - **[Supervisor Pattern](examples/supervisor_agent.py)**: Supervisor delegating to sub-agents
 - **[Evaluation Harness](examples/eval_regression.py)**: Testing agents with datasets
 
 ## 🛠️ CLI Commands
 
-RouteKit provides a CLI for common operations:
+RouteKitAI provides a CLI for common operations:
 
 ```bash
 # Run an agent script
-routekit run agent_script.py
+RouteKitAI run agent_script.py
 
 # View a trace (multiple formats available)
-routekit trace <trace_id>                    # Table view (default)
-routekit trace <trace_id> --format timeline  # Timeline visualization
-routekit trace <trace_id> --format steps     # Step-by-step execution
-routekit trace <trace_id> --format json      # JSON output
-routekit trace <trace_id> --format raw       # Raw JSONL
+RouteKitAI trace <trace_id>                    # Table view (default)
+RouteKitAI trace <trace_id> --format timeline  # Timeline visualization
+RouteKitAI trace <trace_id> --format steps     # Step-by-step execution
+RouteKitAI trace <trace_id> --format json      # JSON output
+RouteKitAI trace <trace_id> --format raw       # Raw JSONL
 
 # Analyze trace metrics
-routekit trace-analyze <trace_id>            # Performance metrics, token usage, costs
+RouteKitAI trace-analyze <trace_id>            # Performance metrics, token usage, costs
 
 # Search traces
-routekit trace-search "error"                # Search all traces for "error"
-routekit trace-search "model" --trace-id abc # Search specific trace
-routekit trace-search "tool" --event-type tool_called  # Filter by event type
+RouteKitAI trace-search "error"                # Search all traces for "error"
+RouteKitAI trace-search "model" --trace-id abc # Search specific trace
+RouteKitAI trace-search "tool" --event-type tool_called  # Filter by event type
 
 # Replay a trace
-routekit replay <trace_id> --agent my_agent
+RouteKitAI replay <trace_id> --agent my_agent
 
 # Start web UI for trace visualization
-routekit serve                    # Start on default port 8080
-routekit serve --port 3000        # Custom port
-routekit serve --host 0.0.0.0     # Make accessible from network
+RouteKitAI serve                    # Start on default port 8080
+RouteKitAI serve --port 3000        # Custom port
+RouteKitAI serve --host 0.0.0.0     # Make accessible from network
 
 # Run sanity checks
-routekit test-agent
+RouteKitAI test-agent
 ```
 
 ## 🏗️ Core Primitives
 
-RouteKit keeps it minimal with 5 core primitives:
+RouteKitAI keeps it minimal with 5 core primitives:
 
 1. **Model**: LLM interface abstraction
 2. **Message**: Conversation message representation
@@ -212,8 +212,8 @@ RouteKit keeps it minimal with 5 core primitives:
 
 ```bash
 # Clone the repository
-git clone https://github.com/MedGhassen/RouteKit.git
-cd routekit
+git clone https://github.com/MedGhassen/RouteKitAI.git
+cd RouteKitAI
 
 # Install with dev dependencies
 pip install -e ".[dev]"
@@ -226,7 +226,7 @@ pip install -e ".[dev]"
 pytest
 
 # Run with coverage
-pytest --cov=routekit --cov-report=html
+pytest --cov=RouteKitAI --cov-report=html
 
 # Run specific test file
 pytest tests/test_runtime.py
@@ -266,18 +266,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-RouteKit is inspired by the need for testable, observable AI agent frameworks. Special thanks to the open-source community for their contributions and feedback.
+RouteKitAI is inspired by the need for testable, observable AI agent frameworks. Special thanks to the open-source community for their contributions and feedback.
 
 ## 🔗 Links
 
-- **GitHub**: [https://github.com/MedGhassen/RouteKit](https://github.com/MedGhassen/RouteKit)
-- **Documentation**: [https://routekit.readthedocs.io](https://routekit.readthedocs.io) (coming soon)
-- **Issues**: [https://github.com/MedGhassen/RouteKit/issues](https://github.com/MedGhassen/RouteKit/issues)
+- **GitHub**: [https://github.com/MedGhassen/RouteKitAI](https://github.com/MedGhassen/RouteKitAI)
+- **Documentation**: [https://RouteKitAI.readthedocs.io](https://RouteKitAI.readthedocs.io) (coming soon)
+- **Issues**: [https://github.com/MedGhassen/RouteKitAI/issues](https://github.com/MedGhassen/RouteKitAI/issues)
 
 ---
 
 <div align="center">
 
-Made with ❤️ by the RouteKit contributors
+Made with ❤️ by the Mohamed Ghassen Brahim
 
 </div>

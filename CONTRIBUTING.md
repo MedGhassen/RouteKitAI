@@ -1,6 +1,6 @@
-# Contributing to RouteKit
+# Contributing to RouteKitAI
 
-Thank you for your interest in contributing to RouteKit! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to RouteKitAI! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -22,12 +22,12 @@ This project adheres to a code of conduct. By participating, you are expected to
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/your-username/routekit.git
-   cd routekit
+   git clone https://github.com/your-username/RouteKitAI.git
+   cd RouteKitAI
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/MedGhassen/RouteKit.git
+   git remote add upstream https://github.com/MedGhassen/RouteKitAI.git
    ```
 
 ## Development Setup
@@ -45,7 +45,7 @@ This project adheres to a code of conduct. By participating, you are expected to
 pip install -e ".[dev]"
 
 # Verify installation
-python -c "import routekit; print(routekit.__version__)"
+python -c "import routekitai; print(RouteKitAI.__version__)"
 ```
 
 ### Development Tools
@@ -106,7 +106,7 @@ docs(readme): update installation instructions
 pytest
 
 # Run with coverage
-pytest --cov=routekit --cov-report=html
+pytest --cov=RouteKitAI --cov-report=html
 
 # Run specific test file
 pytest tests/test_runtime.py
@@ -170,7 +170,7 @@ ruff check --fix src/ tests/
 mypy src/
 
 # Check specific file
-mypy src/routekit/core/runtime.py
+mypy src/RouteKitAI/core/runtime.py
 ```
 
 ### Code Style Guidelines
@@ -254,4 +254,4 @@ If you have questions:
 
 ## Thank You!
 
-Your contributions make RouteKit better for everyone. Thank you for taking the time to contribute!
+Your contributions make RouteKitAI better for everyone. Thank you for taking the time to contribute!

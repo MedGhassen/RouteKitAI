@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from routekit.sandbox.filesystem import FilesystemSandbox, FilesystemSandboxError
+from routekitai.sandbox.filesystem import FilesystemSandbox, FilesystemSandboxError
 
 
 @pytest.mark.asyncio

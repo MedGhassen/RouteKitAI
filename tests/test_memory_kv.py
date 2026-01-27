@@ -2,7 +2,7 @@
 
 import pytest
 
-from routekit.memory.kv import KVMemory
+from routekitai.memory.kv import KVMemory
 
 
 @pytest.mark.asyncio
