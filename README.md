@@ -212,7 +212,7 @@ RouteKit keeps it minimal with 5 core primitives:
 
 ```bash
 # Clone the repository
-git clone https://github.com/routekit/routekit.git
+git clone https://github.com/MedGhassen/RouteKit.git
 cd routekit
 
 # Install with dev dependencies
@@ -270,9 +270,9 @@ RouteKit is inspired by the need for testable, observable AI agent frameworks. S
 
 ## 🔗 Links
 
-- **GitHub**: [https://github.com/routekit/routekit](https://github.com/routekit/routekit)
+- **GitHub**: [https://github.com/MedGhassen/RouteKit](https://github.com/MedGhassen/RouteKit)
 - **Documentation**: [https://routekit.readthedocs.io](https://routekit.readthedocs.io) (coming soon)
-- **Issues**: [https://github.com/routekit/routekit/issues](https://github.com/routekit/routekit/issues)
+- **Issues**: [https://github.com/MedGhassen/RouteKit/issues](https://github.com/MedGhassen/RouteKit/issues)
 
 ---
 

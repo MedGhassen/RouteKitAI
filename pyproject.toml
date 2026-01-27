@@ -54,10 +54,10 @@ optional = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/routekit/routekit"
+Homepage = "https://github.com/MedGhassen/RouteKit"
 Documentation = "https://routekit.readthedocs.io"
-Repository = "https://github.com/routekit/routekit"
-Issues = "https://github.com/routekit/routekit/issues"
+Repository = "https://github.com/MedGhassen/RouteKit"
+Issues = "https://github.com/MedGhassen/RouteKit/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

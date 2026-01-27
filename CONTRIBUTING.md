@@ -27,7 +27,7 @@ This project adheres to a code of conduct. By participating, you are expected to
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/routekit/routekit.git
+   git remote add upstream https://github.com/MedGhassen/RouteKit.git
    ```
 
 ## Development Setup
