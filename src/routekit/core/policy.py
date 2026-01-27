@@ -1,14 +1,11 @@
 """Policy system for RouteKit agent execution."""
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 from routekit.core.message import Message
-
-if TYPE_CHECKING:
-    pass
 
 
 class Action(BaseModel):

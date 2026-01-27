@@ -2,22 +2,17 @@
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING
+
+try:
+    import typer
+    from rich.console import Console
+except ImportError as e:
+    raise ImportError(
+        "CLI dependencies not installed. Install with: pip install typer rich"
+    ) from e
 
 from routekit.core.runtime import Runtime
 from routekit.observability.exporters.jsonl import JSONLExporter
-
-if TYPE_CHECKING:
-    import typer
-    from rich.console import Console
-else:
-    try:
-        import typer
-        from rich.console import Console
-    except ImportError as e:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        ) from e
 
 app = typer.Typer(name="replay", help="Replay agent execution traces")
 console = Console()

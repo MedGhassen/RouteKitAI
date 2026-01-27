@@ -3,27 +3,20 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from routekit.observability.analyzer import TraceAnalyzer
-from routekit.observability.exporters.jsonl import JSONLExporter
-from routekit.observability.trace import Trace
-
-if TYPE_CHECKING:
+try:
     import typer
     from rich.console import Console
     from rich.json import JSON
     from rich.table import Table
-else:
-    try:
-        import typer
-        from rich.console import Console
-        from rich.json import JSON
-        from rich.table import Table
-    except ImportError as e:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        ) from e
+except ImportError as e:
+    raise ImportError(
+        "CLI dependencies not installed. Install with: pip install typer rich"
+    ) from e
+
+from routekit.observability.analyzer import TraceAnalyzer
+from routekit.observability.exporters.jsonl import JSONLExporter
+from routekit.observability.trace import Trace
 
 app = typer.Typer(name="trace", help="View and inspect agent execution traces")
 console = Console()

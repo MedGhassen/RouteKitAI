@@ -3,23 +3,16 @@
 import os
 from collections.abc import AsyncIterator
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+try:
     import typer
     from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
-else:
-    try:
-        import typer
-        from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect  # type: ignore[import-not-found]
-        from fastapi.middleware.cors import CORSMiddleware  # type: ignore[import-not-found]
-        from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse  # type: ignore[import-not-found]
-    except ImportError as e:
-        raise ImportError(
-            "Web UI dependencies not installed. Install with: pip install 'routekit[ui]'"
-        ) from e
+except ImportError as e:
+    raise ImportError(
+        "Web UI dependencies not installed. Install with: pip install 'routekit[ui]'"
+    ) from e
 
 from routekit.observability.analyzer import TraceAnalyzer
 from routekit.observability.exporters.jsonl import JSONLExporter

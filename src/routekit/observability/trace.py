@@ -3,12 +3,9 @@
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
-
-if TYPE_CHECKING:
-    from routekit.observability.streaming import TraceEventBroadcaster
 
 
 class TraceEvent(BaseModel):

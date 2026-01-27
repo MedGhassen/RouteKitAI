@@ -1,9 +1,10 @@
 """Concrete policy implementations for RouteKit."""
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
+from routekit.core.agent import Agent
 from routekit.core.message import Message, MessageRole
 from routekit.core.model import ModelResponse
 from routekit.core.policy import (
@@ -14,11 +15,8 @@ from routekit.core.policy import (
     Policy,
     ToolAction,
 )
-
-if TYPE_CHECKING:
-    from routekit.core.agent import Agent
-    from routekit.core.runtime import Runtime
-    from routekit.graphs.graph import Graph
+from routekit.core.runtime import Runtime
+from routekit.graphs.graph import Graph
 
 
 class ReActPolicy(Policy):
@@ -142,8 +140,8 @@ class GraphPolicy(Policy, BaseModel):
 
     model_config = {"arbitrary_types_allowed": True}
 
-    graph: "Graph" = Field(..., description="Graph to execute")
-    runtime: "Runtime | None" = Field(default=None, description="Runtime for graph execution")
+    graph: Graph = Field(..., description="Graph to execute")
+    runtime: Runtime | None = Field(default=None, description="Runtime for graph execution")
 
     async def plan(self, state: dict[str, Any]) -> list[Action]:
         """Plan using graph execution.
@@ -279,7 +277,7 @@ class SupervisorPolicy(Policy, BaseModel):
 
     model_config = {"arbitrary_types_allowed": True}
 
-    sub_agents: dict[str, "Agent"] = Field(
+    sub_agents: dict[str, Agent] = Field(
         default_factory=dict, description="Sub-agents available for delegation"
     )
     runtime: Any = Field(default=None, description="Runtime for executing sub-agents")

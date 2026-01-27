@@ -2,26 +2,20 @@
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING
+
+try:
+    import typer
+    from rich.console import Console
+    from rich.table import Table
+except ImportError as e:
+    raise ImportError(
+        "CLI dependencies not installed. Install with: pip install typer rich"
+    ) from e
 
 from routekit.core.agent import Agent
 from routekit.core.runtime import Runtime
 from routekit.core.tools import EchoTool
 from routekit.providers.local import FakeModel
-
-if TYPE_CHECKING:
-    import typer
-    from rich.console import Console
-    from rich.table import Table
-else:
-    try:
-        import typer
-        from rich.console import Console
-        from rich.table import Table
-    except ImportError as e:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        ) from e
 
 app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
 console = Console()

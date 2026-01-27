@@ -2,18 +2,12 @@
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+try:
     import typer
     from rich.console import Console
     from rich.markdown import Markdown
-else:
-    try:
-        import typer
-        from rich.console import Console
-        from rich.markdown import Markdown
-    except ImportError as e:
+except ImportError as e:
         raise ImportError(
             "CLI dependencies not installed. Install with: pip install typer rich"
         ) from e

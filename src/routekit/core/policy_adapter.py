@@ -1,5 +1,7 @@
 """Adapter to bridge new Policy system with Runtime's Policy interface."""
 
+from __future__ import annotations
+
 import uuid
 from typing import TYPE_CHECKING, Any
 
@@ -26,7 +28,7 @@ class PolicyAdapter(RuntimePolicy):
 
     async def next_steps(
         self,
-        agent: "Agent",
+        agent: Agent,
         messages: list[Message],
         state: dict[str, Any],
     ) -> list[Step]:

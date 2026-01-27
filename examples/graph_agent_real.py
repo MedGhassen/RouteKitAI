@@ -63,7 +63,7 @@ async def main() -> None:
             "Please set it with: export OPENAI_API_KEY='your-api-key-here'"
         )
 
-    print(f"✓ Using OpenAI API (model: gpt-4o-mini)")
+    print("✓ Using OpenAI API (model: gpt-4o-mini)")
     print()
 
     # Create OpenAI models
@@ -163,7 +163,7 @@ async def main() -> None:
     final_output = state.get("final_output") or state.get("output") or result.get("output")
 
     if final_output:
-        print(f"\nFinal output:")
+        print("\nFinal output:")
         print("-" * 60)
         # Handle both string and dict outputs
         if isinstance(final_output, dict):
@@ -171,7 +171,7 @@ async def main() -> None:
         else:
             print(str(final_output))
     else:
-        print(f"\nFinal output: N/A")
+        print("\nFinal output: N/A")
         print(f"\nFull state keys: {list(state.keys())}")
         print(f"Result keys: {list(result.keys())}")
 

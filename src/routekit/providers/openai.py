@@ -1,12 +1,12 @@
 """OpenAI-compatible model provider."""
 
 import json
-import httpx
 from collections.abc import AsyncIterator
-from typing import TYPE_CHECKING, Any
+from typing import Any
+
+import httpx
+
 from routekit.core.errors import ModelError
-
-
 from routekit.core.message import Message, MessageRole
 from routekit.core.model import Model, ModelResponse, StreamEvent, ToolCall, Usage
 from routekit.core.tool import Tool

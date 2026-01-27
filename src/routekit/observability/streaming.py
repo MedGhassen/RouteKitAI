@@ -3,10 +3,7 @@
 import asyncio
 import json
 from collections.abc import AsyncIterator
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from routekit.observability.trace import TraceEvent
+from typing import Any
 
 
 class TraceEventBroadcaster:
@@ -95,7 +92,7 @@ class TraceEventBroadcaster:
                         "data": event.data,
                     }
                     yield f"data: {json.dumps(event_data)}\n\n"
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Send keepalive
                     yield ": keepalive\n\n"
                 except asyncio.CancelledError:

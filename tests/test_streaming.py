@@ -1,7 +1,6 @@
 """Tests for streaming support functionality."""
 
 import asyncio
-import json
 import time
 from collections.abc import AsyncIterator
 
@@ -9,7 +8,7 @@ import pytest
 
 from routekit.core.agent import Agent
 from routekit.core.message import Message
-from routekit.core.model import ModelResponse, StreamEvent, ToolCall, Usage
+from routekit.core.model import ModelResponse, StreamEvent, Usage
 from routekit.core.runtime import Runtime
 from routekit.observability.streaming import TraceEventBroadcaster, get_broadcaster
 from routekit.observability.trace import Trace, TraceEvent
@@ -270,7 +269,7 @@ class TestProgressTracking:
         runtime.add_progress_callback(progress_callback)
 
         # Run agent
-        result = await runtime.run("test_agent", "Hello")
+        await runtime.run("test_agent", "Hello")
 
         # Should have received progress updates
         assert len(progress_updates) > 0
@@ -482,7 +481,7 @@ class TestTraceBroadcasting:
             event = await asyncio.wait_for(queue.get(), timeout=0.5)
             assert event.type == "test_event"
             assert event.data["message"] == "hello"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Broadcasting happens in background, might not be immediate
             # This is acceptable behavior
             pass
@@ -509,7 +508,7 @@ class TestTraceBroadcasting:
             while True:
                 event = await asyncio.wait_for(queue.get(), timeout=0.2)
                 events_received.append(event)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
 
         # Should have received both events

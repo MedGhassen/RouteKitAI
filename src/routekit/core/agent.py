@@ -1,12 +1,16 @@
 """Agent primitive for RouteKit."""
 
+from __future__ import annotations
+
 import asyncio
+import uuid
 from collections.abc import AsyncIterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
+from routekit.core.hooks import ToolFilter
 from routekit.core.memory import Memory
 from routekit.core.message import Message
 from routekit.core.model import Model
@@ -14,10 +18,8 @@ from routekit.core.policy import Policy
 from routekit.core.policy_adapter import PolicyAdapter
 from routekit.core.runtime import Runtime
 from routekit.core.tool import Tool
-
-if TYPE_CHECKING:
-    from routekit.core.hooks import ToolFilter
-    from routekit.graphs.graph import Graph
+from routekit.graphs.graph import Graph
+from routekit.observability.trace import Trace, TraceEvent
 
 
 class RunResult(BaseModel):
@@ -44,7 +46,7 @@ class Agent(BaseModel):
         default=None, description="Agent policy or policy configuration"
     )
     memory: Memory | None = Field(default=None, description="Agent memory system")
-    tool_filter: "ToolFilter | None" = Field(
+    tool_filter: ToolFilter | None = Field(
         default=None, description="Agent-level tool allow/deny list"
     )
     trace_dir: Path | None = Field(default=None, description="Directory for trace files")
@@ -109,9 +111,6 @@ class Agent(BaseModel):
             ...     elif event["type"] == "progress_update":
             ...         print(f"Progress: {event['data']['progress_percent']}%")
         """
-        import asyncio
-        from routekit.observability.trace import TraceEvent
-
         # Use queues to collect events and progress updates
         trace_queue: asyncio.Queue[TraceEvent] = asyncio.Queue()
         progress_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
@@ -137,9 +136,6 @@ class Agent(BaseModel):
         self._runtime.add_progress_callback(progress_callback)
 
         # Create a trace to capture events
-        import uuid
-        from routekit.observability.trace import Trace
-
         trace_id = str(uuid.uuid4())
         trace = Trace(trace_id=trace_id, metadata={"agent": self.name, "prompt": prompt})
         trace.add_event_callback(trace_callback)
@@ -268,7 +264,7 @@ class Agent(BaseModel):
         name: str,
         responses: list[str | dict[str, Any]],
         tools: list[Tool] | None = None,
-    ) -> "Agent":
+    ) -> Agent:
         """Create agent with FakeModel for testing.
 
         Args:
@@ -294,11 +290,11 @@ class Agent(BaseModel):
     def with_graph_policy(
         cls,
         name: str,
-        graph: "Graph",
+        graph: Graph,
         model: Model,
         runtime: Runtime | None = None,
         **kwargs: Any,
-    ) -> "Agent":
+    ) -> Agent:
         """Create agent with graph policy.
 
         Args:
@@ -316,8 +312,6 @@ class Agent(BaseModel):
             >>> graph = Graph(name="test", entry_node="start", nodes=[...])
             >>> agent = Agent.with_graph_policy("graph_agent", graph, model)
         """
-        if TYPE_CHECKING:
-            pass
 
         from routekit.core.policies import GraphPolicy
 

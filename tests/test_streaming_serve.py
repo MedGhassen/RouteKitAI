@@ -47,7 +47,7 @@ class TestSSEEndpoint:
             received_event = await asyncio.wait_for(test_queue.get(), timeout=1.0)
             assert received_event.type == "test_event"
             assert received_event.data["trace_id"] == "test_trace_123"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Broadcasting happens in background, might not be immediate
             pass
 
@@ -85,9 +85,9 @@ class TestSSEEndpoint:
             try:
                 event2 = await asyncio.wait_for(test_queue.get(), timeout=0.5)
                 received_events.append(event2)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Broadcasting happens in background, might not be immediate
             pass
 
@@ -132,7 +132,7 @@ class TestWebSocketEndpoint:
             received_event = await asyncio.wait_for(queue.get(), timeout=0.5)
             assert received_event.type == "test_event"
             assert received_event.data["trace_id"] == "test_trace_123"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Broadcasting happens in background, might not be immediate
             pass
 
