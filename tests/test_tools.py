@@ -189,7 +189,7 @@ async def test_file_read_tool_not_found() -> None:
 async def test_http_get_tool() -> None:
     """Test HttpGetTool (if httpx is available)."""
     try:
-        import httpx
+        import httpx  # noqa: F401
         from httpx import Response
     except ImportError:
         pytest.skip("httpx not installed")
