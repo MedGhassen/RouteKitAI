@@ -32,9 +32,9 @@ def trace_command(
     """View an agent execution trace.
 
     Examples:
-        routekit trace abc123
-        routekit trace abc123 --format json
-        routekit trace abc123 --trace-dir ./custom_traces
+        routkitai trace abc123
+        routkitai trace abc123 --format json
+        routkitai trace abc123 --trace-dir ./custom_traces
     """
     # Determine trace directory
     trace_path: Path

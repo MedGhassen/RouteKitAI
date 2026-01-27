@@ -118,7 +118,7 @@ class GraphExecutor(BaseModel):
             try:
                 node_output = await self._execute_node(node, exec_state.state)
             except RouteKitRuntimeError:
-                # Re-raise RouteKit errors as-is
+                # Re-raise routkitai errors as-is
                 raise
             except Exception as e:
                 # Wrap unknown exceptions

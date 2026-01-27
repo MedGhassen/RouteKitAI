@@ -1,4 +1,4 @@
-"""Policy hooks for RouteKit runtime."""
+"""Policy hooks for routkitai runtime."""
 
 import re
 from collections.abc import Callable

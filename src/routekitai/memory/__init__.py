@@ -1,4 +1,4 @@
-"""Memory systems for RouteKit agents."""
+"""Memory systems for routkitai agents."""
 
 from routekitai.core.memory import Memory
 from routekitai.memory.episodic import EpisodicMemory

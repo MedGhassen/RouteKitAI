@@ -23,7 +23,7 @@ async def main() -> None:
 
     research_model = FakeModel(name="research")
     research_model.add_response(
-        "Research completed: RouteKit is a graph-native agent orchestration framework."
+        "Research completed: routkitai is a graph-native agent orchestration framework."
     )
 
     analysis_model = FakeModel(name="analysis")

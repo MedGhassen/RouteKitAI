@@ -30,9 +30,9 @@ def search_command(
     """Search traces by content.
 
     Examples:
-        routekit trace-search "error"
-        routekit trace-search "model" --trace-id abc123
-        routekit trace-search "tool" --event-type tool_called
+        routkitai trace-search "error"
+        routkitai trace-search "model" --trace-id abc123
+        routkitai trace-search "tool" --event-type tool_called
     """
     # Determine trace directory
     trace_path: Path

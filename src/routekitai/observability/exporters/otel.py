@@ -18,7 +18,7 @@ class OTELExporterError(RouteKitRuntimeError):
 class OTELExporter(BaseModel):
     """Exports traces to OpenTelemetry format.
 
-    Converts RouteKit traces to OpenTelemetry format and exports them.
+    Converts routkitai traces to OpenTelemetry format and exports them.
     For MVP, exports in JSON format compatible with OTEL collectors.
     """
 
@@ -26,10 +26,10 @@ class OTELExporter(BaseModel):
     headers: dict[str, str] = Field(default_factory=dict, description="Export headers")
 
     def _convert_trace_to_otel(self, trace: Trace) -> dict[str, Any]:
-        """Convert RouteKit trace to OpenTelemetry format.
+        """Convert routkitai trace to OpenTelemetry format.
 
         Args:
-            trace: RouteKit trace
+            trace: routkitai trace
 
         Returns:
             OTEL-compatible trace data

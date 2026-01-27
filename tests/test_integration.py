@@ -1,4 +1,4 @@
-"""Integration tests for end-to-end RouteKit functionality."""
+"""Integration tests for end-to-end routkitai functionality."""
 
 import tempfile
 from pathlib import Path

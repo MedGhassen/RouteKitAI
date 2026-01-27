@@ -54,9 +54,9 @@ def run(
     """Run an agent with a prompt or execute a Python script.
 
     Examples:
-        routekit run "What is 2+2?"
-        routekit run agent_script.py
-        routekit run "Hello" --agent my_agent --format json
+        routkitai run "What is 2+2?"
+        routkitai run agent_script.py
+        routkitai run "Hello" --agent my_agent --format json
     """
 
     script_path = Path(prompt_or_script)
@@ -77,7 +77,7 @@ def run(
             Markdown(
                 f"""
 ```python
-from routekit import Agent, Runtime
+from routkitai import Agent, Runtime
 from routekitai.providers.local import FakeModel
 
 model = FakeModel(name="test")

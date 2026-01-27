@@ -3,6 +3,7 @@
 import asyncio
 import tempfile
 from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import BaseModel, Field
@@ -189,12 +190,30 @@ async def test_http_get_tool() -> None:
     """Test HttpGetTool (if httpx is available)."""
     try:
         import httpx  # noqa: F401
+        from httpx import Response
     except ImportError:
         pytest.skip("httpx not installed")
 
     tool = HttpGetTool()
-    # Test with a simple public API
-    result = await tool.execute(url="https://httpbin.org/get", timeout=10.0)
+
+    # Mock the HTTP response to avoid network calls
+    # Response.text is automatically computed from content
+    response_body = '{"url": "https://httpbin.org/get", "args": {}, "headers": {}}'
+    mock_response = Response(
+        200,
+        content=response_body.encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+
+    # Mock AsyncClient context manager and get method
+    mock_client = AsyncMock()
+    mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+    mock_client.__aexit__ = AsyncMock(return_value=None)
+    mock_client.get = AsyncMock(return_value=mock_response)
+
+    # Patch httpx.AsyncClient globally (since it's imported inside the method)
+    with patch("httpx.AsyncClient", return_value=mock_client):
+        result = await tool.execute(url="https://httpbin.org/get", timeout=10.0)
 
     assert result.status_code == 200
     assert "url" in result.body.lower()  # httpbin returns request info

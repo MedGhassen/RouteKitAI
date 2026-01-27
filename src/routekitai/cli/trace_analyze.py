@@ -26,8 +26,8 @@ def analyze_command(
     """Analyze a trace and display metrics.
 
     Examples:
-        routekit trace-analyze abc123
-        routekit trace-analyze abc123 --trace-dir ./custom_traces
+        routkitai trace-analyze abc123
+        routkitai trace-analyze abc123 --trace-dir ./custom_traces
     """
     # Determine trace directory
     trace_path: Path

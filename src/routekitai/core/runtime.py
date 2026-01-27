@@ -269,7 +269,7 @@ class Runtime(BaseModel):
                 await exporter.export(trace)
             raise
         except (RouteKitRuntimeError, ToolError, ModelError) as e:
-            # Re-raise known RouteKit errors without wrapping
+            # Re-raise known routkitai errors without wrapping
             trace.add_event(
                 "error",
                 {

@@ -4,7 +4,7 @@ from typing import Any
 
 
 class RouteKitError(Exception):
-    """Base exception for all RouteKit errors."""
+    """Base exception for all routkitai errors."""
 
     def __init__(self, message: str, context: dict[str, Any] | None = None) -> None:
         """Initialize error with message and optional context.

@@ -29,9 +29,9 @@ def replay_command(
     """Replay a trace with deterministic execution.
 
     Examples:
-        routekit replay abc123 --agent my_agent
-        routekit replay abc123 --agent my_agent --no-verify
-        routekit replay abc123 --agent my_agent --trace-dir ./custom_traces
+        routkitai replay abc123 --agent my_agent
+        routkitai replay abc123 --agent my_agent --no-verify
+        routkitai replay abc123 --agent my_agent --trace-dir ./custom_traces
     """
 
     async def _replay() -> None:
