@@ -375,7 +375,9 @@ class Runtime(BaseModel):
                 else:
                     # Generate final response
                     final_response = await self._call_model(agent, messages, trace, stream=False)
-                    assert isinstance(final_response, ModelResponse), "Expected ModelResponse when stream=False"
+                    assert isinstance(final_response, ModelResponse), (
+                        "Expected ModelResponse when stream=False"
+                    )
                     output_message = Message.assistant(final_response.content)
                     messages.append(output_message)
                 break
@@ -501,7 +503,9 @@ class Runtime(BaseModel):
                 output_message = messages[-1]
             else:
                 final_response = await self._call_model(agent, messages, trace, stream=False)
-                assert isinstance(final_response, ModelResponse), "Expected ModelResponse when stream=False"
+                assert isinstance(final_response, ModelResponse), (
+                    "Expected ModelResponse when stream=False"
+                )
                 output_message = Message.assistant(final_response.content)
                 messages.append(output_message)
 
@@ -690,7 +694,9 @@ class Runtime(BaseModel):
                                     context={"step_id": step.step_id, "step_type": step.step_type},
                                 )
                         response = await self._call_model(agent, messages, trace, stream=False)
-                        assert isinstance(response, ModelResponse), "Expected ModelResponse when stream=False"
+                        assert isinstance(response, ModelResponse), (
+                            "Expected ModelResponse when stream=False"
+                        )
                         response_data = {
                             "content": response.content,
                             "tool_calls": [
@@ -904,7 +910,10 @@ class Runtime(BaseModel):
 
             if stream:
                 # Return streaming iterator
-                assert isinstance(response, AsyncIterator), "Expected AsyncIterator when stream=True"
+                assert isinstance(response, AsyncIterator), (
+                    "Expected AsyncIterator when stream=True"
+                )
+
                 async def stream_wrapper() -> AsyncIterator[StreamEvent]:
                     content_buffer = ""
                     tool_calls_buffer: list[dict[str, Any]] = []

@@ -8,9 +8,7 @@ try:
     from rich.console import Console
     from rich.markdown import Markdown
 except ImportError as e:
-        raise ImportError(
-            "CLI dependencies not installed. Install with: pip install typer rich"
-        ) from e
+    raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 app = typer.Typer(name="run", help="Run an agent with a prompt or script")
 console = Console()

@@ -8,9 +8,7 @@ try:
     from rich.console import Console
     from rich.table import Table
 except ImportError as e:
-    raise ImportError(
-        "CLI dependencies not installed. Install with: pip install typer rich"
-    ) from e
+    raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 from routekit.core.agent import Agent
 from routekit.core.runtime import Runtime

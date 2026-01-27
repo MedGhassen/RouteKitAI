@@ -184,7 +184,10 @@ class Agent(BaseModel):
                             if result is not None:
                                 # Type guard: result should be RunResult when task is run_task
                                 from routekit.core.agent import RunResult
-                                assert isinstance(result, RunResult), "Expected RunResult from run_task"
+
+                                assert isinstance(result, RunResult), (
+                                    "Expected RunResult from run_task"
+                                )
                                 yield {
                                     "type": "result",
                                     "result": {

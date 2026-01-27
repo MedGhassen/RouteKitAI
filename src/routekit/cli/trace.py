@@ -10,9 +10,7 @@ try:
     from rich.json import JSON
     from rich.table import Table
 except ImportError as e:
-    raise ImportError(
-        "CLI dependencies not installed. Install with: pip install typer rich"
-    ) from e
+    raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 from routekit.observability.analyzer import TraceAnalyzer
 from routekit.observability.exporters.jsonl import JSONLExporter

@@ -7,9 +7,7 @@ try:
     import typer
     from rich.console import Console
 except ImportError as e:
-    raise ImportError(
-        "CLI dependencies not installed. Install with: pip install typer rich"
-    ) from e
+    raise ImportError("CLI dependencies not installed. Install with: pip install typer rich") from e
 
 from routekit.core.runtime import Runtime
 from routekit.observability.exporters.jsonl import JSONLExporter
