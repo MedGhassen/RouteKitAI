@@ -5,12 +5,12 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from routekit.core.agent import Agent
-from routekit.core.model import Model, ModelResponse, ToolCall, Usage
-from routekit.core.policies import ReActPolicy
-from routekit.core.policy_adapter import PolicyAdapter
-from routekit.core.runtime import Runtime
-from routekit.core.tool import Tool
+from routekitai.core.agent import Agent
+from routekitai.core.model import Model, ModelResponse, ToolCall, Usage
+from routekitai.core.policies import ReActPolicy
+from routekitai.core.policy_adapter import PolicyAdapter
+from routekitai.core.runtime import Runtime
+from routekitai.core.tool import Tool
 
 
 class MockModel(Model):

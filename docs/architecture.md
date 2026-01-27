@@ -1,12 +1,12 @@
-# RouteKit Architecture
+# RouteKitAI Architecture
 
 ## Overview
 
-RouteKit is designed around a simple but powerful philosophy: **graph-native orchestration, tracing-first observability, and replay-built-in testing**. These aren't add-ons—they're core to RouteKit's design from day one.
+RouteKitAI is designed around a simple but powerful philosophy: **graph-native orchestration, tracing-first observability, and replay-built-in testing**. These aren't add-ons—they're core to RouteKitAI's design from day one.
 
 ## The Wedge: Three First-Class Features
 
-RouteKit's MVP focuses on **deterministic, testable agent runs** through three integrated features:
+RouteKitAI's MVP focuses on **deterministic, testable agent runs** through three integrated features:
 
 1. **Graph-native orchestration**: Agents compose into explicit workflows with clear control flow
 2. **Tracing**: Every execution produces an immutable event log
@@ -14,7 +14,7 @@ RouteKit's MVP focuses on **deterministic, testable agent runs** through three i
 
 ### Why This Matters
 
-Most agent frameworks treat orchestration, observability, and testing as separate concerns added later. RouteKit inverts this:
+Most agent frameworks treat orchestration, observability, and testing as separate concerns added later. RouteKitAI inverts this:
 
 - **Graph-native**: Workflows are graphs, not linear scripts. Control flow is explicit and inspectable.
 - **Tracing-first**: Every run produces a complete trace. No opt-in, no sampling—always on.
@@ -30,7 +30,7 @@ This enables:
 
 ### Step-Based Runtime
 
-RouteKit executes agents in discrete **steps**. Each step:
+RouteKitAI executes agents in discrete **steps**. Each step:
 - Takes a message and context
 - Produces a message and metadata
 - Records all inputs/outputs to the trace
@@ -93,7 +93,7 @@ class Model(ABC):
         ...
 ```
 
-This abstraction allows RouteKit to work with any LLM provider (OpenAI, Anthropic, local models, etc.) without coupling to specific APIs.
+This abstraction allows RouteKitAI to work with any LLM provider (OpenAI, Anthropic, local models, etc.) without coupling to specific APIs.
 
 ### 2. Message System
 
@@ -233,7 +233,7 @@ class Policy(ABC):
 
 ## Memory System
 
-RouteKit supports multiple memory backends:
+RouteKitAI supports multiple memory backends:
 
 - **EpisodicMemory**: SQLite-backed episode storage
 - **RetrievalMemory**: TF-IDF or substring search
@@ -296,7 +296,7 @@ Sandboxing provides isolation for tool execution:
 
 ## Performance Considerations
 
-RouteKit prioritizes correctness and testability over raw performance:
+RouteKitAI prioritizes correctness and testability over raw performance:
 
 - **Correctness first**: Deterministic behavior is more important than speed
 - **Testability**: Replay enables fast, reliable tests

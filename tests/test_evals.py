@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from routekit.core.agent import Agent, RunResult
-from routekit.core.runtime import Runtime
-from routekit.evals import ContainsMetric, Dataset, EvalRunner, ExactMatchMetric, RegexMetric
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent, RunResult
+from routekitai.core.runtime import Runtime
+from routekitai.evals import ContainsMetric, Dataset, EvalRunner, ExactMatchMetric, RegexMetric
+from routekitai.providers.local import FakeModel
 
 
 class EvalTestAgent(Agent):

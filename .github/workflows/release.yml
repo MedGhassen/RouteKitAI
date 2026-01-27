@@ -44,7 +44,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     environment:
       name: pypi
-      url: https://pypi.org/p/routekit
+      url: https://pypi.org/project/RouteKitAI
     steps:
       - uses: actions/checkout@v4
 

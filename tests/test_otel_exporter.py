@@ -2,8 +2,8 @@
 
 import pytest
 
-from routekit.observability.exporters.otel import OTELExporter
-from routekit.observability.trace import Trace
+from routekitai.observability.exporters.otel import OTELExporter
+from routekitai.observability.trace import Trace
 
 
 @pytest.mark.asyncio

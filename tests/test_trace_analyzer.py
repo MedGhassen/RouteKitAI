@@ -2,8 +2,8 @@
 
 import time
 
-from routekit.observability.analyzer import TraceAnalyzer, TraceMetrics
-from routekit.observability.trace import Trace
+from routekitai.observability.analyzer import TraceAnalyzer, TraceMetrics
+from routekitai.observability.trace import Trace
 
 
 def create_test_trace() -> Trace:

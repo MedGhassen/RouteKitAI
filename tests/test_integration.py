@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from routekit.core.agent import Agent
-from routekit.core.runtime import Runtime
-from routekit.core.tools import EchoTool
-from routekit.providers.local import FakeModel
+from routekitai.core.agent import Agent
+from routekitai.core.runtime import Runtime
+from routekitai.core.tools import EchoTool
+from routekitai.providers.local import FakeModel
 
 
 class TestAgent(Agent):

@@ -3,11 +3,11 @@
 import asyncio
 from pathlib import Path
 
-from routekit.core.agent import Agent
-from routekit.core.model import Model, ModelResponse, Usage
-from routekit.core.policies import PlanExecutePolicy
-from routekit.core.policy_adapter import PolicyAdapter
-from routekit.core.runtime import Runtime
+from routekitai.core.agent import Agent
+from routekitai.core.model import Model, ModelResponse, Usage
+from routekitai.core.policies import PlanExecutePolicy
+from routekitai.core.policy_adapter import PolicyAdapter
+from routekitai.core.runtime import Runtime
 
 
 class MockModel(Model):

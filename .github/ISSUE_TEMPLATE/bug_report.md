@@ -28,7 +28,7 @@ What actually happened.
 
 - **OS**: [e.g., Ubuntu 22.04, macOS 13.0, Windows 11]
 - **Python Version**: [e.g., 3.11.0]
-- **RouteKit Version**: [e.g., 0.1.0]
+- **RouteKitAI Version**: [e.g., 0.1.0]
 - **Dependencies**: [List any relevant dependencies and versions]
 
 ## Code Example

@@ -6,9 +6,9 @@ from typing import Any
 
 import pytest
 
-from routekit.memory.episodic import EpisodicMemory
-from routekit.memory.retrieval import RetrievalMemory
-from routekit.memory.working import WorkingMemory
+from routekitai.memory.episodic import EpisodicMemory
+from routekitai.memory.retrieval import RetrievalMemory
+from routekitai.memory.working import WorkingMemory
 
 
 @pytest.mark.asyncio
@@ -156,12 +156,12 @@ async def test_retrieval_memory_append() -> None:
 @pytest.mark.asyncio
 async def test_memory_in_agent_state() -> None:
     """Test that memory is accessible in agent state."""
-    from routekit.core.agent import Agent
-    from routekit.core.message import Message
-    from routekit.core.model import Model, ModelResponse, Usage
-    from routekit.core.policy import ModelAction, Policy
-    from routekit.core.policy_adapter import PolicyAdapter
-    from routekit.core.runtime import Runtime
+    from routekitai.core.agent import Agent
+    from routekitai.core.message import Message
+    from routekitai.core.model import Model, ModelResponse, Usage
+    from routekitai.core.policy import ModelAction, Policy
+    from routekitai.core.policy_adapter import PolicyAdapter
+    from routekitai.core.runtime import Runtime
 
     class MockModel(Model):
         def __init__(self) -> None:

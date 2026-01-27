@@ -2,7 +2,7 @@
 
 import pytest
 
-from routekit.sandbox.network import NetworkSandbox, NetworkSandboxError
+from routekitai.sandbox.network import NetworkSandbox, NetworkSandboxError
 
 
 @pytest.mark.asyncio

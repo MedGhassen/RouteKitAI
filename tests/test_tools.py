@@ -7,10 +7,10 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel, Field
 
-from routekit.core.errors import ToolError
-from routekit.core.tool import Tool
-from routekit.core.tools import EchoTool, FileReadTool, HttpGetTool
-from routekit.observability.trace import Trace
+from routekitai.core.errors import ToolError
+from routekitai.core.tool import Tool
+from routekitai.core.tools import EchoTool, FileReadTool, HttpGetTool
+from routekitai.observability.trace import Trace
 
 
 class TestInput(BaseModel):
@@ -103,7 +103,7 @@ def test_tool_schema_generation() -> None:
     assert schema["properties"]["message"]["type"] == "string"
 
     # Verify schema matches input model
-    from routekit.core.tools import EchoInput
+    from routekitai.core.tools import EchoInput
 
     expected_schema = EchoInput.model_json_schema()
     assert schema == expected_schema
@@ -238,7 +238,7 @@ async def test_http_get_tool_redaction() -> None:
 @pytest.mark.asyncio
 async def test_tool_timeout() -> None:
     """Test tool timeout behavior."""
-    from routekit.core.runtime import Runtime
+    from routekitai.core.runtime import Runtime
 
     tool = SlowTool(sleep_time=1.0)  # Sleep for 1 second
     # Tool has 0.1s timeout
@@ -251,7 +251,7 @@ async def test_tool_timeout() -> None:
 @pytest.mark.asyncio
 async def test_tool_retry() -> None:
     """Test tool retry behavior."""
-    from routekit.core.runtime import Runtime
+    from routekitai.core.runtime import Runtime
 
     # Create tool that fails twice then succeeds
     tool = FailingTool(fail_count=2)
@@ -271,7 +271,7 @@ async def test_tool_retry() -> None:
 @pytest.mark.asyncio
 async def test_tool_retry_exhausted() -> None:
     """Test tool retry exhaustion."""
-    from routekit.core.runtime import Runtime
+    from routekitai.core.runtime import Runtime
 
     # Create tool that always fails
     tool = FailingTool(fail_count=10)  # Will fail more than retries

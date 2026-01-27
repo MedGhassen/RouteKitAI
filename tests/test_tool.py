@@ -3,8 +3,8 @@
 import pytest
 from pydantic import BaseModel, Field
 
-from routekit.core.errors import ToolError
-from routekit.core.tool import Tool, ToolPermission
+from routekitai.core.errors import ToolError
+from routekitai.core.tool import Tool, ToolPermission
 
 
 class AddInput(BaseModel):

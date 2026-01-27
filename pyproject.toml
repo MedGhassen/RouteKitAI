@@ -3,14 +3,14 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "routekit"
-version = "0.1.0"
+name = "RouteKitAI"
+dynamic = ["version"]
 description = "An agent development + orchestration framework"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "RouteKit Contributors"}
+    {name = "Mohamed Ghassen Brahim"}
 ]
 keywords = ["ai", "agents", "orchestration", "llm", "framework"]
 classifiers = [
@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.scripts]
-routekit = "routekit.cli.main:main"
+routekitai = "routekitai.cli.main:main"
 
 [project.optional-dependencies]
 dev = [
@@ -54,16 +54,22 @@ optional = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/routekit/routekit"
+Homepage = "https://github.com/MedGhassen/RouteKit"
 Documentation = "https://routekit.readthedocs.io"
-Repository = "https://github.com/routekit/routekit"
-Issues = "https://github.com/routekit/routekit/issues"
+Repository = "https://github.com/MedGhassen/RouteKit"
+Issues = "https://github.com/MedGhassen/RouteKit/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.dynamic]
+version = {attr = "routekitai.__version__"}
+
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+routekitai = ["py.typed"]
 
 [tool.ruff]
 target-version = "py311"
@@ -84,7 +90,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["routekit"]
+known-first-party = ["routekitai"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -122,13 +128,13 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = [
-    "routekit.cli.*",
+    "routekitai.cli.*",
 ]
 disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 module = [
-    "routekit.cli.serve",
+    "routekitai.cli.serve",
 ]
 ignore_missing_imports = true
 
@@ -141,7 +147,7 @@ asyncio_mode = "auto"
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=routekit",
+    "--cov=routekitai",
     "--cov-report=term-missing",
     "--cov-report=html",
 ]
