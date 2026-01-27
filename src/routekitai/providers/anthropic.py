@@ -75,7 +75,7 @@ class AnthropicModel(Model):
         return self._client
 
     def _message_to_anthropic(self, message: Message) -> dict[str, Any]:
-        """Convert RouteKit Message to Anthropic format."""
+        """Convert routkitai Message to Anthropic format."""
         role_map = {
             MessageRole.SYSTEM: "system",
             MessageRole.USER: "user",
@@ -94,7 +94,7 @@ class AnthropicModel(Model):
         }
 
     def _tools_to_anthropic(self, tools: list[Tool]) -> list[dict[str, Any]]:
-        """Convert RouteKit Tools to Anthropic tool format."""
+        """Convert routkitai Tools to Anthropic tool format."""
         return [
             {
                 "name": tool.name,
@@ -105,7 +105,7 @@ class AnthropicModel(Model):
         ]
 
     def _anthropic_to_tool_calls(self, tool_use_blocks: list[dict[str, Any]]) -> list[ToolCall]:
-        """Convert Anthropic tool use blocks to RouteKit format."""
+        """Convert Anthropic tool use blocks to routkitai format."""
         result = []
         for block in tool_use_blocks:
             if block.get("type") == "tool_use":

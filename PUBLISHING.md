@@ -5,17 +5,41 @@ This document describes how to publish RouteKitAI to PyPI using the GitHub Actio
 ## Prerequisites
 
 1. **PyPI Account**: Create an account at https://pypi.org/account/register/
-2. **API Token**: 
+
+2. **Trusted Publisher Setup (OIDC - Recommended)**:
+   - Go to your PyPI project: https://pypi.org/manage/project/routekitai/settings/
+   - Navigate to "Publishing" → "Add a new pending publisher"
+   - Select "GitHub Actions" as the publisher type
+   - Fill in the details:
+     - **PyPI project name**: `RouteKitAI`
+     - **Owner**: Your GitHub username or organization (e.g., `MedGhassen`)
+     - **Repository name**: `RouteKit` (or your repo name)
+     - **Workflow filename**: `.github/workflows/publish.yml`
+     - **Environment name**: `pypi` (optional, but recommended for protection)
+   - Click "Add"
+   - **Note**: No API tokens needed! OIDC handles authentication securely.
+
+3. **GitHub Environment Setup** (Optional but Recommended):
+   - Go to your repository settings → Environments
+   - Click "New environment" and name it `pypi`
+   - (Optional) Add environment URL: `https://pypi.org/project/RouteKitAI`
+   - Configure protection rules if needed (e.g., required reviewers)
+   - **No secrets needed** - OIDC handles authentication automatically
+
+### Alternative: API Token Method (Legacy)
+
+If you prefer to use API tokens instead of OIDC:
+
+1. **API Token**: 
    - Go to https://pypi.org/manage/account/token/
    - Create a new API token with scope: "Entire account" or "Project: routekitai"
    - Copy the token (starts with `pypi-`)
 
-3. **GitHub Environment Setup**: 
+2. **GitHub Environment Setup**: 
    - Go to your repository settings → Environments
    - Click "New environment" and name it `pypi`
-   - (Optional) Add environment URL: `https://pypi.org/project/RouteKitAI`
    - In the "Secrets" section, add a secret named `PYPI_API_TOKEN` with your PyPI API token
-   - **Important**: The workflow uses the `pypi` environment, so the secret must be added to this environment (not just repository secrets)
+   - **Note**: You'll need to modify the workflow to use `TWINE_USERNAME` and `TWINE_PASSWORD` instead of the OIDC action
 
 ## Publishing Process
 
@@ -117,8 +141,16 @@ If the build fails:
 
 ### Upload Errors
 
-If upload fails:
-- Verify `PYPI_API_TOKEN` secret is set correctly in GitHub
+If upload fails with OIDC/Trusted Publishing:
+- Verify the trusted publisher is configured correctly in PyPI project settings
+- Check that the workflow filename matches exactly: `.github/workflows/publish.yml`
+- Ensure the repository owner/name matches your GitHub repository
+- Verify the environment name is `pypi` (if using environments)
+- Check that `permissions.id-token: write` is set in the workflow
+- Ensure the workflow is running from the correct branch (usually `main` or `master`)
+
+If using API tokens (legacy):
+- Verify `PYPI_API_TOKEN` secret is set correctly in GitHub environment
 - Check that the version doesn't already exist on PyPI
 - Ensure you have proper permissions on PyPI
 

@@ -1,4 +1,4 @@
-"""Policy system for RouteKit agent execution."""
+"""Policy system for routkitai agent execution."""
 
 from abc import ABC, abstractmethod
 from typing import Any

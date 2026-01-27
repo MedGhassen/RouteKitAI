@@ -73,7 +73,7 @@ class OpenAIChatModel(Model):
         return self._client
 
     def _message_to_openai(self, message: Message) -> dict[str, Any]:
-        """Convert RouteKit Message to OpenAI format."""
+        """Convert routkitai Message to OpenAI format."""
         role_map = {
             MessageRole.SYSTEM: "system",
             MessageRole.USER: "user",
@@ -101,7 +101,7 @@ class OpenAIChatModel(Model):
         return msg_dict
 
     def _tools_to_openai(self, tools: list[Tool]) -> list[dict[str, Any]]:
-        """Convert RouteKit Tools to OpenAI function format."""
+        """Convert routkitai Tools to OpenAI function format."""
         return [
             {
                 "type": "function",
@@ -115,7 +115,7 @@ class OpenAIChatModel(Model):
         ]
 
     def _openai_to_tool_calls(self, tool_calls: list[dict[str, Any]]) -> list[ToolCall]:
-        """Convert OpenAI tool calls to RouteKit format."""
+        """Convert OpenAI tool calls to routkitai format."""
         result = []
         for tc in tool_calls:
             if tc.get("type") == "function":

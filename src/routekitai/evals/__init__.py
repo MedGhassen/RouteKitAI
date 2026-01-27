@@ -1,4 +1,4 @@
-"""Evaluation harness for RouteKit agents."""
+"""Evaluation harness for routkitai agents."""
 
 from routekitai.evals.dataset import Dataset
 from routekitai.evals.metrics import ContainsMetric, ExactMatchMetric, RegexMetric

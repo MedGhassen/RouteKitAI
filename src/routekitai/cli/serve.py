@@ -18,7 +18,7 @@ from routekitai.observability.analyzer import TraceAnalyzer
 from routekitai.observability.exporters.jsonl import JSONLExporter
 from routekitai.observability.streaming import get_broadcaster
 
-app = FastAPI(title="RouteKit Trace Viewer", version="0.1.0")
+app = FastAPI(title="routkitai Trace Viewer", version="0.1.0")
 
 # Enable CORS for local development
 app.add_middleware(
@@ -282,7 +282,7 @@ def _get_dashboard_html() -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RouteKit Trace Viewer</title>
+    <title>routkitai Trace Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -569,7 +569,7 @@ def _get_dashboard_html() -> str:
 <body>
     <div class="container">
         <header>
-            <h1>🔍 RouteKit Trace Viewer</h1>
+            <h1>🔍 routkitai Trace Viewer</h1>
             <p>Visualize and analyze agent execution traces</p>
         </header>
 
@@ -938,9 +938,9 @@ def serve_command(
     """Start the trace visualization web server.
 
     Examples:
-        routekit serve
-        routekit serve --port 3000
-        routekit serve --host 0.0.0.0 --port 8080
+        routkitai serve
+        routkitai serve --port 3000
+        routkitai serve --host 0.0.0.0 --port 8080
     """
     import uvicorn
 
@@ -951,11 +951,11 @@ def serve_command(
         from rich.console import Console
 
         console = Console()
-        console.print("\n[bold green]🚀 Starting RouteKit Trace Viewer[/bold green]")
+        console.print("\n[bold green]🚀 Starting routkitai Trace Viewer[/bold green]")
         console.print(f"[dim]Server running at http://{host}:{port}[/dim]")
         console.print(f"[dim]Trace directory: {trace_dir}[/dim]\n")
     except ImportError:
-        print("\n🚀 Starting RouteKit Trace Viewer")
+        print("\n🚀 Starting routkitai Trace Viewer")
         print(f"Server running at http://{host}:{port}")
         print(f"Trace directory: {trace_dir}\n")
 

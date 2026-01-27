@@ -1,4 +1,4 @@
-"""RouteKit core primitives."""
+"""routkitai core primitives."""
 
 from routekitai.core.agent import Agent, RunResult
 from routekitai.core.errors import (

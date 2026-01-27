@@ -149,9 +149,9 @@ async def main() -> None:
     executor = GraphExecutor(runtime=runtime, graph=graph)
 
     # Execute graph with a real task
-    print("Executing graph with input: 'Create a summary of RouteKit framework'")
+    print("Executing graph with input: 'Create a summary of routkitai framework'")
     print("-" * 60)
-    result = await executor.execute(input_data={"input": "Create a summary of RouteKit framework"})
+    result = await executor.execute(input_data={"input": "Create a summary of routkitai framework"})
 
     print()
     print("=" * 60)

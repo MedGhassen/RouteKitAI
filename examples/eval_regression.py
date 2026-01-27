@@ -25,7 +25,7 @@ async def main() -> None:
     # Create model with deterministic responses
     model = FakeModel(name="eval_model")
     model.add_response("The answer is 42")
-    model.add_response("RouteKit supports graph orchestration")
+    model.add_response("routkitai supports graph orchestration")
     model.add_response("Python is a programming language")
 
     # Create agent
@@ -48,7 +48,7 @@ async def main() -> None:
                 },
                 {
                     "id": "example_2",
-                    "input": "What does RouteKit support?",
+                    "input": "What does routkitai support?",
                     "expected_output": "graph orchestration",
                 },
                 {

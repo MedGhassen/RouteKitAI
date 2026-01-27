@@ -15,24 +15,24 @@ from routekitai.core.runtime import Runtime
 from routekitai.core.tools import EchoTool
 from routekitai.providers.local import FakeModel
 
-app = typer.Typer(name="test-agent", help="Run sanity checks on RouteKit agents")
+app = typer.Typer(name="test-agent", help="Run sanity checks on routkitai agents")
 console = Console()
 
 
 def test_command(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose output"),
 ) -> None:
-    """Run a battery of sanity checks on RouteKit agents.
+    """Run a battery of sanity checks on routkitai agents.
 
     Tests basic agent functionality, tool execution, tracing, and replay.
 
     Examples:
-        routekit test-agent
-        routekit test-agent --verbose
+        routkitai test-agent
+        routkitai test-agent --verbose
     """
 
     async def _run_tests() -> None:
-        console.print("[bold]Running RouteKit agent sanity checks...[/bold]\n")
+        console.print("[bold]Running routkitai agent sanity checks...[/bold]\n")
 
         tests_passed = 0
         tests_failed = 0

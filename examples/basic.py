@@ -1,10 +1,10 @@
 """Basic example of using RouteKit."""
 
-from routekit import Agent, Message, MessageRole, Model, Runtime, Tool
+from routkitai import Agent, Message, MessageRole, Model, Runtime, Tool
 
 
 async def main() -> None:
-    """Run a basic RouteKit example."""
+    """Run a basic routkitai example."""
     # Define a simple model (placeholder - would need actual implementation)
     model = Model(name="gpt-4", provider="openai", config={})
 

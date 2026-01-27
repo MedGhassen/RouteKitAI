@@ -1,4 +1,4 @@
-"""Hello RouteKit - Simple end-to-end example."""
+"""Hello routkitai - Simple end-to-end example."""
 
 import asyncio
 from pathlib import Path
@@ -19,7 +19,7 @@ class HelloAgent(Agent):
 
 
 async def main() -> None:
-    """Run a simple RouteKit agent."""
+    """Run a simple routkitai agent."""
     # Create a fake model for testing
     model = FakeModel(
         name="fake",
@@ -51,7 +51,7 @@ async def main() -> None:
     runtime.register_agent(agent)
 
     # Run the agent
-    print("Running RouteKit agent...")
+    print("Running routkitai agent...")
     result = await runtime.run("hello_agent", "Hello! Please echo 'Hello from RouteKit!'")
 
     # Print results

@@ -79,7 +79,7 @@ async def test_eval_runner() -> None:
     """Test evaluation runner."""
     model = FakeModel(name="test")
     model.add_response("The answer is 42")
-    model.add_response("RouteKit is a framework")
+    model.add_response("routkitai is a framework")
 
     agent = EvalTestAgent(name="test_agent", model=model, tools=[])
 
