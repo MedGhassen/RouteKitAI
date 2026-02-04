@@ -1,7 +1,7 @@
 """Tool primitive for RouteKit."""
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import StrEnum
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field, create_model
@@ -12,7 +12,7 @@ TInput = TypeVar("TInput", bound=BaseModel)
 TOutput = TypeVar("TOutput", bound=BaseModel)
 
 
-class ToolPermission(str, Enum):
+class ToolPermission(StrEnum):
     """Tool permission types."""
 
     NETWORK = "network"
