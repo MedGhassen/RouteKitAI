@@ -1,0 +1,2103 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A minimal, production-ready framework for building and orchestrating AI agents">
+      
+      
+      
+        <link rel="canonical" href="https://routekitai.readthedocs.io/security-and-governance/">
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../api-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Security & Governance - RouteKitAI</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-and-governance" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="RouteKitAI" class="md-header__button md-logo" aria-label="RouteKitAI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RouteKitAI
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security & Governance
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MedGhassen/RouteKitAI" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="RouteKitAI" class="md-nav__button md-logo" aria-label="RouteKitAI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RouteKitAI
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MedGhassen/RouteKitAI" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/running-agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/creating-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/graph-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graph workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/tracing-and-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracing and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Providers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security & Governance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security & Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy Hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hook-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hook Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pii-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PII Redaction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PII Redaction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-redacted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Redacted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tool Filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-level-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent-Level Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-level-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime-Level Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approval Gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approval Gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-based-approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission-Based Approval
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sandboxing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filesystem-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeouts-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeouts and Retries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timeouts and Retries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeouts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancellation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancellation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trace-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trace Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trace-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Redaction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-always-enable-pii-redaction-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Always Enable PII Redaction in Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-use-deny-lists-for-dangerous-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Use Deny Lists for Dangerous Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-implement-approval-gates-for-high-risk-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Implement Approval Gates for High-Risk Permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-set-appropriate-timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Set Appropriate Timeouts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-replay-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Use Replay for Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-monitor-trace-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Monitor Trace Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-secure-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Secure API Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-security-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting Security Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy Hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hook-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hook Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pii-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PII Redaction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PII Redaction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-redacted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Redacted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tool Filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-level-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent-Level Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-level-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime-Level Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approval Gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approval Gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-based-approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission-Based Approval
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sandboxing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filesystem-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeouts-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeouts and Retries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timeouts and Retries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeouts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancellation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancellation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trace-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trace Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trace-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Redaction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-always-enable-pii-redaction-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Always Enable PII Redaction in Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-use-deny-lists-for-dangerous-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Use Deny Lists for Dangerous Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-implement-approval-gates-for-high-risk-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Implement Approval Gates for High-Risk Permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-set-appropriate-timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Set Appropriate Timeouts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-replay-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Use Replay for Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-monitor-trace-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Monitor Trace Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-secure-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Secure API Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-security-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting Security Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security-and-governance">Security and Governance<a class="headerlink" href="#security-and-governance" title="Permanent link">&para;</a></h1>
+<p>RouteKitAI provides built-in security and governance features to control agent behavior, protect sensitive data, and enforce policies. This guide covers all security features and best practices.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#policy-hooks">Policy Hooks</a></li>
+<li><a href="#pii-redaction">PII Redaction</a></li>
+<li><a href="#tool-filtering">Tool Filtering</a></li>
+<li><a href="#approval-gates">Approval Gates</a></li>
+<li><a href="#sandboxing">Sandboxing</a></li>
+<li><a href="#timeouts-and-retries">Timeouts and Retries</a></li>
+<li><a href="#trace-security">Trace Security</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ul>
+<h2 id="policy-hooks">Policy Hooks<a class="headerlink" href="#policy-hooks" title="Permanent link">&para;</a></h2>
+<p>Policy hooks allow you to intercept and modify agent execution at various points. They are configured at the <code>Runtime</code> level and apply to all agents.</p>
+<h3 id="hook-architecture">Hook Architecture<a class="headerlink" href="#hook-architecture" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">class PolicyHooks(BaseModel):
+    pii_redaction: PIIRedactionHook | None = None
+    tool_filter: ToolFilter | None = None
+    approval_gate: ApprovalGate | None = None
+</code></pre>
+<p>Hooks are executed in order:
+1. PII Redaction (before trace recording)
+2. Tool Filtering (before tool execution)
+3. Approval Gate (before tool execution)</p>
+<h2 id="pii-redaction">PII Redaction<a class="headerlink" href="#pii-redaction" title="Permanent link">&para;</a></h2>
+<p>Automatically redact personally identifiable information (PII) from prompts, tool arguments, and trace logs.</p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from routekitai.core.hooks import PIIRedactionHook, PolicyHooks
+from routekitai.core.runtime import Runtime
+
+# Create PII redaction hook
+pii_hook = PIIRedactionHook(
+    redact_emails=True,      # Redact email addresses
+    redact_phones=True,      # Redact phone numbers
+    replacement=&quot;[REDACTED]&quot; # Custom replacement string
+)
+
+runtime = Runtime(
+    policy_hooks=PolicyHooks(pii_redaction=pii_hook)
+)
+</code></pre>
+<h3 id="custom-patterns">Custom Patterns<a class="headerlink" href="#custom-patterns" title="Permanent link">&para;</a></h3>
+<p>Add custom regex patterns for domain-specific PII:</p>
+<pre><code class="language-python">pii_hook = PIIRedactionHook(
+    redact_emails=True,
+    redact_phones=True,
+)
+
+# Add custom patterns
+pii_hook.redact_patterns = [
+    (r&quot;\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b&quot;, &quot;[CARD]&quot;),  # Credit cards
+    (r&quot;\b\d{3}-\d{2}-\d{4}\b&quot;, &quot;[SSN]&quot;),  # Social Security Numbers
+    (r&quot;\b[A-Z]{2}\d{6}\b&quot;, &quot;[PASSPORT]&quot;),  # Passport numbers
+]
+
+runtime = Runtime(
+    policy_hooks=PolicyHooks(pii_redaction=pii_hook)
+)
+</code></pre>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Email addresses</strong>: <code>user@example.com</code> → <code>[REDACTED]</code></li>
+<li><strong>Phone numbers</strong>: <code>555-123-4567</code> → <code>[REDACTED]</code></li>
+<li><strong>Custom regex patterns</strong>: Match any pattern</li>
+<li><strong>Recursive redaction</strong>: Works in nested dictionaries and lists</li>
+<li><strong>Trace integration</strong>: Automatically redacts trace logs</li>
+</ul>
+<h3 id="what-gets-redacted">What Gets Redacted<a class="headerlink" href="#what-gets-redacted" title="Permanent link">&para;</a></h3>
+<p>PII redaction applies to:
+- User prompts
+- Tool arguments
+- Model responses (optional)
+- Trace event data
+- Error messages</p>
+<h2 id="tool-filtering">Tool Filtering<a class="headerlink" href="#tool-filtering" title="Permanent link">&para;</a></h2>
+<p>Control which tools can be executed at the agent or runtime level.</p>
+<h3 id="agent-level-filter">Agent-Level Filter<a class="headerlink" href="#agent-level-filter" title="Permanent link">&para;</a></h3>
+<p>Restrict tools for a specific agent:</p>
+<pre><code class="language-python">from routekitai.core.hooks import ToolFilter
+from routekitai.core.agent import Agent
+
+# Only allow specific tools
+agent = Agent(
+    name=&quot;restricted_agent&quot;,
+    model=model,
+    tools=[tool1, tool2, tool3],
+    tool_filter=ToolFilter(allowed_tools=[&quot;tool1&quot;, &quot;tool2&quot;])  # Only tool1 and tool2 allowed
+)
+</code></pre>
+<h3 id="runtime-level-filter">Runtime-Level Filter<a class="headerlink" href="#runtime-level-filter" title="Permanent link">&para;</a></h3>
+<p>Deny specific tools globally:</p>
+<pre><code class="language-python">from routekitai.core.hooks import PolicyHooks, ToolFilter
+from routekitai.core.runtime import Runtime
+
+# Deny specific tools globally
+runtime = Runtime(
+    policy_hooks=PolicyHooks(
+        tool_filter=ToolFilter(denied_tools=[&quot;dangerous_tool&quot;, &quot;network_tool&quot;])
+    )
+)
+</code></pre>
+<h3 id="priority">Priority<a class="headerlink" href="#priority" title="Permanent link">&para;</a></h3>
+<p>Agent-level filters take precedence over runtime-level filters. If an agent has a filter, it overrides the runtime filter.</p>
+<h3 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Development</strong>: Restrict tools during testing</li>
+<li><strong>Production</strong>: Deny dangerous tools globally</li>
+<li><strong>Multi-tenant</strong>: Different tool sets per tenant</li>
+<li><strong>Compliance</strong>: Enforce tool usage policies</li>
+</ul>
+<h2 id="approval-gates">Approval Gates<a class="headerlink" href="#approval-gates" title="Permanent link">&para;</a></h2>
+<p>Require explicit approval before executing tools with certain permissions.</p>
+<h3 id="basic-setup">Basic Setup<a class="headerlink" href="#basic-setup" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from routekitai.core.hooks import ApprovalGate, PolicyHooks
+from routekitai.core.runtime import Runtime
+
+def approval_callback(tool_name: str, tool_args: dict) -&gt; bool:
+    &quot;&quot;&quot;Return True if tool is approved, False otherwise.&quot;&quot;&quot;
+    # Check against approval database, user input, etc.
+    if tool_name == &quot;network_tool&quot;:
+        return check_approval_database(tool_name, tool_args)
+    return True  # Auto-approve other tools
+
+runtime = Runtime(
+    policy_hooks=PolicyHooks(
+        approval_gate=ApprovalGate(
+            require_approval_for_permissions=[&quot;network&quot;, &quot;filesystem&quot;],
+            approval_callback=approval_callback,
+        )
+    )
+)
+</code></pre>
+<h3 id="permission-based-approval">Permission-Based Approval<a class="headerlink" href="#permission-based-approval" title="Permanent link">&para;</a></h3>
+<p>Tools can declare permissions:</p>
+<pre><code class="language-python">from routekitai.core.tool import ToolPermission
+
+class NetworkTool(Tool):
+    permissions = [ToolPermission.NETWORK]
+    ...
+</code></pre>
+<p>The approval gate checks these permissions:</p>
+<pre><code class="language-python">approval_gate = ApprovalGate(
+    require_approval_for_permissions=[&quot;network&quot;, &quot;filesystem&quot;],
+    approval_callback=my_callback,
+)
+</code></pre>
+<h3 id="use-cases_1">Use Cases<a class="headerlink" href="#use-cases_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Network access</strong>: Block network tools unless explicitly approved</li>
+<li><strong>File system operations</strong>: Require human review for file writes</li>
+<li><strong>External API calls</strong>: Approve API calls based on cost/risk</li>
+<li><strong>Integration</strong>: Connect to external approval systems</li>
+</ul>
+<h2 id="sandboxing">Sandboxing<a class="headerlink" href="#sandboxing" title="Permanent link">&para;</a></h2>
+<p>Sandboxing provides isolation for tool execution. (Note: Sandboxing is planned for future releases.)</p>
+<h3 id="filesystem-sandbox">Filesystem Sandbox<a class="headerlink" href="#filesystem-sandbox" title="Permanent link">&para;</a></h3>
+<p>Control file system access:</p>
+<pre><code class="language-python">from routekitai.sandbox.filesystem import FilesystemSandbox
+
+sandbox = FilesystemSandbox(
+    allowed_paths=[Path(&quot;/safe/directory&quot;)],
+    read_only_paths=[Path(&quot;/readonly&quot;)],
+    sandbox_root=Path(&quot;/sandbox&quot;),
+)
+</code></pre>
+<h3 id="network-sandbox">Network Sandbox<a class="headerlink" href="#network-sandbox" title="Permanent link">&para;</a></h3>
+<p>Control network access:</p>
+<pre><code class="language-python">from routekitai.sandbox.network import NetworkSandbox
+
+sandbox = NetworkSandbox(
+    allowed_hosts=[&quot;api.example.com&quot;],
+    blocked_hosts=[&quot;dangerous-site.com&quot;],
+    rate_limit={&quot;requests_per_minute&quot;: 60},
+)
+</code></pre>
+<h2 id="timeouts-and-retries">Timeouts and Retries<a class="headerlink" href="#timeouts-and-retries" title="Permanent link">&para;</a></h2>
+<h3 id="timeouts">Timeouts<a class="headerlink" href="#timeouts" title="Permanent link">&para;</a></h3>
+<p>Configure timeouts at multiple levels:</p>
+<pre><code class="language-python"># Runtime-level default timeout
+runtime = Runtime(timeout=30.0)  # 30 seconds default
+
+# Tool-level timeout (takes precedence)
+tool = Tool(
+    name=&quot;slow_tool&quot;,
+    timeout=60.0,  # 60 seconds for this tool
+    ...
+)
+</code></pre>
+<h3 id="retries">Retries<a class="headerlink" href="#retries" title="Permanent link">&para;</a></h3>
+<p>Automatic retry with exponential backoff:</p>
+<pre><code class="language-python">runtime = Runtime(
+    max_retries=3,              # Maximum retry attempts
+    retry_backoff_base=1.0,     # Base delay in seconds
+    retry_backoff_max=60.0,     # Maximum delay cap
+)
+</code></pre>
+<p><strong>Backoff Formula:</strong> <code>delay = min(base * (2^attempt), max)</code></p>
+<ul>
+<li>Attempt 1: 1.0s delay</li>
+<li>Attempt 2: 2.0s delay</li>
+<li>Attempt 3: 4.0s delay</li>
+<li>Capped at 60.0s maximum</li>
+</ul>
+<h3 id="cancellation">Cancellation<a class="headerlink" href="#cancellation" title="Permanent link">&para;</a></h3>
+<p>Cancel long-running executions gracefully:</p>
+<pre><code class="language-python">import asyncio
+from routekitai.core.runtime import Runtime
+
+runtime = Runtime()
+runtime.register_agent(agent)
+
+# Create a task that can be cancelled
+task = asyncio.create_task(
+    runtime.run(&quot;agent_name&quot;, &quot;prompt&quot;)
+)
+
+# Cancel after 5 seconds
+await asyncio.sleep(5)
+task.cancel()
+
+try:
+    result = await task
+except asyncio.CancelledError:
+    print(&quot;Execution cancelled&quot;)
+</code></pre>
+<h2 id="trace-security">Trace Security<a class="headerlink" href="#trace-security" title="Permanent link">&para;</a></h2>
+<p>Traces contain sensitive information. Protect them accordingly.</p>
+<h3 id="trace-storage">Trace Storage<a class="headerlink" href="#trace-storage" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Local storage</strong>: Traces stored in <code>.routekit/traces/</code> by default</li>
+<li><strong>Encryption</strong>: Encrypt trace files if they contain sensitive data</li>
+<li><strong>Access control</strong>: Restrict file system permissions</li>
+<li><strong>Retention</strong>: Implement trace retention policies</li>
+</ul>
+<h3 id="trace-redaction">Trace Redaction<a class="headerlink" href="#trace-redaction" title="Permanent link">&para;</a></h3>
+<p>PII redaction automatically applies to traces:</p>
+<pre><code class="language-python">runtime = Runtime(
+    trace_dir=Path(&quot;.routekit/traces&quot;),
+    policy_hooks=PolicyHooks(
+        pii_redaction=PIIRedactionHook(redact_emails=True, redact_phones=True)
+    )
+)
+</code></pre>
+<h3 id="trace-sharing">Trace Sharing<a class="headerlink" href="#trace-sharing" title="Permanent link">&para;</a></h3>
+<p>Before sharing traces:
+1. Review for sensitive data
+2. Redact PII if needed
+3. Remove API keys and credentials
+4. Anonymize user data</p>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-always-enable-pii-redaction-in-production">1. Always Enable PII Redaction in Production<a class="headerlink" href="#1-always-enable-pii-redaction-in-production" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">runtime = Runtime(
+    policy_hooks=PolicyHooks(
+        pii_redaction=PIIRedactionHook(
+            redact_emails=True,
+            redact_phones=True,
+        )
+    )
+)
+</code></pre>
+<h3 id="2-use-deny-lists-for-dangerous-tools">2. Use Deny Lists for Dangerous Tools<a class="headerlink" href="#2-use-deny-lists-for-dangerous-tools" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">runtime = Runtime(
+    policy_hooks=PolicyHooks(
+        tool_filter=ToolFilter(
+            denied_tools=[&quot;delete_file&quot;, &quot;format_disk&quot;, &quot;shutdown_system&quot;]
+        )
+    )
+)
+</code></pre>
+<h3 id="3-implement-approval-gates-for-high-risk-permissions">3. Implement Approval Gates for High-Risk Permissions<a class="headerlink" href="#3-implement-approval-gates-for-high-risk-permissions" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">def require_approval(tool_name: str, tool_args: dict) -&gt; bool:
+    # Check approval system
+    return check_approval_system(tool_name, tool_args)
+
+runtime = Runtime(
+    policy_hooks=PolicyHooks(
+        approval_gate=ApprovalGate(
+            require_approval_for_permissions=[&quot;network&quot;, &quot;filesystem&quot;],
+            approval_callback=require_approval,
+        )
+    )
+)
+</code></pre>
+<h3 id="4-set-appropriate-timeouts">4. Set Appropriate Timeouts<a class="headerlink" href="#4-set-appropriate-timeouts" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">runtime = Runtime(
+    timeout=30.0,  # Prevent runaway executions
+)
+</code></pre>
+<h3 id="5-use-replay-for-testing">5. Use Replay for Testing<a class="headerlink" href="#5-use-replay-for-testing" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python"># Replay production traces in test environment
+replayed = await runtime.replay(trace_id, &quot;agent_name&quot;)
+</code></pre>
+<h3 id="6-monitor-trace-files">6. Monitor Trace Files<a class="headerlink" href="#6-monitor-trace-files" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Regularly review trace files for security issues</li>
+<li>Implement trace retention policies</li>
+<li>Encrypt sensitive traces</li>
+<li>Restrict access to trace directories</li>
+</ul>
+<h3 id="7-secure-api-keys">7. Secure API Keys<a class="headerlink" href="#7-secure-api-keys" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Never commit API keys to version control</li>
+<li>Use environment variables or secret management</li>
+<li>Rotate keys regularly</li>
+<li>Use different keys for dev/staging/prod</li>
+</ul>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">import os
+from pathlib import Path
+from routekitai.core.agent import Agent
+from routekitai.core.hooks import (
+    ApprovalGate,
+    PIIRedactionHook,
+    PolicyHooks,
+    ToolFilter,
+)
+from routekitai.core.runtime import Runtime
+from routekitai.providers.openai import OpenAIChatModel
+
+# Create model with secure API key handling
+model = OpenAIChatModel(
+    name=&quot;gpt-4&quot;,
+    api_key=os.getenv(&quot;OPENAI_API_KEY&quot;)  # Never hardcode!
+)
+
+# Create agent with restricted tools
+agent = Agent(
+    name=&quot;secure_agent&quot;,
+    model=model,
+    tools=[safe_tool1, safe_tool2],
+    tool_filter=ToolFilter(allowed_tools=[&quot;safe_tool1&quot;, &quot;safe_tool2&quot;]),
+)
+
+# Approval callback
+def network_approval(tool_name: str, tool_args: dict) -&gt; bool:
+    # Check approval system
+    return check_network_approval(tool_name)
+
+# Configure runtime with security hooks
+runtime = Runtime(
+    timeout=30.0,
+    max_retries=3,
+    retry_backoff_base=1.0,
+    retry_backoff_max=60.0,
+    trace_dir=Path(&quot;.routekit/traces&quot;),
+    policy_hooks=PolicyHooks(
+        pii_redaction=PIIRedactionHook(
+            redact_emails=True,
+            redact_phones=True,
+        ),
+        tool_filter=ToolFilter(
+            denied_tools=[&quot;dangerous_tool&quot;]
+        ),
+        approval_gate=ApprovalGate(
+            require_approval_for_permissions=[&quot;network&quot;],
+            approval_callback=network_approval,
+        ),
+    ),
+)
+
+runtime.register_agent(agent)
+result = await runtime.run(&quot;secure_agent&quot;, &quot;User prompt with email@example.com&quot;)
+</code></pre>
+<h2 id="security-checklist">Security Checklist<a class="headerlink" href="#security-checklist" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] PII redaction enabled in production</li>
+<li>[ ] Tool deny lists configured</li>
+<li>[ ] Approval gates for high-risk permissions</li>
+<li>[ ] Timeouts set appropriately</li>
+<li>[ ] API keys stored securely</li>
+<li>[ ] Trace files protected</li>
+<li>[ ] Access control implemented</li>
+<li>[ ] Regular security reviews scheduled</li>
+</ul>
+<h2 id="reporting-security-issues">Reporting Security Issues<a class="headerlink" href="#reporting-security-issues" title="Permanent link">&para;</a></h2>
+<p>If you discover a security vulnerability, please report it responsibly:</p>
+<ol>
+<li><strong>Do not</strong> open a public issue</li>
+<li>Email security concerns to: security@RouteKitAI.dev (or your security contact)</li>
+<li>Include:</li>
+<li>Description of the vulnerability</li>
+<li>Steps to reproduce</li>
+<li>Potential impact</li>
+<li>Suggested fix (if any)</li>
+</ol>
+<p>We take security seriously and will respond promptly to all reports.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

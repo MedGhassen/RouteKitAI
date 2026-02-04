@@ -150,7 +150,7 @@ asyncio.run(main())
 
 - **[Architecture Guide](docs/architecture.md)**: Deep dive into RouteKitAI's design
 - **[Security & Governance](docs/security-and-governance.md)**: Security features and best practices
-- **[API Reference](https://RouteKitAI.readthedocs.io)**: Complete API documentation (coming soon)
+- **[Full documentation](https://routekitai.readthedocs.io)**: Architecture, security, and guides (Read the Docs)
 
 ## 🎓 Examples
 
@@ -274,7 +274,7 @@ RouteKitAI is inspired by the need for testable, observable AI agent frameworks.
 ## 🔗 Links
 
 - **GitHub**: [https://github.com/MedGhassen/RouteKitAI](https://github.com/MedGhassen/RouteKitAI)
-- **Documentation**: [https://RouteKitAI.readthedocs.io](https://RouteKitAI.readthedocs.io) (coming soon)
+- **Documentation**: [https://routekitai.readthedocs.io](https://routekitai.readthedocs.io)
 - **Issues**: [https://github.com/MedGhassen/RouteKitAI/issues](https://github.com/MedGhassen/RouteKitAI/issues)
 
 ---

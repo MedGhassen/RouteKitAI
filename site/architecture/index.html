@@ -1,0 +1,1787 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A minimal, production-ready framework for building and orchestrating AI agents">
+      
+      
+      
+        <link rel="canonical" href="https://routekitai.readthedocs.io/architecture/">
+      
+      
+        <link rel="prev" href="../guides/providers/">
+      
+      
+        <link rel="next" href="../security-and-governance/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Architecture - RouteKitAI</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#routekitai-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="RouteKitAI" class="md-header__button md-logo" aria-label="RouteKitAI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RouteKitAI
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MedGhassen/RouteKitAI" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="RouteKitAI" class="md-nav__button md-logo" aria-label="RouteKitAI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RouteKitAI
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MedGhassen/RouteKitAI" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/running-agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/creating-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creating tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/graph-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graph workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/tracing-and-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracing and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Providers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-wedge-three-first-class-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Wedge: Three First-Class Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Wedge: Three First-Class Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Execution Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-based-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-Based Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traces-as-immutable-event-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traces as Immutable Event Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replay-as-deterministic-re-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replay as Deterministic Re-Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-model-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Model Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-message-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Message System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tool-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tool System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph Orchestration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Orchestration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security &amp; Governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security &amp; Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mvp-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MVP Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MVP Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#included" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Included
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluded-post-mvp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excluded (Post-MVP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-directions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Directions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-and-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security & Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-wedge-three-first-class-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Wedge: Three First-Class Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Wedge: Three First-Class Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Execution Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-based-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-Based Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traces-as-immutable-event-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traces as Immutable Event Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replay-as-deterministic-re-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replay as Deterministic Re-Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-model-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Model Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-message-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Message System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tool-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tool System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph Orchestration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Orchestration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graph-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security &amp; Governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security &amp; Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mvp-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MVP Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MVP Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#included" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Included
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluded-post-mvp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excluded (Post-MVP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-directions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Directions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="routekitai-architecture">RouteKitAI Architecture<a class="headerlink" href="#routekitai-architecture" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>RouteKitAI is designed around a simple but powerful philosophy: <strong>graph-native orchestration, tracing-first observability, and replay-built-in testing</strong>. These aren't add-ons—they're core to RouteKitAI's design from day one.</p>
+<h2 id="the-wedge-three-first-class-features">The Wedge: Three First-Class Features<a class="headerlink" href="#the-wedge-three-first-class-features" title="Permanent link">&para;</a></h2>
+<p>RouteKitAI's MVP focuses on <strong>deterministic, testable agent runs</strong> through three integrated features:</p>
+<ol>
+<li><strong>Graph-native orchestration</strong>: Agents compose into explicit workflows with clear control flow</li>
+<li><strong>Tracing</strong>: Every execution produces an immutable event log</li>
+<li><strong>Replay</strong>: Deterministic re-execution using trace data and stubs</li>
+</ol>
+<h3 id="why-this-matters">Why This Matters<a class="headerlink" href="#why-this-matters" title="Permanent link">&para;</a></h3>
+<p>Most agent frameworks treat orchestration, observability, and testing as separate concerns added later. RouteKitAI inverts this:</p>
+<ul>
+<li><strong>Graph-native</strong>: Workflows are graphs, not linear scripts. Control flow is explicit and inspectable.</li>
+<li><strong>Tracing-first</strong>: Every run produces a complete trace. No opt-in, no sampling—always on.</li>
+<li><strong>Replay-built-in</strong>: Testing isn't an afterthought. Replay uses the same runtime with stubs, ensuring production and test behavior match.</li>
+</ul>
+<p>This enables:
+- <strong>Deterministic testing</strong>: Replay any run with exact inputs/outputs
+- <strong>Debugging</strong>: Inspect full execution history, not just logs
+- <strong>Reproducibility</strong>: Re-run failed executions to diagnose issues
+- <strong>Confidence</strong>: Test agent behavior before deploying</p>
+<h2 id="execution-model">Execution Model<a class="headerlink" href="#execution-model" title="Permanent link">&para;</a></h2>
+<h3 id="step-based-runtime">Step-Based Runtime<a class="headerlink" href="#step-based-runtime" title="Permanent link">&para;</a></h3>
+<p>RouteKitAI executes agents in discrete <strong>steps</strong>. Each step:
+- Takes a message and context
+- Produces a message and metadata
+- Records all inputs/outputs to the trace
+- Can trigger tool calls, sub-agent calls, or control flow decisions</p>
+<p>Steps are the atomic unit of execution and tracing. This granularity enables:
+- Precise replay matching
+- Detailed observability
+- Fine-grained error handling
+- Parallel execution control</p>
+<h3 id="traces-as-immutable-event-logs">Traces as Immutable Event Logs<a class="headerlink" href="#traces-as-immutable-event-logs" title="Permanent link">&para;</a></h3>
+<p>Every runtime execution produces a <strong>trace</strong>: an immutable, append-only log of events:</p>
+<ul>
+<li><code>step_started</code>: Step execution begins</li>
+<li><code>step_completed</code>: Step execution finishes</li>
+<li><code>model_called</code>: LLM API call made</li>
+<li><code>tool_called</code>: Tool execution request</li>
+<li><code>tool_result</code>: Tool execution result</li>
+<li><code>error</code>: Error occurred during execution</li>
+<li><code>run_started</code>: Agent run begins</li>
+<li><code>run_completed</code>: Agent run finishes</li>
+</ul>
+<p>Traces are:
+- <strong>Immutable</strong>: Once written, never modified
+- <strong>Complete</strong>: Every event is recorded
+- <strong>Structured</strong>: Events are typed and queryable
+- <strong>Portable</strong>: Can be saved, loaded, and replayed</p>
+<h3 id="replay-as-deterministic-re-execution">Replay as Deterministic Re-Execution<a class="headerlink" href="#replay-as-deterministic-re-execution" title="Permanent link">&para;</a></h3>
+<p>Replay uses the same runtime with <strong>stubs</strong>:</p>
+<ol>
+<li>Load a trace from a previous run</li>
+<li>Replace external calls (LLM, tools, APIs) with stubs that return recorded values</li>
+<li>Re-execute using the trace's event sequence</li>
+<li>Verify outputs match the original trace</li>
+</ol>
+<p>This ensures:
+- <strong>Determinism</strong>: Same inputs → same outputs
+- <strong>Speed</strong>: No real API calls during replay
+- <strong>Reliability</strong>: Test against real production traces
+- <strong>Debugging</strong>: Step through execution with full context</p>
+<h2 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h2>
+<h3 id="1-model-interface">1. Model Interface<a class="headerlink" href="#1-model-interface" title="Permanent link">&para;</a></h3>
+<p>The <code>Model</code> abstract base class provides a unified interface for LLM providers:</p>
+<pre><code class="language-python">class Model(ABC):
+    async def chat(
+        self,
+        messages: list[Message],
+        tools: list[Tool] | None = None,
+        stream: bool = False,
+    ) -&gt; ModelResponse | AsyncIterator[StreamEvent]:
+        ...
+</code></pre>
+<p>This abstraction allows RouteKitAI to work with any LLM provider (OpenAI, Anthropic, local models, etc.) without coupling to specific APIs.</p>
+<h3 id="2-message-system">2. Message System<a class="headerlink" href="#2-message-system" title="Permanent link">&para;</a></h3>
+<p>Messages are the currency of agent communication:</p>
+<pre><code class="language-python">class Message(BaseModel):
+    role: MessageRole  # SYSTEM, USER, ASSISTANT, TOOL
+    content: str
+    tool_calls: list[dict[str, Any]] | None
+    tool_result: dict[str, Any] | None
+    metadata: dict[str, Any]
+</code></pre>
+<p>Messages flow through the system, carrying context and enabling multi-turn conversations.</p>
+<h3 id="3-tool-system">3. Tool System<a class="headerlink" href="#3-tool-system" title="Permanent link">&para;</a></h3>
+<p>Tools are callable functions that agents can invoke:</p>
+<pre><code class="language-python">class Tool(BaseModel, ABC):
+    name: str
+    description: str
+    input_model: type[BaseModel] | None
+    output_model: type[BaseModel] | None
+
+    @abstractmethod
+    async def run(self, input: BaseModel) -&gt; BaseModel:
+        ...
+</code></pre>
+<p>Tools use Pydantic models for input/output validation, ensuring type safety and clear contracts.</p>
+<h3 id="4-agent">4. Agent<a class="headerlink" href="#4-agent" title="Permanent link">&para;</a></h3>
+<p>An agent combines a model, tools, and optional memory:</p>
+<pre><code class="language-python">class Agent(BaseModel):
+    name: str
+    model: Model
+    tools: list[Tool]
+    memory: Memory | None
+    policy: Policy | None
+</code></pre>
+<p>Agents are stateless—all state is managed by the Runtime.</p>
+<h3 id="5-runtime">5. Runtime<a class="headerlink" href="#5-runtime" title="Permanent link">&para;</a></h3>
+<p>The Runtime orchestrates agent execution:</p>
+<pre><code class="language-python">class Runtime(BaseModel):
+    agents: dict[str, Agent]
+    trace_dir: Path | None
+    policy_hooks: PolicyHooks | None
+    max_concurrency: int
+    timeout: float | None
+    ...
+</code></pre>
+<p>The Runtime:
+- Manages agent registration
+- Executes steps according to policies
+- Records traces
+- Handles errors and timeouts
+- Supports replay</p>
+<h2 id="graph-orchestration">Graph Orchestration<a class="headerlink" href="#graph-orchestration" title="Permanent link">&para;</a></h2>
+<h3 id="graph-structure">Graph Structure<a class="headerlink" href="#graph-structure" title="Permanent link">&para;</a></h3>
+<p>Graphs define workflows as directed graphs:</p>
+<pre><code class="language-python">class Graph(BaseModel):
+    name: str
+    nodes: list[GraphNode]
+    edges: list[GraphEdge]
+    entry_node: str
+    exit_node: str | None
+    state_schema: dict[str, Any] | None
+</code></pre>
+<h3 id="node-types">Node Types<a class="headerlink" href="#node-types" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>MODEL</strong>: Execute an agent/model call</li>
+<li><strong>TOOL</strong>: Execute a tool</li>
+<li><strong>SUBGRAPH</strong>: Execute a nested graph</li>
+<li><strong>CONDITION</strong>: Conditional branching based on state</li>
+</ul>
+<h3 id="state-management">State Management<a class="headerlink" href="#state-management" title="Permanent link">&para;</a></h3>
+<p>Graphs maintain state that flows between nodes:</p>
+<ul>
+<li><strong>Input mapping</strong>: Maps graph state to node inputs</li>
+<li><strong>Output mapping</strong>: Maps node outputs to graph state</li>
+<li><strong>State schema</strong>: Optional JSON schema for validation</li>
+</ul>
+<h3 id="execution-flow">Execution Flow<a class="headerlink" href="#execution-flow" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Start at <code>entry_node</code></li>
+<li>Execute current node with mapped inputs</li>
+<li>Update graph state with node outputs</li>
+<li>Determine next node(s) based on edges and conditions</li>
+<li>Repeat until <code>exit_node</code> or no more edges</li>
+</ol>
+<h2 id="policy-system">Policy System<a class="headerlink" href="#policy-system" title="Permanent link">&para;</a></h2>
+<p>Policies determine what actions an agent takes:</p>
+<pre><code class="language-python">class Policy(ABC):
+    async def plan(self, state: dict[str, Any]) -&gt; list[Action]:
+        ...
+
+    async def reflect(self, state: dict[str, Any], observation: dict[str, Any]) -&gt; dict[str, Any]:
+        ...
+</code></pre>
+<h3 id="built-in-policies">Built-in Policies<a class="headerlink" href="#built-in-policies" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ReActPolicy</strong>: Reasoning + Acting loop (default)</li>
+<li><strong>FunctionCallingPolicy</strong>: Strict function calling mode</li>
+<li><strong>GraphPolicy</strong>: Execute a graph workflow</li>
+<li><strong>SupervisorPolicy</strong>: Multi-agent coordination</li>
+<li><strong>PlanExecutePolicy</strong>: Plan then execute pattern</li>
+</ul>
+<h3 id="action-types">Action Types<a class="headerlink" href="#action-types" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ModelAction</strong>: Call the model</li>
+<li><strong>ToolAction</strong>: Execute a tool</li>
+<li><strong>Parallel</strong>: Execute multiple actions in parallel</li>
+<li><strong>Final</strong>: Terminate with output</li>
+</ul>
+<h2 id="memory-system">Memory System<a class="headerlink" href="#memory-system" title="Permanent link">&para;</a></h2>
+<p>RouteKitAI supports multiple memory backends:</p>
+<ul>
+<li><strong>EpisodicMemory</strong>: SQLite-backed episode storage</li>
+<li><strong>RetrievalMemory</strong>: TF-IDF or substring search</li>
+<li><strong>VectorMemory</strong>: Vector similarity search</li>
+<li><strong>KVMemory</strong>: Key-value storage</li>
+<li><strong>WorkingMemory</strong>: In-memory context for a single run</li>
+</ul>
+<p>Memory is accessed through the <code>Memory</code> abstract interface, allowing agents to retain context across runs.</p>
+<h2 id="security-governance">Security &amp; Governance<a class="headerlink" href="#security-governance" title="Permanent link">&para;</a></h2>
+<h3 id="policy-hooks">Policy Hooks<a class="headerlink" href="#policy-hooks" title="Permanent link">&para;</a></h3>
+<p>Policy hooks intercept execution at key points:</p>
+<ul>
+<li><strong>PII Redaction</strong>: Automatically redact sensitive data</li>
+<li><strong>Tool Filtering</strong>: Allow/deny lists for tools</li>
+<li><strong>Approval Gates</strong>: Require approval for high-risk operations</li>
+</ul>
+<h3 id="sandboxing">Sandboxing<a class="headerlink" href="#sandboxing" title="Permanent link">&para;</a></h3>
+<p>Sandboxing provides isolation for tool execution:</p>
+<ul>
+<li><strong>FilesystemSandbox</strong>: Control file system access</li>
+<li><strong>NetworkSandbox</strong>: Control network access</li>
+<li><strong>Permissions</strong>: Fine-grained permission system</li>
+</ul>
+<h2 id="mvp-scope">MVP Scope<a class="headerlink" href="#mvp-scope" title="Permanent link">&para;</a></h2>
+<h3 id="included">Included<a class="headerlink" href="#included" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Core primitives: Model, Message, Tool, Agent, Runtime</li>
+<li>Graph orchestration: Define agent workflows as directed graphs</li>
+<li>Step-based execution: Discrete execution steps with full trace capture</li>
+<li>Trace format: Immutable event log structure</li>
+<li>Replay engine: Deterministic re-execution with stubs</li>
+<li>Basic tooling: Save/load traces, stub generation</li>
+<li>Memory backends: Episodic and retrieval memory</li>
+<li>Security hooks: PII redaction, tool filtering, approval gates</li>
+<li>CLI tools: Run, trace, replay, test commands</li>
+<li>Trace analysis: Metrics (<code>trace-analyze</code>), search (<code>trace-search</code>), timeline/step views, web UI (<code>serve</code>)</li>
+</ul>
+<h3 id="excluded-post-mvp">Excluded (Post-MVP)<a class="headerlink" href="#excluded-post-mvp" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Distributed execution: Multi-machine orchestration</li>
+<li>Streaming traces: Real-time trace streaming/aggregation</li>
+<li>Production observability: Integration with external monitoring (e.g. OpenTelemetry exporters exist; full integration TBD)</li>
+<li>Advanced graph features: Dynamic graphs, conditional branching beyond basics</li>
+<li>Model providers: Built-in integrations (use adapters)</li>
+<li>UI/dashboards: Additional trace visualization (basic serve UI included)</li>
+</ul>
+<h2 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Minimal core</strong>: 5 primitives max, no bloat</li>
+<li><strong>Type-safe</strong>: Full type hints, mypy-clean</li>
+<li><strong>Async-first</strong>: Built for async I/O from the ground up</li>
+<li><strong>Testable</strong>: Every feature must support deterministic testing</li>
+<li><strong>Traceable</strong>: Every execution produces a complete trace</li>
+<li><strong>Composable</strong>: Build complex workflows from simple primitives</li>
+<li><strong>Extensible</strong>: Easy to add new models, tools, policies, memory backends</li>
+</ol>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<p>RouteKitAI prioritizes correctness and testability over raw performance:</p>
+<ul>
+<li><strong>Correctness first</strong>: Deterministic behavior is more important than speed</li>
+<li><strong>Testability</strong>: Replay enables fast, reliable tests</li>
+<li><strong>Observability</strong>: Complete traces enable debugging and optimization</li>
+<li><strong>Async I/O</strong>: Non-blocking operations for concurrent execution</li>
+</ul>
+<p>Performance optimizations can be added later without breaking the core design.</p>
+<h2 id="future-directions">Future Directions<a class="headerlink" href="#future-directions" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Distributed execution</strong>: Scale across multiple machines</li>
+<li><strong>Advanced graph features</strong>: Dynamic graphs, parallel node execution</li>
+<li><strong>Trace analysis</strong>: Further tooling and integrations (basic analysis and serve UI included)</li>
+<li><strong>Production observability</strong>: Integrate with monitoring systems</li>
+<li><strong>Model provider integrations</strong>: Built-in support for major LLM providers</li>
+<li><strong>UI/dashboards</strong>: Visual trace inspection and graph editing</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,41 @@
+# RouteKitAI documentation — built with MkDocs, published on Read the Docs
+site_name: RouteKitAI
+site_description: A minimal, production-ready framework for building and orchestrating AI agents
+site_url: https://routekitai.readthedocs.io
+
+repo_url: https://github.com/MedGhassen/RouteKitAI
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Guides:
+    - Running agents: guides/running-agents.md
+    - Creating tools: guides/creating-tools.md
+    - Graph workflows: guides/graph-workflows.md
+    - Tracing and replay: guides/tracing-and-replay.md
+    - CLI reference: guides/cli-reference.md
+    - Providers: guides/providers.md
+  - Architecture: architecture.md
+  - Security & Governance: security-and-governance.md
+  - API reference: api-reference.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
