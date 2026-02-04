@@ -244,16 +244,10 @@ class Runtime(BaseModel):
             }
             trace.add_event("run_completed", {"trace_id": trace_id, "result": result_dict})
 
-            # Export trace asynchronously (fire and forget)
+            # Export trace so it is on disk before returning (needed for replay and tests)
             if exporter and self.trace_dir:
-                # Ensure directory exists before async export
                 self.trace_dir.mkdir(parents=True, exist_ok=True)
-                # Create background task for trace export
-                export_task = asyncio.create_task(exporter.export(trace))
-                # Store task reference for potential cleanup
-                # Note: Task will complete in background, errors are logged by exporter
-                # For testing, we could await here, but in production we want fire-and-forget
-                # The exporter now creates the directory itself, so this should work
+                await exporter.export(trace)
 
             return result
         except asyncio.CancelledError:
