@@ -1,13 +1,13 @@
 """Graph definition for agent orchestration."""
 
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class NodeType(str, Enum):
+class NodeType(StrEnum):
     """Type of graph node."""
 
     MODEL = "model"  # Execute a model call

@@ -57,6 +57,7 @@ class ReActPolicy(Policy):
                 ToolAction(
                     tool_name=tc["name"],
                     tool_input=tc.get("arguments", {}),
+                    tool_call_id=tc.get("id", ""),
                 )
                 for tc in last_message.tool_calls
             ]
@@ -120,6 +121,7 @@ class FunctionCallingPolicy(Policy):
                     ToolAction(
                         tool_name=tool_name,
                         tool_input=tc.get("arguments", {}),
+                        tool_call_id=tc.get("id", ""),
                     )
                 )
 
@@ -177,6 +179,10 @@ class GraphPolicy(Policy, BaseModel):
 
         # Execute graph
         graph_result = await executor.execute(input_data=input_data)
+
+        # Store on runtime so callers can inspect steps and state (e.g. for logging)
+        if runtime is not None:
+            runtime._last_graph_result = graph_result
 
         # Return final output as result
         final_output = graph_result.get("state", {}).get("output") or graph_result.get(
@@ -302,19 +308,18 @@ class SupervisorPolicy(Policy, BaseModel):
         if iteration >= self.max_iterations:
             return [Final(output=Message.assistant("Max iterations reached"))]
 
-        # Check if we're waiting for a sub-agent result
-        if state.get("waiting_for_subagent"):
-            # Sub-agent has completed, merge result
-            subagent_result = state.get("subagent_result")
-            if subagent_result:
-                # Create message with sub-agent result
-                result_message = Message.assistant(
-                    f"Sub-agent completed: {subagent_result.get('output', 'Task completed') if isinstance(subagent_result, dict) else str(subagent_result)}"
-                )
-                # Note: State mutations should be done via reflect(), not here
-                # But we need to signal completion, so we'll let the runtime handle it
-                # Supervisor processes the result
-                return [ModelAction(messages=[*messages, result_message])]
+        # Sub-agent just completed: finalize with its result (runtime set waiting_for_subagent=False)
+        subagent_result = state.get("subagent_result")
+        if subagent_result and not state.get("waiting_for_subagent"):
+            if isinstance(subagent_result, dict) and "output" in subagent_result:
+                content = subagent_result["output"]
+                if hasattr(content, "content"):
+                    content = content.content
+                else:
+                    content = str(content)
+            else:
+                content = str(subagent_result)
+            return [Final(output=Message.assistant(content))]
 
         # If no messages, supervisor decides which agent to use
         if not messages:

@@ -1,13 +1,13 @@
 """Permission management for tool execution."""
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 from routekitai.core.tool import ToolPermission
 
 
-class PermissionLevel(str, Enum):
+class PermissionLevel(StrEnum):
     """Permission levels for sandbox execution."""
 
     NONE = "none"

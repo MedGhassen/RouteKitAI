@@ -296,7 +296,7 @@ Traces contain sensitive information. Protect them accordingly.
 
 ### Trace Storage
 
-- **Local storage**: Traces stored in `.RouteKitAI/traces/` by default
+- **Local storage**: Traces stored in `.routekit/traces/` by default
 - **Encryption**: Encrypt trace files if they contain sensitive data
 - **Access control**: Restrict file system permissions
 - **Retention**: Implement trace retention policies
@@ -307,7 +307,7 @@ PII redaction automatically applies to traces:
 
 ```python
 runtime = Runtime(
-    trace_dir=Path(".RouteKitAI/traces"),
+    trace_dir=Path(".routekit/traces"),
     policy_hooks=PolicyHooks(
         pii_redaction=PIIRedactionHook(redact_emails=True, redact_phones=True)
     )
@@ -435,7 +435,7 @@ runtime = Runtime(
     max_retries=3,
     retry_backoff_base=1.0,
     retry_backoff_max=60.0,
-    trace_dir=Path(".RouteKitAI/traces"),
+    trace_dir=Path(".routekit/traces"),
     policy_hooks=PolicyHooks(
         pii_redaction=PIIRedactionHook(
             redact_emails=True,

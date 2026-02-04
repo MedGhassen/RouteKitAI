@@ -15,8 +15,8 @@ class MockModel(Model):
 
     def __init__(self, name: str = "mock") -> None:
         super().__init__()
-        self.name = name
-        self.provider = "test"
+        object.__setattr__(self, "_name", name)
+        object.__setattr__(self, "_provider", "test")
 
     async def chat(self, messages, tools=None, stream=False, **kwargs):
         """Mock chat."""
@@ -39,16 +39,38 @@ async def main() -> None:
     research_model = MockModel("research")
     research_agent = Agent(name="research_agent", model=research_model, tools=[])
 
-    # Create policy with sub-agents
-    supervisor_policy = SupervisorPolicy()
-    supervisor_policy.sub_agents = {"research_agent": research_agent}
-    policy = PolicyAdapter(supervisor_policy)
-
     runtime = Runtime(trace_dir=Path(".routekit/traces"))
     runtime.register_agent(supervisor)
+    runtime.register_agent(research_agent)
 
-    result = await runtime.run("supervisor", "Research the impact of AI", policy=policy)
+    # Policy needs runtime to execute delegated sub-agent
+    supervisor_policy = SupervisorPolicy(
+        sub_agents={"research_agent": research_agent},
+        runtime=runtime,
+        delegation_keywords={"research_agent": ["research", "impact", "ai"]},
+    )
+    policy = PolicyAdapter(supervisor_policy)
 
+    prompt = "Research the impact of AI"
+    result = await runtime.run("supervisor", prompt, policy=policy)
+
+    # Show flow: input, supervisor decision, delegation, sub-agent output
+    print("Flow:")
+    print(f"  Input: {prompt!r}")
+    state = result.final_state
+    if state.get("delegated_agent"):
+        print(f"  Delegated to: {state['delegated_agent']}")
+    for i, msg in enumerate(result.messages):
+        role = getattr(msg.role, "value", str(msg.role))
+        short = msg.content[:70] + ("..." if len(msg.content) > 70 else "")
+        label = " (supervisor)" if role == "assistant" and "delegate" in msg.content.lower() else ""
+        label = (
+            " (sub-agent result)"
+            if role == "assistant" and "sub-agent" in msg.content.lower()
+            else label
+        )
+        print(f"  {i + 1}. [{role}]{label} {short}")
+    print()
     print(f"Result: {result.output.content}")
     print(f"Trace ID: {result.trace_id}")
 

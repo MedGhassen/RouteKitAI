@@ -18,13 +18,13 @@ class MockModel(Model):
 
     def __init__(self) -> None:
         super().__init__()
-        self.name = "mock"
-        self.provider = "test"
-        self.call_count = 0
+        object.__setattr__(self, "_name", "mock")
+        object.__setattr__(self, "_provider", "test")
+        object.__setattr__(self, "call_count", 0)
 
     async def chat(self, messages, tools=None, stream=False, **kwargs):
         """Mock chat that returns tool calls."""
-        self.call_count += 1
+        object.__setattr__(self, "call_count", self.call_count + 1)
         if self.call_count == 1:
             # First call: return tool call
             return ModelResponse(
@@ -101,7 +101,7 @@ async def main() -> None:
     runtime.register_agent(agent)
 
     # Run with ReAct policy (using adapter)
-    react_policy = ReActPolicy(max_iterations=10)
+    react_policy = ReActPolicy()
     policy = PolicyAdapter(react_policy)
     result = await runtime.run("react_agent", "What is 2 + 3?", policy=policy)
 

@@ -156,44 +156,47 @@ asyncio.run(main())
 
 Check out the [`examples/`](examples/) directory for complete examples:
 
-- **[Basic Agent](examples/hello_RouteKitAI.py)**: Simple agent with tools
-- **[Graph Orchestration](examples/graph_agent.py)**: Multi-agent workflow
-- **[Supervisor Pattern](examples/supervisor_agent.py)**: Supervisor delegating to sub-agents
+- **[Basic Agent](examples/basic.py)** / **[Hello RouteKit](examples/hello_routekit.py)**: Simple agent with tools
+- **[Graph Orchestration](examples/graph_agent.py)** / **[Graph Policy](examples/graph_policy.py)**: Multi-agent workflows
+- **[Supervisor Pattern](examples/supervisor_agent.py)** / **[Supervisor Policy](examples/supervisor_policy.py)**: Supervisor delegating to sub-agents
+- **[ReAct / Plan–Execute / Function Calling](examples/react_policy.py)**, **[Plan–Execute](examples/plan_execute_policy.py)**, **[Function Calling](examples/function_calling_policy.py)**: Policy examples
 - **[Evaluation Harness](examples/eval_regression.py)**: Testing agents with datasets
+
+Run all examples: `./scripts/run_examples.sh` (or `bash scripts/run_examples.sh`).
 
 ## 🛠️ CLI Commands
 
-RouteKitAI provides a CLI for common operations:
+RouteKitAI provides a CLI (`routekitai`) for common operations:
 
 ```bash
 # Run an agent script
-RouteKitAI run agent_script.py
+routekitai run agent_script.py
 
 # View a trace (multiple formats available)
-RouteKitAI trace <trace_id>                    # Table view (default)
-RouteKitAI trace <trace_id> --format timeline  # Timeline visualization
-RouteKitAI trace <trace_id> --format steps     # Step-by-step execution
-RouteKitAI trace <trace_id> --format json      # JSON output
-RouteKitAI trace <trace_id> --format raw       # Raw JSONL
+routekitai trace <trace_id>                    # Table view (default)
+routekitai trace <trace_id> --format timeline  # Timeline visualization
+routekitai trace <trace_id> --format steps     # Step-by-step execution
+routekitai trace <trace_id> --format json     # JSON output
+routekitai trace <trace_id> --format raw      # Raw JSONL
 
 # Analyze trace metrics
-RouteKitAI trace-analyze <trace_id>            # Performance metrics, token usage, costs
+routekitai trace-analyze <trace_id>            # Performance metrics, token usage, costs
 
 # Search traces
-RouteKitAI trace-search "error"                # Search all traces for "error"
-RouteKitAI trace-search "model" --trace-id abc # Search specific trace
-RouteKitAI trace-search "tool" --event-type tool_called  # Filter by event type
+routekitai trace-search "error"                # Search all traces for "error"
+routekitai trace-search "model" --trace-id abc # Search specific trace
+routekitai trace-search "tool" --event-type tool_called  # Filter by event type
 
 # Replay a trace
-RouteKitAI replay <trace_id> --agent my_agent
+routekitai replay <trace_id> --agent my_agent
 
 # Start web UI for trace visualization
-RouteKitAI serve                    # Start on default port 8080
-RouteKitAI serve --port 3000        # Custom port
-RouteKitAI serve --host 0.0.0.0     # Make accessible from network
+routekitai serve                    # Start on default port 8080
+routekitai serve --port 3000        # Custom port
+routekitai serve --host 0.0.0.0     # Make accessible from network
 
 # Run sanity checks
-RouteKitAI test-agent
+routekitai test-agent
 ```
 
 ## 🏗️ Core Primitives
@@ -226,7 +229,7 @@ pip install -e ".[dev]"
 pytest
 
 # Run with coverage
-pytest --cov=RouteKitAI --cov-report=html
+pytest --cov=routekitai --cov-report=html
 
 # Run specific test file
 pytest tests/test_runtime.py
@@ -239,15 +242,15 @@ pytest tests/test_runtime.py
 mypy src/
 
 # Linting
-ruff check src/
+ruff check src/ tests/ examples/
 
 # Format code
-ruff format src/
+ruff format src/ tests/ examples/
 ```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our contributing guidelines (coming soon) and:
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)

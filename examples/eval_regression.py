@@ -22,11 +22,16 @@ async def main() -> None:
     """Run evaluation with regression testing."""
     print("Running evaluation with regression testing...")
 
-    # Create model with deterministic responses
-    model = FakeModel(name="eval_model")
-    model.add_response("The answer is 42")
-    model.add_response("routkitai supports graph orchestration")
-    model.add_response("Python is a programming language")
+    # Create model with deterministic responses (dict keyed by prompt content
+    # so the same input always gets the same output for both runs and regression)
+    model = FakeModel(
+        name="eval_model",
+        responses={
+            "answer": "The answer is 42",
+            "routkitai": "routkitai supports graph orchestration",
+            "python": "Python is a programming language",
+        },
+    )
 
     # Create agent
     agent = EvalAgent(name="eval_agent", model=model, tools=[])

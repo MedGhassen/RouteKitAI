@@ -18,8 +18,8 @@ class MockModel(Model):
 
     def __init__(self) -> None:
         super().__init__()
-        self.name = "mock"
-        self.provider = "test"
+        object.__setattr__(self, "_name", "mock")
+        object.__setattr__(self, "_provider", "test")
 
     async def chat(self, messages, tools=None, stream=False, **kwargs):
         """Mock chat with function calling."""
@@ -73,7 +73,7 @@ async def main() -> None:
     runtime = Runtime(trace_dir=Path(".routekit/traces"))
     runtime.register_agent(agent)
 
-    func_policy = FunctionCallingPolicy(max_iterations=10)
+    func_policy = FunctionCallingPolicy()
     policy = PolicyAdapter(func_policy)
     result = await runtime.run(
         "function_agent", "What's the weather in San Francisco?", policy=policy

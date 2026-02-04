@@ -107,6 +107,8 @@ class Runtime(BaseModel):
         self._current_step: int = 0
         self._total_steps: int = 0
         self._progress_callbacks: list[Callable[[dict[str, Any]], None]] = []
+        # Last graph execution result (set by GraphPolicy for callers to inspect steps/state)
+        self._last_graph_result: dict[str, Any] | None = None
 
     def register_agent(self, agent: "Agent") -> None:
         """Register an agent with the runtime.
@@ -244,16 +246,10 @@ class Runtime(BaseModel):
             }
             trace.add_event("run_completed", {"trace_id": trace_id, "result": result_dict})
 
-            # Export trace asynchronously (fire and forget)
+            # Export trace so it is on disk before returning (needed for replay and tests)
             if exporter and self.trace_dir:
-                # Ensure directory exists before async export
                 self.trace_dir.mkdir(parents=True, exist_ok=True)
-                # Create background task for trace export
-                export_task = asyncio.create_task(exporter.export(trace))
-                # Store task reference for potential cleanup
-                # Note: Task will complete in background, errors are logged by exporter
-                # For testing, we could await here, but in production we want fire-and-forget
-                # The exporter now creates the directory itself, so this should work
+                await exporter.export(trace)
 
             return result
         except asyncio.CancelledError:
@@ -394,7 +390,13 @@ class Runtime(BaseModel):
             step_results = await self._execute_steps_parallel(steps, agent, trace)
 
             # Process step results
+            final_output_message: Message | None = None
+            last_model_response: ModelResponse | None = None
             for step_result in step_results:
+                if step_result.step_type == "final":
+                    if step_result.output_data and "output" in step_result.output_data:
+                        final_output_message = step_result.output_data["output"]
+                    break
                 if step_result.step_type == "model_call":
                     # Handle model response
                     if (
@@ -412,6 +414,11 @@ class Runtime(BaseModel):
                             response_data.get("tool_calls", [])
                             if isinstance(response_data, dict)
                             else []
+                        )
+                        last_model_response = ModelResponse(
+                            content=content,
+                            tool_calls=None,
+                            usage=None,
                         )
 
                         # Create assistant message with tool calls
@@ -445,13 +452,22 @@ class Runtime(BaseModel):
                             if step_result.input_data
                             else ""
                         )
+                        tool_call_id = (
+                            step_result.input_data.get("tool_call_id", "")
+                            if step_result.input_data
+                            else ""
+                        )
                         tool_result = step_result.output_data["result"]
 
-                        # Add tool result message
+                        # Add tool result message (tool_call_id required by OpenAI API)
                         messages.append(
                             Message.tool(
                                 f"Tool {tool_name} executed",
-                                {"result": tool_result, "tool": tool_name},
+                                {
+                                    "result": tool_result,
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call_id,
+                                },
                             )
                         )
 
@@ -494,6 +510,24 @@ class Runtime(BaseModel):
                                 "trace_id": step_result.output_data.get("trace_id"),
                             }
                             state["waiting_for_subagent"] = False
+
+            # Let policy reflect on step results (e.g. PlanExecutePolicy updates phase/plan)
+            if (
+                last_model_response is not None
+                and hasattr(policy, "reflect")
+                and callable(policy.reflect)
+            ):
+                state.setdefault(
+                    "phase", "planning"
+                )  # so policies can detect first (planning) phase
+                observation = {"result": last_model_response}
+                reflected = await policy.reflect(state, observation)
+                if isinstance(reflected, dict):
+                    state.update(reflected)
+
+            if final_output_message is not None:
+                output_message = final_output_message
+                break
 
             iteration += 1
 
@@ -600,7 +634,10 @@ class Runtime(BaseModel):
             )
 
             try:
-                if step.step_type == "model_call":
+                if step.step_type == "final":
+                    # Policy produced a final output (e.g. GraphPolicy); pass it through
+                    step.output_data = {"output": step.input_data.get("output")}
+                elif step.step_type == "model_call":
                     # Check if in replay mode
                     if self._replay_mode and self._replay_trace:
                         # Match by sequential order using step_completed events
@@ -1394,6 +1431,7 @@ class DefaultPolicy(Policy):
                         input_data={
                             "tool_name": tool_call["name"],
                             "tool_args": tool_call.get("arguments", {}),
+                            "tool_call_id": tool_call.get("id", ""),
                         },
                     )
                 )

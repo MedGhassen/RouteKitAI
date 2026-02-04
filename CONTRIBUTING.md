@@ -45,7 +45,7 @@ This project adheres to a code of conduct. By participating, you are expected to
 pip install -e ".[dev]"
 
 # Verify installation
-python -c "import routekitai; print(RouteKitAI.__version__)"
+python -c "import routekitai; print(routekitai.__version__)"
 ```
 
 ### Development Tools

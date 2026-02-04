@@ -1,54 +1,30 @@
 """Basic example of using RouteKit."""
 
-from routkitai import Agent, Message, MessageRole, Model, Runtime, Tool
+import asyncio
+
+from routekitai import Agent
+from routekitai.core.tools import EchoTool
+from routekitai.providers.local import FakeModel
 
 
 async def main() -> None:
-    """Run a basic routkitai example."""
-    # Define a simple model (placeholder - would need actual implementation)
-    model = Model(name="gpt-4", provider="openai", config={})
+    """Run a basic routekitai example (no API key required)."""
+    # Use a fake model for local testing
+    model = FakeModel(name="basic")
+    model.add_response("Hello! I used the echo tool.")
 
-    # Create a simple tool
-    def add(a: int, b: int) -> int:
-        """Add two numbers."""
-        return a + b
-
-    calculator = Tool(
-        name="add",
-        description="Add two numbers",
-        parameters={
-            "type": "object",
-            "properties": {
-                "a": {"type": "integer"},
-                "b": {"type": "integer"},
-            },
-            "required": ["a", "b"],
-        },
-        func=add,
-    )
-
-    # Create an agent
+    # Create an agent with the echo tool
     agent = Agent(
         name="assistant",
         model=model,
-        tools=[calculator],
-        system_prompt="You are a helpful assistant.",
+        tools=[EchoTool()],
     )
 
-    # Create runtime and register agent
-    runtime = Runtime()
-    runtime.register_agent(agent)
-
-    # Create a message
-    message = Message(role=MessageRole.USER, content="What is 2+2?")
-
-    # Run the agent (this would need actual implementation)
-    print(f"Message: {message.content}")
-    print(f"Agent: {agent.name}")
-    print(f"Tools: {[tool.name for tool in agent.tools]}")
+    # Run the agent
+    result = await agent.run("Say hello and echo 'RouteKit works!'")
+    print(f"Output: {result.output.content}")
+    print(f"Trace ID: {result.trace_id}")
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(main())

@@ -1,12 +1,12 @@
 """Message primitive for RouteKit."""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     """Message role types."""
 
     USER = "user"
