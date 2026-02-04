@@ -260,8 +260,29 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and:
 
 ## 📋 Requirements
 
-- Python 3.11 or higher
-- Pydantic 2.0+
+**Core (always installed):**
+
+- Python 3.11+
+- [Pydantic](https://docs.pydantic.dev/) 2.x
+- [NumPy](https://numpy.org/) 1.24+
+- [httpx](https://www.python-httpx.org/) 0.24+
+
+**Optional extras:**
+
+| Extra | Purpose |
+|-------|---------|
+| `[dev]` | CLI, tests, linting, type checking (pytest, mypy, ruff, rich, typer, safety, bandit) |
+| `[ui]` | Web UI for traces: `routekitai serve` (FastAPI, Uvicorn) |
+| `[optional]` | Vector memory, OpenAI adapter (sentence-transformers, faiss, openai, nest-asyncio) |
+| `[docs]` | Build documentation locally (MkDocs, MkDocs Material) |
+
+Examples:
+
+```bash
+pip install "RouteKitAI[dev]"       # development + CLI
+pip install "RouteKitAI[dev,ui]"    # + trace web UI
+pip install "RouteKitAI[docs]"      # build docs: mkdocs build / mkdocs serve
+```
 
 ## 📄 License
 

@@ -55,6 +55,10 @@ optional = [
     "openai>=1.0.0",
     "nest-asyncio>=1.5.0",
 ]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/MedGhassen/RouteKit"
