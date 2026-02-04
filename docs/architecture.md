@@ -237,8 +237,9 @@ RouteKitAI supports multiple memory backends:
 
 - **EpisodicMemory**: SQLite-backed episode storage
 - **RetrievalMemory**: TF-IDF or substring search
-- **VectorMemory**: Vector similarity search (planned)
-- **KVMemory**: Key-value storage (planned)
+- **VectorMemory**: Vector similarity search
+- **KVMemory**: Key-value storage
+- **WorkingMemory**: In-memory context for a single run
 
 Memory is accessed through the `Memory` abstract interface, allowing agents to retain context across runs.
 
@@ -273,16 +274,16 @@ Sandboxing provides isolation for tool execution:
 - Memory backends: Episodic and retrieval memory
 - Security hooks: PII redaction, tool filtering, approval gates
 - CLI tools: Run, trace, replay, test commands
+- Trace analysis: Metrics (`trace-analyze`), search (`trace-search`), timeline/step views, web UI (`serve`)
 
 ### Excluded (Post-MVP)
 
 - Distributed execution: Multi-machine orchestration
 - Streaming traces: Real-time trace streaming/aggregation
-- Trace analysis: Advanced querying, visualization, metrics
-- Production observability: Integration with monitoring systems
+- Production observability: Integration with external monitoring (e.g. OpenTelemetry exporters exist; full integration TBD)
 - Advanced graph features: Dynamic graphs, conditional branching beyond basics
 - Model providers: Built-in integrations (use adapters)
-- UI/dashboards: Trace visualization tools
+- UI/dashboards: Additional trace visualization (basic serve UI included)
 
 ## Design Principles
 
@@ -309,7 +310,7 @@ Performance optimizations can be added later without breaking the core design.
 
 - **Distributed execution**: Scale across multiple machines
 - **Advanced graph features**: Dynamic graphs, parallel node execution
-- **Trace analysis**: Query, visualize, and analyze traces
+- **Trace analysis**: Further tooling and integrations (basic analysis and serve UI included)
 - **Production observability**: Integrate with monitoring systems
 - **Model provider integrations**: Built-in support for major LLM providers
 - **UI/dashboards**: Visual trace inspection and graph editing
