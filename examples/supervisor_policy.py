@@ -64,7 +64,11 @@ async def main() -> None:
         role = getattr(msg.role, "value", str(msg.role))
         short = msg.content[:70] + ("..." if len(msg.content) > 70 else "")
         label = " (supervisor)" if role == "assistant" and "delegate" in msg.content.lower() else ""
-        label = " (sub-agent result)" if role == "assistant" and "sub-agent" in msg.content.lower() else label
+        label = (
+            " (sub-agent result)"
+            if role == "assistant" and "sub-agent" in msg.content.lower()
+            else label
+        )
         print(f"  {i + 1}. [{role}]{label} {short}")
     print()
     print(f"Result: {result.output.content}")

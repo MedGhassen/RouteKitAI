@@ -28,7 +28,9 @@ class ToolAction(Action):
     action_type: str = Field(default="tool", description="Action type")
     tool_name: str = Field(..., description="Tool name to execute")
     tool_input: dict[str, Any] = Field(..., description="Tool input arguments")
-    tool_call_id: str = Field(default="", description="Tool call ID from assistant message (for API compatibility)")
+    tool_call_id: str = Field(
+        default="", description="Tool call ID from assistant message (for API compatibility)"
+    )
 
 
 class Parallel(Action):

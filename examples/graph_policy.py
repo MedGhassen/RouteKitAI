@@ -34,7 +34,10 @@ async def main() -> None:
     # Agent2: finalizes with a clear completion message
     model2 = FakeModel(
         name="model2",
-        responses={"processed": "Graph execution complete.", "request": "Graph execution complete."},
+        responses={
+            "processed": "Graph execution complete.",
+            "request": "Graph execution complete.",
+        },
     )
 
     agent1 = GraphPolicyAgent(name="agent1", model=model1, tools=[EchoTool()])

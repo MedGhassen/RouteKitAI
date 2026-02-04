@@ -65,14 +65,18 @@ async def main() -> None:
         print()
     # Execution outcomes = model's response each time we asked "Execute step: X"
     # Assistant messages: [0]=plan, [1]=outcome for step 1, [2]=outcome for step 2, ...
-    assistant_msgs = [m for m in result.messages if getattr(m.role, "value", str(m.role)) == "assistant"]
+    assistant_msgs = [
+        m for m in result.messages if getattr(m.role, "value", str(m.role)) == "assistant"
+    ]
     if len(assistant_msgs) > 1:
         print("Execution outcomes (model output for each step):")
         for i, msg in enumerate(assistant_msgs[1:], start=1):
             step_label = plan[i - 1].strip() if i <= len(plan) else f"Step {i}"
             if step_label and step_label[0].isdigit():
                 idx = 1
-                while idx < len(step_label) and (step_label[idx].isdigit() or step_label[idx] in ".)"):
+                while idx < len(step_label) and (
+                    step_label[idx].isdigit() or step_label[idx] in ".)"
+                ):
                     idx += 1
                 step_label = step_label[idx:].strip() or step_label
             outcome = msg.content[:80] + ("..." if len(msg.content) > 80 else "")

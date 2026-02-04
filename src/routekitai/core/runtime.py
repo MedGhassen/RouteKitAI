@@ -512,8 +512,14 @@ class Runtime(BaseModel):
                             state["waiting_for_subagent"] = False
 
             # Let policy reflect on step results (e.g. PlanExecutePolicy updates phase/plan)
-            if last_model_response is not None and hasattr(policy, "reflect") and callable(policy.reflect):
-                state.setdefault("phase", "planning")  # so policies can detect first (planning) phase
+            if (
+                last_model_response is not None
+                and hasattr(policy, "reflect")
+                and callable(policy.reflect)
+            ):
+                state.setdefault(
+                    "phase", "planning"
+                )  # so policies can detect first (planning) phase
                 observation = {"result": last_model_response}
                 reflected = await policy.reflect(state, observation)
                 if isinstance(reflected, dict):
