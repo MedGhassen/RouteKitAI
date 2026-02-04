@@ -107,6 +107,7 @@ class PolicyAdapter(RuntimePolicy):
                         input_data={
                             "tool_name": action.tool_name,
                             "tool_args": action.tool_input,
+                            "tool_call_id": action.tool_call_id,
                         },
                     )
                 )
@@ -122,12 +123,26 @@ class PolicyAdapter(RuntimePolicy):
                                 input_data={
                                     "tool_name": sub_action.tool_name,
                                     "tool_args": sub_action.tool_input,
+                                    "tool_call_id": sub_action.tool_call_id,
                                 },
                             )
                         )
                     # Other action types in parallel not yet supported
             elif isinstance(action, Final):
-                # Final action - return empty to signal completion
-                return []
+                # Final action - return a "final" step so runtime uses this output
+                steps.append(
+                    Step(
+                        step_id=str(uuid.uuid4()),
+                        step_type="final",
+                        input_data={"output": action.output},
+                    )
+                )
+                return steps
 
         return steps
+
+    async def reflect(self, state: dict[str, Any], observation: dict[str, Any]) -> dict[str, Any]:
+        """Delegate to the underlying policy's reflect if it has one."""
+        if hasattr(self.policy, "reflect") and callable(self.policy.reflect):
+            return await self.policy.reflect(state, observation)
+        return state.copy()

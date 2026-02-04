@@ -56,9 +56,24 @@ async def main() -> None:
 
     policy = PolicyAdapter(supervisor_policy)
 
-    # Run supervisor
-    result = await runtime.run("supervisor", "Research information about RouteKit", policy=policy)
+    prompt = "Research information about RouteKit"
+    result = await runtime.run("supervisor", prompt, policy=policy)
 
+    print("\nFlow:")
+    print(f"  Input: {prompt!r}")
+    state = result.final_state
+    if state.get("delegated_agent"):
+        print(f"  Delegated to: {state['delegated_agent']}")
+    for i, msg in enumerate(result.messages):
+        role = getattr(msg.role, "value", str(msg.role))
+        short = msg.content[:70] + ("..." if len(msg.content) > 70 else "")
+        label = ""
+        if role == "assistant":
+            if "delegate" in msg.content.lower():
+                label = " (supervisor)"
+            elif "sub-agent" in msg.content.lower():
+                label = " (sub-agent result)"
+        print(f"  {i + 1}. [{role}]{label} {short}")
     print("\nSupervisor result:")
     print(f"  Output: {result.output.content}")
     print(f"  Trace ID: {result.trace_id}")
