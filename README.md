@@ -15,6 +15,8 @@
 
 ---
 
+> **⚠️ Early stage**: RouteKitAI is still in very early development. APIs may change, and some features are experimental. Use with caution in production.
+
 RouteKitAI is a Python framework for building AI agents with **graph-based orchestration**, **built-in tracing**, and **deterministic replay**. Unlike other frameworks, RouteKitAI treats observability and testability as first-class features from day one.
 
 ## ✨ Features
