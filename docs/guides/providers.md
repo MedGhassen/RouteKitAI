@@ -58,14 +58,21 @@ model = OpenAIChatModel(
 
 ## Anthropic
 
-Uses the Anthropic API. Install the optional dependency and use the provider (if exposed in the package):
+Uses the Anthropic Messages API (Claude). No extra install beyond RouteKitAI; the provider uses `httpx` (already a dependency).
 
 ```python
-# Check routekitai.providers for exact import
-from routekitai.providers.anthropic import AnthropicChatModel  # if available
+import os
+from routekitai.providers import AnthropicModel
+
+model = AnthropicModel(
+    name="claude-3-5-sonnet-20241022",
+    api_key=os.environ.get("ANTHROPIC_API_KEY"),
+)
 ```
 
-Configure with `ANTHROPIC_API_KEY` and the desired model name.
+- **api_key** — Prefer `ANTHROPIC_API_KEY` environment variable.
+- **name** — Model name (e.g. `claude-3-5-sonnet-20241022`, `claude-3-opus-20240229`).
+- **base_url** — Optional; defaults to `https://api.anthropic.com/v1`.
 
 ## Azure OpenAI
 

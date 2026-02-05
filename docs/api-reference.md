@@ -105,7 +105,7 @@ Overview of the main public APIs in RouteKitAI. For full signatures and docstrin
 |--------|-------------|
 | **FakeModel** | Local model with preloaded responses (no API key). |
 | **OpenAIChatModel** | OpenAI chat API. |
-| **AnthropicChatModel** | Anthropic API (if installed). |
+| **AnthropicModel** | Anthropic Claude (Messages API). |
 | **AzureOpenAIChatModel** | Azure OpenAI (if installed). |
 
 ---

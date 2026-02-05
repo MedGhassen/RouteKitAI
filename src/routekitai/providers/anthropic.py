@@ -75,7 +75,11 @@ class AnthropicModel(Model):
         return self._client
 
     def _message_to_anthropic(self, message: Message) -> dict[str, Any]:
-        """Convert routkitai Message to Anthropic format."""
+        """Convert routkitai Message to Anthropic format.
+
+        Anthropic requires all messages to have non-empty content except the
+        optional final assistant message. We ensure content is never empty.
+        """
         role_map = {
             MessageRole.SYSTEM: "system",
             MessageRole.USER: "user",
@@ -84,13 +88,15 @@ class AnthropicModel(Model):
         # Anthropic doesn't support tool role messages directly
         if message.role == MessageRole.TOOL:
             # Convert tool messages to user messages with tool result
-            return {
-                "role": "user",
-                "content": f"Tool result: {message.content}",
-            }
+            content = (
+                f"Tool result: {message.content}" if message.content else "Tool result: (no output)"
+            )
+            return {"role": "user", "content": content}
+        # API rejects empty or whitespace-only content; use a non-whitespace placeholder
+        content = message.content if (message.content and message.content.strip()) else "(no text)"
         return {
             "role": role_map.get(message.role, "user"),
-            "content": message.content,
+            "content": content,
         }
 
     def _tools_to_anthropic(self, tools: list[Tool]) -> list[dict[str, Any]]:
@@ -208,9 +214,19 @@ class AnthropicModel(Model):
             )
 
         except httpx.HTTPStatusError as e:
-            raise ModelError(
-                f"Anthropic API error: {e.response.status_code} - {e.response.text}"
-            ) from e
+            msg = f"Anthropic API error: {e.response.status_code}"
+            try:
+                body = e.response.json()
+                err = body.get("error") or {}
+                if isinstance(err, dict) and err.get("message"):
+                    msg = f"{msg} - {err['message']}"
+                else:
+                    msg = f"{msg} - {e.response.text}"
+            except Exception:
+                msg = f"{msg} - {e.response.text}"
+            if e.response.status_code == 404 and "model" in msg.lower():
+                msg += " Use a model ID from https://docs.anthropic.com/en/api/models or set ANTHROPIC_MODEL."
+            raise ModelError(msg) from e
         except Exception as e:
             raise ModelError(f"Failed to call Anthropic API: {e}") from e
 

@@ -25,7 +25,8 @@ class ReActPolicy(Policy):
     Simple loop: model -> decide tool -> tool -> model -> final
     """
 
-    max_iterations: int = 10
+    def __init__(self, max_iterations: int = 10) -> None:
+        self.max_iterations = max_iterations
 
     async def plan(self, state: dict[str, Any]) -> list[Action]:
         """Plan next action in ReAct loop.

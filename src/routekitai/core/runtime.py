@@ -543,6 +543,14 @@ class Runtime(BaseModel):
                 output_message = Message.assistant(final_response.content)
                 messages.append(output_message)
 
+        # If final output has no content (e.g. model returned empty after tool use),
+        # use the last assistant message that had content so the run result is useful.
+        if not (output_message.content or "").strip() and messages:
+            for msg in reversed(messages):
+                if msg.role == MessageRole.ASSISTANT and (msg.content or "").strip():
+                    output_message = msg
+                    break
+
         # Import here to avoid circular import
         from routekitai.core.agent import RunResult
 
