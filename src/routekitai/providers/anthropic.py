@@ -88,7 +88,9 @@ class AnthropicModel(Model):
         # Anthropic doesn't support tool role messages directly
         if message.role == MessageRole.TOOL:
             # Convert tool messages to user messages with tool result
-            content = f"Tool result: {message.content}" if message.content else "Tool result: (no output)"
+            content = (
+                f"Tool result: {message.content}" if message.content else "Tool result: (no output)"
+            )
             return {"role": "user", "content": content}
         # API rejects empty or whitespace-only content; use a non-whitespace placeholder
         content = message.content if (message.content and message.content.strip()) else "(no text)"

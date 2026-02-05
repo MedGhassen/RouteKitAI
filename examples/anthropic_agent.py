@@ -20,6 +20,7 @@ import os
 from pathlib import Path
 
 from routekitai import Agent
+from routekitai.core.message import MessageRole
 from routekitai.core.policies import ReActPolicy
 from routekitai.core.tools import EchoTool
 from routekitai.providers.anthropic import AnthropicModel
@@ -72,15 +73,34 @@ async def main() -> None:
     print("Agent run completed!")
     print("=" * 60)
     print("\nOutput:")
-    print(result.output.content)
-    print(f"\nTrace ID: {result.trace_id}")
+    output_text = (result.output.content or "").strip()
+    if output_text:
+        print(output_text)
+    else:
+        # Fallback when model returned no final text (e.g. after tool use)
+        last_with_content = None
+        for msg in reversed(result.messages):
+            if msg.role == MessageRole.ASSISTANT and (msg.content or "").strip():
+                last_with_content = msg.content.strip()
+                break
+        if last_with_content:
+            print(last_with_content)
+        else:
+            # Show tool results if any
+            tool_results = [
+                str(msg.tool_result.get("result", msg.content))
+                for msg in result.messages
+                if msg.role == MessageRole.TOOL and msg.tool_result
+            ]
+            if tool_results:
+                print("(no final text; tool results: ", ", ".join(tool_results), ")")
+            else:
+                print("(no text output)")
 
-    trace_dir = Path(".routekit") / "traces"
-    if trace_dir.exists():
-        trace_files = list(trace_dir.glob("*.jsonl"))
-        if trace_files:
-            latest = max(trace_files, key=lambda p: p.stat().st_mtime)
-            print(f"Trace saved to: {latest}")
+    trace_path = Path(".routekit") / "traces" / f"{result.trace_id}.jsonl"
+    print(f"\nTrace ID: {result.trace_id}")
+    if trace_path.exists():
+        print(f"Trace saved to: {trace_path}")
 
 
 if __name__ == "__main__":
