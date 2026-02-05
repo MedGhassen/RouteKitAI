@@ -159,6 +159,7 @@ asyncio.run(main())
 Check out the [`examples/`](examples/) directory for complete examples:
 
 - **[Basic Agent](examples/basic.py)** / **[Hello RouteKit](examples/hello_routekit.py)**: Simple agent with tools
+- **[Real agent with Anthropic](examples/anthropic_agent.py)**: Live Claude agent with tool use (requires `ANTHROPIC_API_KEY`)
 - **[Graph Orchestration](examples/graph_agent.py)** / **[Graph Policy](examples/graph_policy.py)**: Multi-agent workflows
 - **[Supervisor Pattern](examples/supervisor_agent.py)** / **[Supervisor Policy](examples/supervisor_policy.py)**: Supervisor delegating to sub-agents
 - **[ReAct / Plan–Execute / Function Calling](examples/react_policy.py)**, **[Plan–Execute](examples/plan_execute_policy.py)**, **[Function Calling](examples/function_calling_policy.py)**: Policy examples
